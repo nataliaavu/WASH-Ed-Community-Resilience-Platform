@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="Brand Blue">#1A47C8</color>
+    <color name="Deep Blue">#0F2EA8</color>
+    <color name="Light Blue">#3D6EF0</color>
+    <color name="Brand Pink">#E8177A</color>
+    <color name="Brand Yellow">#F5C800</color>
+    <color name="White">#FFFFFF</color>
+    <color name="Off-White">#F7F8FC</color>
+    <color name="Text Dark">#1A1A2E</color>
+    <color name="Text Mid">#444466</color>
+</resources>
