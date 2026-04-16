@@ -13,7 +13,6 @@ class MyApp extends StatelessWidget {
       title: 'WASH-Ed Platform',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterialDesign: true,
       ),
       home: const MyHomePage(title: 'WASH-Ed Community Resilience'),
     );
@@ -40,11 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Welcome to the Resilience Platform!',
-            ),
-          ],
+          children: <Widget>[Text('Welcome to the Resilience Platform!')],
         ),
       ),
     );
