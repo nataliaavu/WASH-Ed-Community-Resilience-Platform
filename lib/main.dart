@@ -1,45 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/views/landing/onboarding_page.dart';
+import 'package:wash_ed_app/views/landing/landing_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const WashEdApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class WashEdApp extends StatelessWidget {
+  const WashEdApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'WASH-Ed Platform',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'WASH-Ed Community Resilience'),
+      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      initialRoute: '/init',
+      routes: <String, WidgetBuilder>{
+        '/': (BuildContext context) => const OnboardingDemoPage(),
+        '/init': (BuildContext context) => const InitScreen(),
+        '/onboarding': (BuildContext context) => OnboardingScreen(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class OnboardingDemoPage extends StatefulWidget {
+  const OnboardingDemoPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  OnboardingDemoPageState createState() => OnboardingDemoPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class OnboardingDemoPageState extends State<OnboardingDemoPage> {
   @override
   Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
+        // TRY THIS: Try changing the color here to a specific color (to
+        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text("onboarding demo"),
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[Text('Welcome to the Resilience Platform!')],
+      body: Center(
+        child: IntrinsicWidth(
+          child: Column(
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .stretch,
+            children: [
+              const Text('press button to launch onboarding screen'),
+              FloatingActionButton(
+                onPressed: () => Navigator.pushNamed(context, '/onboarding'),
+                child: const Text('onboarding'),
+              ),
+            ],
+          ),
         ),
       ),
     );
