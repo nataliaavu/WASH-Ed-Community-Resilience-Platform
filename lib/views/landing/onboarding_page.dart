@@ -19,24 +19,14 @@ class OnboardingScreenState extends State<OnboardingScreen> {
       key: _introKey,
       allowImplicitScrolling: true,
       infiniteAutoScroll: false,
-      globalHeader: Align(
-        alignment: Alignment.topRight,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 16, right: 16),
-            child: _buildSkipButton(),
-          ),
-        ),
-      ),
       pages: [
         buildWelcomePage(),
-        buildWelcomePage(),
-        buildAppearancePage(),
-        buildCompletePage(),
+        buildLearnPage(),
+        buildSafetyPage(),
+        buildAlertsAndContinuePage(),
       ],
       onDone: onOnboardingEnd,
-      onSkip: onOnboardingEnd,
-      // showSkipButton: false,
+      showSkipButton: false,
       showBackButton: true,
       showNextButton: true,
       skipOrBackFlex: 0,
@@ -72,42 +62,47 @@ class OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildSkipButton() {
-    return TextButton(
-      onPressed: onOnboardingEnd,
-      child: Text(
-        "Skip",
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
   PageViewModel buildWelcomePage() {
     return PageViewModel(
-      title: "welcome",
-      body: "this is the onboarding screen",
-      image: buildIconPage(Icons.book_outlined),
+      title: "Welcome to Kiko's Hub!",
+      body:
+          "A safe place to learn, play, and stay prepared for the rising tides",
+      image: Image(
+        image: AssetImage("assets/kiko/WashEd_kiko_sprite_cheer.png"),
+      ),
       decoration: getPageDecoration(),
     );
   }
 
-  PageViewModel buildAppearancePage() {
+  PageViewModel buildLearnPage() {
     return PageViewModel(
-      title: "another page",
-      body: "this is another page",
-      image: buildIconPage(Icons.book_outlined),
+      title: "Learn with Kiko!",
+      body: "Discover fun and simple ways to keep everyone safe and healthy",
+      image: Image(
+        image: AssetImage("assets/kiko/WashEd_kiko_sprite_base.png"),
+      ),
       decoration: getPageDecoration(),
     );
   }
 
-  PageViewModel buildCompletePage() {
+  PageViewModel buildSafetyPage() {
     return PageViewModel(
-      title: "done",
-      body: "onboarding complete",
-      image: buildIconPage(Icons.check_circle_outline),
+      title: "Stay safe!",
+      body: "Prepare for the rainy season with helpful guides and flood alerts",
+      image: Image(
+        image: AssetImage("assets/kiko/WashEd_kiko_sprite_side-jump.png"),
+      ),
+      decoration: getPageDecoration(),
+    );
+  }
+
+  PageViewModel buildAlertsAndContinuePage() {
+    return PageViewModel(
+      title: "Let's begin!",
+      body: "Let's start by getting your profile ready for action!",
+      image: Image(
+        image: AssetImage("assets/kiko/WashEd_kiko_sprite_cheer.png"),
+      ),
       decoration: getPageDecoration(),
     );
   }
@@ -135,12 +130,13 @@ class OnboardingScreenState extends State<OnboardingScreen> {
         color: Theme.of(context).colorScheme.onSurface,
       ),
       bodyTextStyle: TextStyle(
-        fontSize: 19.0,
+        fontSize: 18.0,
         color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
       ),
       bodyPadding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+      imagePadding: const EdgeInsets.symmetric(vertical: 20.0),
       pageColor: Theme.of(context).scaffoldBackgroundColor,
-      imagePadding: const EdgeInsets.symmetric(vertical: 40.0),
+      pageMargin: const EdgeInsets.only(top: 80.0),
     );
   }
 
