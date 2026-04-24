@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wash_ed_app/views/landing/onboarding_page.dart';
-import 'package:wash_ed_app/views/landing/landing_page.dart';
+import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
+import 'package:wash_ed_app/views/onboarding/init_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
