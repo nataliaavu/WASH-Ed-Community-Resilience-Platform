@@ -1,6 +1,5 @@
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -25,7 +24,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
         buildSafetyPage(),
         buildAlertsAndContinuePage(),
       ],
-      onDone: onOnboardingEnd,
+      onDone: gotoUserSetup,
       showSkipButton: false,
       showBackButton: true,
       showNextButton: true,
@@ -146,12 +145,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  void onOnboardingEnd() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isOnboarded', true);
-
-    if (mounted) {
-      Navigator.pop(context);
-    }
+  void gotoUserSetup() async {
+    Navigator.pushReplacementNamed(context, "/setup");
   }
 }

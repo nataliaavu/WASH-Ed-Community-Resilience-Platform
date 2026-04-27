@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
 import 'package:wash_ed_app/views/onboarding/init_page.dart';
+import 'package:wash_ed_app/views/setup/setup_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,8 @@ class WashEdApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => const OnboardingDemoPage(),
         '/init': (BuildContext context) => const InitScreen(),
-        '/onboarding': (BuildContext context) => OnboardingScreen(),
+        '/onboarding': (BuildContext context) => const OnboardingScreen(),
+        '/setup': (BuildContext context) => const SetupPage(),
       },
     );
   }

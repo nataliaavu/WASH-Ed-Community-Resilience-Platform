@@ -22,13 +22,11 @@ class InitScreenState extends State<InitScreen> {
 
   void route() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool showOnboarding = !(prefs.getBool('isOnboarded') ?? false);
+    bool showOnboarding = !(prefs.getBool('userSetupFinished') ?? false);
 
     if (!mounted) return;
 
-    Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-    if (showOnboarding) {
-      Navigator.pushNamed(context, '/onboarding');
-    }
+    String route = showOnboarding ? '/onboarding' : '/';
+    Navigator.pushNamedAndRemoveUntil(context, route, (_) => false);
   }
 }
