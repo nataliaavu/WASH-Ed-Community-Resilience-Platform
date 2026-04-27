@@ -44,16 +44,22 @@ class OnboardingScreenState extends State<OnboardingScreen> {
           borderRadius: BorderRadius.all(Radius.circular(25.0)),
         ),
       ),
-      next: Icon(
-        Icons.arrow_forward,
-        color: Theme.of(context).colorScheme.primary,
+      back: Text(
+        "Back",
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
-      back: Icon(
-        Icons.arrow_back,
-        color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
+      next: Text(
+        "Next",
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
       done: Text(
-        "Done",
+        "Go!",
         style: TextStyle(
           fontWeight: FontWeight.w600,
           color: Theme.of(context).colorScheme.primary,
