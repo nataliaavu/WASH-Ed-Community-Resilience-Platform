@@ -18,7 +18,7 @@ class WashEdApp extends StatelessWidget {
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
       initialRoute: '/init',
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => const OnboardingDemoPage(),
+        '/': (BuildContext context) => const AppMain(),
         '/init': (BuildContext context) => const InitScreen(),
         '/onboarding': (BuildContext context) => const OnboardingScreen(),
         '/setup': (BuildContext context) => const SetupPage(),
@@ -27,46 +27,57 @@ class WashEdApp extends StatelessWidget {
   }
 }
 
-class OnboardingDemoPage extends StatefulWidget {
-  const OnboardingDemoPage({super.key});
+/// Replace the placeholder widgets in `_pages` with your real pages from
+/// `lib\views` (e.g. `HomePage()`, `ModulesPage()`, ...).
+class AppMain extends StatefulWidget {
+  const AppMain({super.key});
 
   @override
-  OnboardingDemoPageState createState() => OnboardingDemoPageState();
+  State<AppMain> createState() => _AppMainState();
 }
 
-class OnboardingDemoPageState extends State<OnboardingDemoPage> {
+class _AppMainState extends State<AppMain> {
+  int _currentIndex = 0;
+
+  // TODO: Replace these placeholders with your actual pages from
+  // lib\views, e.g. `const HomePage()`.
+  final List<Widget> _pages = const <Widget>[
+    Center(child: Text('Home page')), // replace with HomePage()
+    Center(child: Text('Modules page')), // replace with ModulesPage()
+    Center(child: Text('Prepare page')), // replace with PreparePage()
+    Center(child: Text('Profile page')), // replace with ProfilePage()
+  ];
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text("onboarding demo"),
-      ),
-      body: Center(
-        child: IntrinsicWidth(
-          child: Column(
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .stretch,
-            children: [
-              const Text('press button to launch onboarding screen'),
-              FloatingActionButton(
-                onPressed: () => Navigator.pushNamed(context, '/onboarding'),
-                child: const Text('onboarding'),
-              ),
-            ],
+      body: IndexedStack(index: _currentIndex, children: _pages),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school_outlined),
+            activeIcon: Icon(Icons.school),
+            label: 'Modules',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_outlined),
+            activeIcon: Icon(Icons.assignment),
+            label: 'Prepare',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }
