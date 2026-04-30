@@ -1,3 +1,4 @@
+/* ORIGINAL MAIN
 import 'package:flutter/material.dart';
 
 void main() {
@@ -42,6 +43,31 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[Text('Welcome to the Resilience Platform!')],
         ),
       ),
+    );
+  }
+}
+*/
+
+// POINT DIRECTLY TO THE PREPARE PAGE
+import 'package:flutter/material.dart';
+import 'views/prepare/prepare_page.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'WASH-Ed Platform',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3D5AFE)),
+      ),
+      home: const PreparePage(),  // ← points straight to your page
     );
   }
 }
