@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../views/learn_page.dart';
 
 /// Replace the placeholder widgets in `_pages` with your real pages from
 /// `lib\views` (e.g. `HomePage()`, `ModulesPage()`, ...).
@@ -16,7 +17,7 @@ class _AppNavigationBarState extends State<AppNavigationBar> {
   // lib\views, e.g. `const HomePage()`.
   final List<Widget> _pages = const <Widget>[
     Center(child: Text('Home page')), // replace with HomePage()
-    Center(child: Text('Modules page')), // replace with ModulesPage()
+    const LearnPage(), // Learn page with tabs
     Center(child: Text('Prepare page')), // replace with PreparePage()
     Center(child: Text('Profile page')), // replace with ProfilePage()
   ];
