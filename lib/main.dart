@@ -45,7 +45,7 @@ class _AppMainState extends State<AppMain> {
   final List<Widget> _pages = const <Widget>[
     Center(child: Text('Home page')), // replace with HomePage()
     Center(child: Text('Modules page')), // replace with ModulesPage()
-    Center(child: Text('Prepare page')), // replace with PreparePage()
+    PreparePage(),
     Center(child: Text('Profile page')), // replace with ProfilePage()
   ];
 
