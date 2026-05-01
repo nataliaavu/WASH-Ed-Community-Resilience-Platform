@@ -61,6 +61,11 @@ class SetupPageState extends State<SetupPage> {
   }
 
   void _updateCurrentPageIndex(int index) {
+    if (index == 4) {
+      Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
+      return;
+    }
+
     _pageViewController.animateToPage(
       index,
       duration: const Duration(milliseconds: 400),
@@ -108,9 +113,7 @@ class NavigationButtons extends StatelessWidget {
               foregroundColor: WidgetStatePropertyAll(Color(0xFF_F7F8FC)),
             ),
             onPressed: () {
-              if (currentPageIndex < 4) {
-                onUpdateCurrentPageIndex(currentPageIndex + 1);
-              }
+              onUpdateCurrentPageIndex(currentPageIndex + 1);
             },
             child: const Text("Next"),
           ),
