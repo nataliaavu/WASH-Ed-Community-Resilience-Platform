@@ -29,25 +29,6 @@
           ),
         ),
 
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex : selectedIndex,
-          onTap: (index){
-            setState((){
-              selectedIndex = index;
-            });
-          },
-          selectedItemColor : Colors.deepPurple, 
-          unselectedItemColor : Colors.black,
-          showUnselectedLabels: true,
-
-          items: const[
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.cast_for_education), label: 'Learn'),
-            BottomNavigationBarItem(icon: Icon(Icons.checklist_sharp), label: 'Prepare'),
-            BottomNavigationBarItem(icon: Icon(Icons.gamepad_outlined), label: 'Games'),
-            BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profile'),
-          ],
-        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -151,7 +132,6 @@
                 const SizedBox(height: 20),
                 riskBox('Flood Risk', screenWidth * 1, 140),
                 const SizedBox(height: 20),
-            
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
