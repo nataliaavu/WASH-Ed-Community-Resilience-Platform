@@ -1,74 +1,85 @@
-/* ORIGINAL MAIN
 import 'package:flutter/material.dart';
-import 'widgets/navigation_bar.dart';
+import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
+import 'package:wash_ed_app/views/onboarding/init_page.dart';
+import 'package:wash_ed_app/views/prepare/prepare_page.dart';
+import 'package:wash_ed_app/views/setup/setup_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const WashEdApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class WashEdApp extends StatelessWidget {
+  const WashEdApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'WASH-Ed Platform',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const AppNavigationBar(),
+      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      initialRoute: '/init',
+      routes: <String, WidgetBuilder>{
+        '/': (BuildContext context) => const AppMain(),
+        '/init': (BuildContext context) => const InitScreen(),
+        '/onboarding': (BuildContext context) => const OnboardingScreen(),
+        '/setup': (BuildContext context) => const SetupPage(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+/// Replace the placeholder widgets in `_pages` with your real pages from
+/// `lib\views` (e.g. `HomePage()`, `ModulesPage()`, ...).
+class AppMain extends StatefulWidget {
+  const AppMain({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<AppMain> createState() => _AppMainState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _AppMainState extends State<AppMain> {
+  int _currentIndex = 0;
+
+  // TODO: Replace these placeholders with your actual pages from
+  // lib\views, e.g. `const HomePage()`.
+  final List<Widget> _pages = const <Widget>[
+    Center(child: Text('Home page')), // replace with HomePage()
+    Center(child: Text('Modules page')), // replace with ModulesPage()
+    PreparePage(),
+    Center(child: Text('Profile page')), // replace with ProfilePage()
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+      body: IndexedStack(index: _currentIndex, children: _pages),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school_outlined),
+            activeIcon: Icon(Icons.school),
+            label: 'Modules',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_outlined),
+            activeIcon: Icon(Icons.assignment),
+            label: 'Prepare',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[Text('Welcome to the Resilience Platform!')],
-        ),
-      ),
-    );
-  }
-}
-*/
-
-// POINT DIRECTLY TO THE PREPARE PAGE
-import 'package:flutter/material.dart';
-import 'views/prepare/prepare_page.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'WASH-Ed Platform',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3D5AFE)),
-      ),
-      home: const PreparePage(),  // ← points straight to your page
     );
   }
 }

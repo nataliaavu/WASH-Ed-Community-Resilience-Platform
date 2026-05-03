@@ -10,7 +10,10 @@ class PreparePage extends StatefulWidget {
 class _PreparePageState extends State<PreparePage> {
   // Checklist items - content to be confirmed by WASH-Ed
   final List<Map<String, dynamic>> _checklist = [
-    {'label': 'Store clean drinking water (1 gallon per person/day)', 'checked': false},
+    {
+      'label': 'Store clean drinking water (1 gallon per person/day)',
+      'checked': false,
+    },
     {'label': 'Pack emergency food supplies (3-day supply)', 'checked': false},
     {'label': 'Prepare a first aid kit', 'checked': false},
   ];
@@ -49,8 +52,8 @@ class _PreparePageState extends State<PreparePage> {
                         _buildSectionLabel('Quick Safety Steps'),
                         const SizedBox(height: 10),
                         ..._safetySteps.asMap().entries.map(
-                              (e) => _buildSafetyStepCard(e.key + 1, e.value),
-                            ),
+                          (e) => _buildSafetyStepCard(e.key + 1, e.value),
+                        ),
                         const SizedBox(height: 24),
                         _buildChecklistSection(),
                         const SizedBox(height: 24),
@@ -61,7 +64,6 @@ class _PreparePageState extends State<PreparePage> {
               ),
             ),
           ),
-          _buildBottomNavBar(),
         ],
       ),
     );
@@ -113,12 +115,10 @@ class _PreparePageState extends State<PreparePage> {
             width: 100,
             height: 110,
             child: Image.asset(
-              'assets/Kiko/WashEd_kiko_sprite_cheer.png',
+              'assets/kiko/WashEd_kiko_sprite_cheer.png',
               fit: BoxFit.contain,
             ),
           ),
-            // TODO: swap above Icon with this once kiko.png is in assets/:
-            // child: Image.asset('assets/images/kiko.png', height: 90),
         ],
       ),
     );
@@ -166,10 +166,7 @@ class _PreparePageState extends State<PreparePage> {
               children: [
                 Text(
                   'Emergency Services',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 Text(
                   'Police, Fire, Ambulance',
@@ -219,10 +216,7 @@ class _PreparePageState extends State<PreparePage> {
               children: [
                 Text(
                   'Emergency Contacts',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 Text(
                   'Family and Friend Support',
@@ -333,68 +327,17 @@ class _PreparePageState extends State<PreparePage> {
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
                 activeColor: const Color(0xFF3D5AFE),
-                checkboxShape: const CircleBorder(), // circle checkbox like wireframe
+                checkboxShape:
+                    const CircleBorder(), // circle checkbox like wireframe
                 side: const BorderSide(color: Colors.grey, width: 1.5),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             );
           }),
         ],
       ),
-    );
-  }
-
-  // ── BOTTOM NAV BAR ──────────────────────────────────────────────────────────
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFEEEEEE))),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.home, 'Home', false),
-          _buildNavItem(Icons.school, 'Learn', false),
-          _buildNavItem(Icons.checklist, 'Prepare', true), // active
-          _buildNavItem(Icons.sports_esports, 'Games', false),
-          _buildNavItem(Icons.person, 'Profile', false),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          decoration: isActive
-              ? BoxDecoration(
-                  color: const Color(0xFFE91E8C).withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(20),
-                )
-              : null,
-          child: Icon(
-            icon,
-            color: isActive ? const Color(0xFFE91E8C) : Colors.black54,
-            size: 24,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            color: isActive ? const Color(0xFFE91E8C) : Colors.black54,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-      ],
     );
   }
 }
