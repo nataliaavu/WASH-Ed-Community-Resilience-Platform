@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
 import 'package:wash_ed_app/views/onboarding/init_page.dart';
+import 'package:wash_ed_app/views/learn_page.dart';
 import 'package:wash_ed_app/views/prepare/prepare_page.dart';
 import 'package:wash_ed_app/views/setup/setup_page.dart';
 import 'package:wash_ed_app/views/home/home_page.dart';
@@ -46,6 +47,7 @@ class _AppMainState extends State<AppMain> {
   final List<Widget> _pages = const <Widget>[
     HomePage(), // replace with HomePage()
     Center(child: Text('Modules page')), // replace with ModulesPage()
+    LearnPage(),
     PreparePage(),
     Center(child: Text('Profile page')), // replace with ProfilePage()
   ];
