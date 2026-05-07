@@ -11,6 +11,12 @@ dependencies:
     sdk: flutter
   introduction_screen: ^4.0.0
   shared_preferences: ^2.5.5
+  sqflite: ^2.3.0
+  path: ^1.9.0
+  path_provider: ^2.1.0
+  flutter_pdfview: ^1.3.2
+  http: ^1.2.0
+  connectivity_plus: ^6.0.3
 
 dev_dependencies:
   flutter_test:
@@ -21,3 +27,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/kiko/
+    # Uncomment the line below after adding your PDF files to assets/pdfs/
+    # - assets/pdfs/
