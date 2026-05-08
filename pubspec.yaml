@@ -29,3 +29,4 @@ flutter:
     - assets/kiko/
     # Uncomment the line below after adding your PDF files to assets/pdfs/
     # - assets/pdfs/
+    - assets/wash-ed/
