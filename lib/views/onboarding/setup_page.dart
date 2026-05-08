@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wash_ed_app/views/setup/setup_location_page.dart';
-import 'package:wash_ed_app/views/setup/setup_name_page.dart';
-import 'package:wash_ed_app/views/setup/setup_role_page.dart';
-import 'package:wash_ed_app/views/setup/setup_squad_page.dart';
+import 'package:wash_ed_app/views/onboarding/setup_location_page.dart';
+import 'package:wash_ed_app/views/onboarding/setup_name_page.dart';
+import 'package:wash_ed_app/views/onboarding/setup_role_page.dart';
+import 'package:wash_ed_app/views/onboarding/setup_squad_page.dart';
 
 class SetupPage extends StatefulWidget {
   const SetupPage({super.key});
