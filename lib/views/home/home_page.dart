@@ -7,7 +7,7 @@
     }
 
     class _HomePageState extends State<HomePage> {
-      String riskLevel = "medium";
+      String riskLevel = "low";
       @override
       Widget build(BuildContext context) {
         final screenWidth = MediaQuery.of(context).size.width;
@@ -16,7 +16,7 @@
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Hello Miguelllll!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue)), // Spacing between text and logo
+                const Text('Hello Miguel!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue)), // Spacing between text and logo
                 Image(image: AssetImage('assets/wash-ed/WASHEd_logo_2022_og_no-shadow.png'), height: 50),
               ]
             ),
@@ -373,13 +373,11 @@
                     ),
                   ), 
                   Text(
-                    riskLevel,
+                    riskLevel.toUpperCase(),
                     style: TextStyle(
                       fontSize: 20,
                       color: riskLevel == "low" ? Colors.green : riskLevel == "medium" ? Colors.orange : Colors.red,
-                      
-
-
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
