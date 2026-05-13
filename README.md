@@ -19,19 +19,64 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 - Create an intuitive, child-friendly user experience leveraging the Kiko Carabao character
 - Ensure usability in low-connectivity environments, including offline access to essential content
 
+## Target Users
+### Primary Users
+- Filipino Children aged 6-12
+- Parents/guardians and educators in flood-prone communities
+
+### Secondary Users
+- Community health workers
+- Local government units
+
 ## Features of App
+- Location based flood alerts
+- WASH Education Modules featuring Kiko Carabao
+- User account types
+- Offline functionality for core content
+- Flood preparedness checklists and evacuation guidance
+- Direct links to official hazard monitoring websites
+- Interactive mini games for WASH learning
+
+## Non Functional Requirements
+- Fast loading times
+- Child-friendly and intuitive interface
+- Accessibility for users with low digital literacy
+- Low-bandwidth optimisation
 
 ## Tech Stack
+| Layer | Technology |
+|-------|------------|
+| Mobile Framework | Flutter |
+| Backend | |
+| Batabase & Auth | |
+| Push Notifications | |
+| Offline Storage ||
+| API | |
+| UI/UX Design | Figma |
+| Mini Games | itch.io |
+| Version Control | GitHub |
+| Project Management | JIRA |
 
 ## Configuration / Environment Variables
 
 ## System Requirements
+1. Flutter SDK - [https://docs.flutter.dev/install]
+2. Android Studio
+  1. [https://docs.flutter.dev/platform-integration/android/setup]
+  2. [https://docs.flutter.dev/tools/android-studio]
+3. Git
 
 ## Installation Instructions
-
-### Prerequisites
 ### 1. Clone the Repository
+```
+git clone [https://github.com/nataliaavu/WASH-Ed-Community-Resilience-Platform]
+cd wash-ed-community-resilience-platform
+```
 
+### 2. Install Dependencies
+
+
+## Project Structure
 
 
 ## Contributors
@@ -45,6 +90,10 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 | William Lay | Front End Developer |
 
 ## Client
+Developed in collaboration with: **WASH Education Pty Ltd.**
+- Thomas Da Jose
+- Arielle Struhl
+- Gryan Perez
 
 ## License
 This project was developed for educational and research purposes in collaboration with WASh-Ed. All educational content and character assets remain the property of WASH Education Pty Ltd.
