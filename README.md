@@ -29,6 +29,11 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 
 ## Installation Instructions
 
+### Prerequisites
+### 1. Clone the Repository
+
+
+
 ## Contributors
 | Name | Role |
 |------|------|
