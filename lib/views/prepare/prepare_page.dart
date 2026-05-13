@@ -10,19 +10,19 @@ class PreparePage extends StatefulWidget {
 class _PreparePageState extends State<PreparePage> {
   // Checklist items - content to be confirmed by WASH-Ed
   final List<Map<String, dynamic>> _checklist = [
-    {
-      'label': 'Store clean drinking water (1 gallon per person/day)',
-      'checked': false,
-    },
-    {'label': 'Pack emergency food supplies (3-day supply)', 'checked': false},
-    {'label': 'Prepare a first aid kit', 'checked': false},
+    {'label': 'Water and snacks for 3 days', 'checked': false},
+    {'label': 'Important documents sealed in a plastic bag', 'checked': false},
+    {'label': 'Torch, extra clothes, and first aid kit', 'checked': false},
+    {'label': 'Power bank for your phone (if you have one)', 'checked': false},
   ];
 
   // Safety steps - content to be confirmed by WASH-Ed
   final List<String> _safetySteps = [
-    'Move to higher ground immediately if water rises.',
-    'Do not walk through floodwater as it may be contaminated.',
-    'Turn off electricity at the main switch before leaving.',
+    'Tell a trusted adult near you straight away.',
+    'Grab your emergency bag if you can, and move to higher ground.',
+    'Stay away from floodwater. It can be deep and dirty.',
+    'Listen to the adults around you and follow official instructions.',
+    'If told yo evacuate, go with your family to somewhere safe and dry.',
   ];
 
   @override
@@ -100,7 +100,7 @@ class _PreparePageState extends State<PreparePage> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "Stay calm, stay safe. Follow Kiko's\nsteps to stay safe!",
+                  "Wherever you are, \n here's what to do!",
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.white70,
@@ -215,17 +215,24 @@ class _PreparePageState extends State<PreparePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Emergency Contacts',
+                  'Phillipine Red Cross',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 Text(
-                  'Family and Friend Support',
+                  'Disaser Relief',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: Colors.grey),
+          const Text(
+            '143',
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w900,
+              color: Colors.red,
+            ),
+          ),
         ],
       ),
     );
@@ -294,6 +301,14 @@ class _PreparePageState extends State<PreparePage> {
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Color(0xFF3D5AFE),
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Pack a bag you can carry quickly if you need to leave home fast.',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black
             ),
           ),
           const SizedBox(height: 10),
