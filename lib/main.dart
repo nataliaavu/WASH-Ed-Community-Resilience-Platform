@@ -44,13 +44,25 @@ class _AppMainState extends State<AppMain> {
 
   // TODO: Replace these placeholders with your actual pages from
   // lib\views, e.g. `const HomePage()`.
-  final List<Widget> _pages = const <Widget>[
-    HomePage(), // replace with HomePage()
+  late final List<Widget> _pages;
+  @override
+  void initState(){
+    super.initState();
+    _pages = <Widget> [
+      HomePage(
+        onTabSelected: (index) {
+          setState((){
+          _currentIndex = index;
+          });
+        },
+      ),
     Center(child: Text('Modules page')), // replace with ModulesPage()
     LearnPage(),
     PreparePage(),
-    Center(child: Text('Profile page')), // replace with ProfilePage()
-  ];
+    Center(child: Text('Profile page')), 
+    ];
+  }// replace with ProfilePage()
+  
 
   @override
   Widget build(BuildContext context) {

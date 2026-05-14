@@ -1,13 +1,36 @@
     import 'package:flutter/material.dart';
+    import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
+    import 'package:wash_ed_app/views/onboarding/init_page.dart';
+    import 'package:wash_ed_app/views/learn/learn_page.dart';
+    import 'package:wash_ed_app/views/prepare/prepare_page.dart';
+    import 'package:wash_ed_app/views/setup/setup_page.dart';
+    import 'package:wash_ed_app/views/home/home_page.dart';
 
     class HomePage extends StatefulWidget {
-      const HomePage({super.key});
+      final Function(int) onTabSelected;
+
+      const HomePage({
+        super.key,
+        required this.onTabSelected,
+      });
 
       State<HomePage> createState() => _HomePageState();
     }
 
     class _HomePageState extends State<HomePage> {
       String riskLevel = "low";
+
+      String selectedCity = "Bulacan";
+
+      final List<String> cities = [
+        "Bulacan",
+        "Quezon City",
+        "Davao City", 
+        "Manila",
+        "Caloocan City", 
+        "Taguig City",
+      ];
+
       @override
       Widget build(BuildContext context) {
         final screenWidth = MediaQuery.of(context).size.width;
@@ -85,18 +108,32 @@
                                   Icon(
                                     Icons.location_on_outlined,
                                     color: Colors.blue,
-                                    size: 30,
+                                    size: 22,
                                   ),
 
-                                  SizedBox(height: 5),
-
-                                  Text(
-                                    "Bulacan", 
+                                  DropdownButton<String>(
+                                    value: selectedCity,
+                                    isDense: true,
+                                    underline: SizedBox(),
+                                    icon: Icon(Icons.arrow_drop_down_rounded, color: Colors.black),
                                     style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 16,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                     ),
+
+                                    items: cities.map((city) {
+                                      return DropdownMenuItem(
+                                        value: city,
+                                        child: Text(city),
+                                      );
+                                    }).toList(),
+
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedCity = value!;
+                                      });
+                                    },
                                   ),
                                 ],
                               ),
@@ -151,13 +188,31 @@
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        buttonBox('Learning Module', screenWidth * 0.27, 100, Icons.cast_for_education),
-                        const SizedBox(width: 10),
-                        buttonBox('Flood Prep', screenWidth * 0.27, 100, Icons.checklist_sharp),
-                        const SizedBox(width: 10),
-                        buttonBox('Play Games', screenWidth * 0.27, 100, Icons.gamepad_outlined),
+                        InkWell(
+                          onTap: () {
+                            widget.onTabSelected(2);
+                          },
+                          child: buttonBox('Learning Module', screenWidth * 0.27, 100, Icons.cast_for_education),
+                        ),
+                        SizedBox(width: 10),
+
+                        InkWell(
+                          onTap: () {
+                            widget.onTabSelected(3);
+                          },
+                          child: buttonBox('Flood Prep', screenWidth * 0.27, 100, Icons.checklist_sharp),
+                        ),
+                        SizedBox(width: 10),
+
+                        InkWell(
+                          onTap: () {
+                            //TODO: Replace with games page
+                          },
+                          child: buttonBox('Play Games', screenWidth * 0.27, 100, Icons.gamepad_outlined),
+                        ),
                       ],
                     ),
+
                     SizedBox(height: 20),
                     Align(
                       alignment: Alignment.center,
