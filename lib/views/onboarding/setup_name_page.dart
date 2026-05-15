@@ -20,51 +20,86 @@ class SetupNamePageState extends State<SetupNamePage> {
           ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              // Speech Bubble logic
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 40),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
-                ),
-                child: const Text(
-                  "Hello I'm Kiko!\nWhat's your name?",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF_1A45A0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Image(
-                image: AssetImage("assets/kiko/WashEd_kiko_sprite_cheer.png"),
-              ),
-              const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Type here",
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+          child: Padding(
+            padding: EdgeInsetsGeometry.fromLTRB(40, 20, 40, 80),
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: CustomPaint(
+                    foregroundPainter: SpeechBubbleTrianglePainter(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black12, blurRadius: 10),
+                        ],
+                      ),
+                      child: Center(
+                        child: const Text(
+                          "Hello I'm Kiko!\nWhat's your name?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF_1A45A0),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                Spacer(flex: 1),
+                Expanded(
+                  flex: 10,
+                  child: Image.asset(
+                    "assets/kiko/WashEd_kiko_sprite_cheer.png",
+                  ),
+                ),
+                Spacer(),
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Type your name here",
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+class SpeechBubbleTrianglePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()..color = Colors.white;
+
+    final double h = 20;
+    final double w = 20;
+    final double width = size.width;
+    final double height = size.height;
+
+    final Path path = Path()
+      ..moveTo(width / 2 - w / 2, height)
+      ..lineTo(width / 2, h + height)
+      ..lineTo(width / 2 + w / 2, height)
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
