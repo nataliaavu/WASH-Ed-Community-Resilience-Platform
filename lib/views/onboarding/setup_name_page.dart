@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SetupNamePage extends StatefulWidget {
   const SetupNamePage({super.key});
@@ -61,6 +62,7 @@ class SetupNamePageState extends State<SetupNamePage> {
                 Expanded(
                   flex: 2,
                   child: TextField(
+                    onSubmitted: _onSubmitted,
                     decoration: InputDecoration(
                       hintText: "Type your name here",
                       filled: true,
@@ -78,6 +80,11 @@ class SetupNamePageState extends State<SetupNamePage> {
         ),
       ),
     );
+  }
+
+  void _onSubmitted(String name) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("setup.name", name);
   }
 }
 
