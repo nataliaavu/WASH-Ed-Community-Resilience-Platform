@@ -46,37 +46,133 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 ## Tech Stack
 | Layer | Technology |
 |-------|------------|
-| Mobile Framework | Flutter |
+| Mobile Framework | Flutter (Dart) |
 | Backend | |
-| Batabase & Auth | |
+| Database & Auth | |
 | Push Notifications | |
 | Offline Storage ||
 | API | |
 | UI/UX Design | Figma |
-| Mini Games | itch.io |
+| Mini Games | Links to itch.io |
 | Version Control | GitHub |
 | Project Management | JIRA |
 
 ## Configuration / Environment Variables
 
-## System Requirements
+## System Prerequisites
 1. Flutter SDK - [https://docs.flutter.dev/install]
-2. Android Studio
-  1. [https://docs.flutter.dev/platform-integration/android/setup]
-  2. [https://docs.flutter.dev/tools/android-studio]
-3. Git
+2. Dart SDK (included with Flutter)
+3. Android Studio - for Android builds
+[https://docs.flutter.dev/platform-integration/android/setup]
+[https://docs.flutter.dev/tools/android-studio]
+4. Git
 
 ## Installation Instructions
 ### 1. Clone the Repository
 ```
-git clone [https://github.com/nataliaavu/WASH-Ed-Community-Resilience-Platform]
+git clone https://github.com/nataliaavu/WASH-Ed-Community-Resilience-Platform
 cd wash-ed-community-resilience-platform
 ```
 
-### 2. Install Dependencies
+### 2. Install Flutter Dependencies
+```
+flutter pub get
+```
 
+### 3. Configure Environment Variables?
+
+IDK WHAT TO DO FOR INSTALLATION INSTRUCTIONS
 
 ## Project Structure
+This is a Flutter project targeting Android and iOS
+```
+wash-ed-resilience-platform/
+├── android/                        # Android platform files
+│   ├── app/
+│   │   └── src/
+│   │       └── build.gradle.kts
+│   ├── gradle/wrapper/
+│   │   └── gradle-wrapper.properties
+│   ├── build.gradle.kts
+│   ├── gradle.properties
+│   └── settings.gradle.kts
+│
+├── assets/                         # Static assets bundled with the app
+│   ├── kiko/                       # Kiko Carabao character sprites
+│   │   ├── WashEd_kiko_sprite_base.png
+│   │   ├── WashEd_kiko_sprite_cheer.png
+│   │   ├── WashEd_kiko_sprite_sad.png
+│   │   ├── WashEd_kiko_sprite_side-jump.png
+│   │   ├── WashEd_kiko_sprite_stress.png
+│   │   ├── WashEd_kiko_sprite_thumbs-up.png
+│   │   └── washed-carabao_sprite_defeat.png
+│   └── wash-ed/                    # WASH-Ed branding and logo assets
+│       ├── WASHEd_logo_2022_icon_drop-shadow.png
+│       ├── WASHEd_logo_2022_icon_no-shadow.png
+│       ├── WASHEd_logo_2022_og_drop-shadow.png
+│       ├── WASHEd_logo_2022_og_no-shadow.png
+│       ├── WASHEd_logo_2022_one-text_drop-shadow.png
+│       ├── WASHEd_logo_2022_one-text_no-shadow.png
+│       ├── WASHEd_logo_2022_two-text_drop-shadow.png
+│       ├── WASHEd_logo_2022_two-text_no-shadow.png
+│       └── masy-x-washed_badge-samples_v1.png
+│
+├── ios/                            # iOS platform files
+│   ├── Flutter/
+│   │   ├── AppFrameworkInfo.plist
+│   │   ├── Debug.xcconfig
+│   │   └── Release.xcconfig
+│   ├── Runner.xcodeproj/
+│   ├── Runner.xcworkspace/
+│   └── Runner/
+│       ├── Assets.xcassets/
+│       │   ├── AppIcon.appiconset/
+│       │   └── LaunchImage.imageset/
+│       ├── Base.lproj/
+│       │   ├── LaunchScreen.storyboard
+│       │   └── Main.storyboard
+│       ├── AppDelegate.swift
+│       ├── Info.plist
+│       ├── Runner-Bridging-Header.h
+│       └── SceneDelegate.swift
+│
+├── lib/                            # Main Flutter/Dart source code
+│   ├── models/
+│   │   └── weather_api.dart        # Weather/flood API data models
+│   ├── views/
+│   │   ├── home/
+│   │   │   └── home_page.dart      # Main dashboard with weather widget and flood risk
+│   │   ├── learn/
+│   │   │   └── learn_page.dart     # WASH education modules and resources
+│   │   ├── onboarding/
+│   │   │   ├── init_page.dart      # App entry / splash
+│   │   │   └── onboarding_page.dart # Welcome carousel screens
+│   │   ├── prepare/
+│   │   │   └── prepare_page.dart   # Flood guidance, checklists, emergency contacts
+│   │   └── setup/
+│   │       ├── setup_page.dart     # Setup flow coordinator
+│   │       ├── setup_role_page.dart    # Student / Educator role selection
+│   │       ├── setup_name_page.dart   # User name entry
+│   │       ├── setup_location_page.dart # Province/municipality selection
+│   │       └── setup_squad_page.dart  # Safety squad / emergency contacts setup
+│   ├── widgets/
+│   │   ├── modules_list.dart       # Reusable learning modules list widget
+│   │   └── weather_widget.dart     # Weather and flood risk display widget
+│   ├── home.dart                   # Home shell / bottom nav coordinator
+│   ├── profile.dart                # Profile screen (details, account type, locations, language)
+│   └── main.dart                   # App entry point
+│
+├── test/
+│   └── widget_test.dart            # Widget tests
+│
+├── .gitignore
+├── .metadata
+├── analysis_options.yaml
+├── devtools_options.yaml
+├── pubspec.lock
+├── pubspec.yaml                    # Flutter dependencies and asset declarations
+└── README.md
+```
 
 
 ## Contributors
