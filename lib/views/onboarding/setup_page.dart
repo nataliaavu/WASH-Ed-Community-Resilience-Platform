@@ -37,7 +37,7 @@ class SetupPageState extends State<SetupPage> {
             /// [PageView.scrollDirection] defaults to [Axis.horizontal].
             /// Use [Axis.vertical] to scroll vertically.
             controller: _pageViewController,
-            onPageChanged: _handlePageViewChanged,
+            onPageChanged: _onPageChanged,
             children: <Widget>[
               SetupRolePage(),
               SetupNamePage(),
@@ -45,22 +45,24 @@ class SetupPageState extends State<SetupPage> {
               SetupSquadPage(),
             ],
           ),
-          NavigationButtons(
-            currentPageIndex: _currentPageIndex,
-            onUpdateCurrentPageIndex: _updateCurrentPageIndex,
-          ),
+          if (_currentPageIndex != 0) ...[
+            NavigationButtons(
+              currentPageIndex: _currentPageIndex,
+              onUpdateCurrentPageIndex: _onUpdateCurrentPageIndex,
+            ),
+          ],
         ],
       ),
     );
   }
 
-  void _handlePageViewChanged(int currentPageIndex) {
+  void _onPageChanged(int currentPageIndex) {
     setState(() {
       _currentPageIndex = currentPageIndex;
     });
   }
 
-  void _updateCurrentPageIndex(int index) {
+  void _onUpdateCurrentPageIndex(int index) {
     if (index == 4) {
       Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
       return;
