@@ -44,9 +44,8 @@ const Color kPink = Color(0xFFE91E8C);
 const Color kYellow = Color(0xFFFFCC00);
 const Color kNavyText = Color(0xFF1A237E);
 const Color kCardBg = Color(0xFFFFFFFF);
-const Color kPageBg = Color(0xFFFFF8F0); // warm cream
+const Color kPageBg = Color(0xFFFFF8F0); 
 
-// Gradient that fades from lavender-pink → peach (matches the screenshots)
 const LinearGradient kMascotBgGradient = LinearGradient(
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
