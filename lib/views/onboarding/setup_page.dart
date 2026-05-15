@@ -39,7 +39,10 @@ class SetupPageState extends State<SetupPage> {
             controller: _pageViewController,
             onPageChanged: _onPageChanged,
             children: <Widget>[
-              SetupRolePage(),
+              SetupRolePage(
+                onPageChanged: _onPageChanged,
+                onUpdateCurrentPageIndex: _onUpdateCurrentPageIndex,
+              ),
               SetupNamePage(),
               SetupLocationPage(),
               SetupSquadPage(),

@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SetupRolePage extends StatefulWidget {
-  const SetupRolePage({super.key});
+  const SetupRolePage({
+    super.key,
+    required this.onPageChanged,
+    required this.onUpdateCurrentPageIndex,
+  });
+  final Function onPageChanged;
+  final Function onUpdateCurrentPageIndex;
 
   @override
   State<SetupRolePage> createState() => SetupRolePageState();
@@ -41,11 +48,11 @@ class SetupRolePageState extends State<SetupRolePage> {
                   style: TextStyle(fontSize: 16, color: Colors.black87),
                 ),
                 const SizedBox(height: 40),
-                _buildRoleCard("I am a Student", Icons.school),
+                _buildRoleCard("student", Icons.school),
                 const SizedBox(height: 20),
-                _buildRoleCard("I am a Parent", Icons.supervisor_account),
+                _buildRoleCard("parent", Icons.supervisor_account),
                 const SizedBox(height: 20),
-                _buildRoleCard("I am an Educator", Icons.groups),
+                _buildRoleCard("educator", Icons.groups),
               ],
             ),
           ),
@@ -54,35 +61,55 @@ class SetupRolePageState extends State<SetupRolePage> {
     );
   }
 
-  Widget _buildRoleCard(String title, IconData icon) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+  Widget _buildRoleCard(String role, IconData icon) {
+    return Material(
+      child: Ink(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _chooseRole(role),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Color(0xFF_E91E63),
+                  child: Icon(icon, color: Colors.white, size: 30),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  "I am a ${role.replaceFirst(role[0], role[0].toUpperCase())}",
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundColor: Color(0xFF_E91E63),
-            child: Icon(icon, color: Colors.white, size: 30),
-          ),
-          const SizedBox(width: 16),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-        ],
+        ),
       ),
     );
+  }
+
+  void _chooseRole(String role) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("setup.role", role);
+
+    // To next page
+    widget.onPageChanged(1);
+    widget.onUpdateCurrentPageIndex(1);
   }
 }
