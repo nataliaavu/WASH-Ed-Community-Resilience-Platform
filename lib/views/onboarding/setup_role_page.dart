@@ -48,11 +48,15 @@ class SetupRolePageState extends State<SetupRolePage> {
                   style: TextStyle(fontSize: 16, color: Colors.black87),
                 ),
                 const SizedBox(height: 40),
-                _buildRoleCard("student", Icons.school),
+                _buildRoleCard("student", "I am a Student", Icons.school),
                 const SizedBox(height: 20),
-                _buildRoleCard("parent", Icons.supervisor_account),
+                _buildRoleCard(
+                  "parent",
+                  "I am a Parent",
+                  Icons.supervisor_account,
+                ),
                 const SizedBox(height: 20),
-                _buildRoleCard("educator", Icons.groups),
+                _buildRoleCard("educator", "I am an Educator", Icons.groups),
               ],
             ),
           ),
@@ -61,7 +65,7 @@ class SetupRolePageState extends State<SetupRolePage> {
     );
   }
 
-  Widget _buildRoleCard(String role, IconData icon) {
+  Widget _buildRoleCard(String role, String title, IconData icon) {
     return Material(
       child: Ink(
         width: double.infinity,
@@ -90,7 +94,7 @@ class SetupRolePageState extends State<SetupRolePage> {
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  "I am a ${role.replaceFirst(role[0], role[0].toUpperCase())}",
+                  title,
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
