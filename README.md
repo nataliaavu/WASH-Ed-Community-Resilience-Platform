@@ -83,6 +83,12 @@ flutter pub get
 
 IDK WHAT TO DO FOR INSTALLATION INSTRUCTIONS
 
+## API Integrations
+The app integreates with ____ APIs to deliver location-based flood warnings
+| Resource | URL |
+| -------- | |
+| MeteoSource | ___ |
+
 ## Project Structure
 This is a Flutter project targeting Android and iOS
 ```
