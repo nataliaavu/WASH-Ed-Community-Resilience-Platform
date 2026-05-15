@@ -34,8 +34,7 @@ class SetupPageState extends State<SetupPage> {
         alignment: Alignment.bottomCenter,
         children: <Widget>[
           PageView(
-            /// [PageView.scrollDirection] defaults to [Axis.horizontal].
-            /// Use [Axis.vertical] to scroll vertically.
+            physics: const NeverScrollableScrollPhysics(),
             controller: _pageViewController,
             onPageChanged: _onPageChanged,
             children: <Widget>[
