@@ -11,7 +11,28 @@ Educational content will feature the Kiko Carabao character and utilise WASH-Ed 
 
 The platform will integrate hazard data from [API] to provide location-based flood warnings for families and preparedness information for families. 
 
-## Project Goals
+## Table of Contents
+- [1. Project Goals](#1-project-goals)
+- [2. Target Users](#2-target-users)
+  - [2.1 Primary Users](#21-primary-users)
+  - [2.2 Secondary Users](#22-secondary-users)
+- [3. Features of App](#3-features-of-app)
+- [4. Non Functional Requirements](#4-non-functional-requirements)
+- [5. Mobile User Interface Workflow](#5-mobile-user-interface-workflow)
+- [6. Tech Stack](#6-tech-stack)
+- [7. Configuration / Environment Variables](#7-configuration--environment-variables)
+- [8. System Prerequisites](#8-system-prerequisites)
+- [9. Installation Instructions](#9-installation-instructions)
+  - [9.1 Clone the Repository](#91-clone-the-repository)
+  - [9.2 Install Flutter Dependencies](#92-install-flutter-dependencies)
+  - [9.3 Configure Environment Variables](#93-configure-environment-variables)
+  - [9.4 Run the App](#94-run-the-app)
+- [10. API Integrations](#10-api-integrations)
+- [11. Project Structure](#11-project-structure)
+- [12. Contributors](#12-contributors)
+- [13. Client](#13-client)
+
+## 1. Project Goals
 The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 - Deliver accessible and engaging WASH education for children aged 6–12 and their families
 - Provide real-time flood alerts and hazard information through integration with official government data sources (Gov API TBA) or an alternative adequate API
@@ -19,16 +40,16 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 - Create an intuitive, child-friendly user experience leveraging the Kiko Carabao character
 - Ensure usability in low-connectivity environments, including offline access to essential content
 
-## Target Users
-### Primary Users
+## 2. Target Users
+### 2.1 Primary Users
 - Filipino Children aged 6-12
 - Parents/guardians and educators in flood-prone communities
 
-### Secondary Users
+### 2.2 Secondary Users
 - Community health workers
 - Local government units
 
-## Features of App
+## 3. Features of App
 - Location based flood alerts
 - WASH Education Modules featuring Kiko Carabao
 - User account types
@@ -37,16 +58,16 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 - Direct links to official hazard monitoring websites
 - Interactive mini games for WASH learning
 
-## Non Functional Requirements
+## 4. Non Functional Requirements
 - Fast loading times
 - Child-friendly and intuitive interface
 - Accessibility for users with low digital literacy
 - Low-bandwidth optimisation
 
-## Mobile User Interface Workflow
-![UI Workflow](assets/wash-ed/UI_Workflow.png)
+## 5. Mobile User Interface Workflow
+![UI Workflow](assets/UI_Workflow.png)
 
-## Tech Stack
+## 6. Tech Stack
 | Layer | Technology |
 |-------|------------|
 | Mobile Framework | Flutter (Dart) |
@@ -60,9 +81,9 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 | Version Control | GitHub |
 | Project Management | JIRA |
 
-## Configuration / Environment Variables
+## 7. Configuration / Environment Variables
 
-## System Prerequisites
+## 8. System Prerequisites
 1. Flutter SDK - [https://docs.flutter.dev/install]
 2. Dart SDK (included with Flutter)
 3. Android Studio - for Android builds
@@ -70,29 +91,34 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 [https://docs.flutter.dev/tools/android-studio]
 4. Git
 
-## Installation Instructions
-### 1. Clone the Repository
+## 9. Installation Instructions
+### 9.1 Clone the Repository
 ```
 git clone https://github.com/nataliaavu/WASH-Ed-Community-Resilience-Platform
 cd wash-ed-community-resilience-platform
 ```
 
-### 2. Install Flutter Dependencies
+### 9.2 Install Flutter Dependencies
 ```
 flutter pub get
 ```
 
-### 3. Configure Environment Variables?
+### 9.3 ?
 
 IDK WHAT TO DO FOR INSTALLATION INSTRUCTIONS
 
-## API Integrations
+### 9.4 Run the app
+```
+flutter run   # Run on a connected Android device or emulator
+```
+
+## 10. API Integrations
 The app integreates with ____ APIs to deliver location-based flood warnings
 | Resource | URL |
 | -------- | ------ |
 | MeteoSource ? | ___ |
 
-## Project Structure
+## 11. Project Structure
 This is a Flutter project targeting Android and iOS
 ```
 wash-ed-resilience-platform/
@@ -183,8 +209,7 @@ wash-ed-resilience-platform/
 └── README.md
 ```
 
-
-## Contributors
+## 12. Contributors
 | Name | Role |
 |------|------|
 | Natalia Vu | Team Lead / Full Stack Developer |
@@ -194,11 +219,11 @@ wash-ed-resilience-platform/
 | Matt Aducayen | Back End Developer |
 | William Lay | Front End Developer |
 
-## Client
+## 13. Client
 Developed in collaboration with: **WASH Education Pty Ltd.**
 - Thomas Da Jose
 - Arielle Struhl
 - Gryan Perez
 
-## License
+## 14. License
 This project was developed for educational and research purposes in collaboration with WASh-Ed. All educational content and character assets remain the property of WASH Education Pty Ltd.
