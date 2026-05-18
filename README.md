@@ -43,6 +43,9 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 - Accessibility for users with low digital literacy
 - Low-bandwidth optimisation
 
+## Mobile User Interface Workflow
+![UI Workflow](assets/wash-ed/UI_Workflow.png)
+
 ## Tech Stack
 | Layer | Technology |
 |-------|------------|
@@ -86,8 +89,8 @@ IDK WHAT TO DO FOR INSTALLATION INSTRUCTIONS
 ## API Integrations
 The app integreates with ____ APIs to deliver location-based flood warnings
 | Resource | URL |
-| -------- | |
-| MeteoSource | ___ |
+| -------- | ------ |
+| MeteoSource ? | ___ |
 
 ## Project Structure
 This is a Flutter project targeting Android and iOS
