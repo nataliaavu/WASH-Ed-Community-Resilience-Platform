@@ -18,11 +18,11 @@ class _PreparePageState extends State<PreparePage> {
 
   // Safety steps - content to be confirmed by WASH-Ed
   final List<String> _safetySteps = [
-    'Tell a trusted adult near you straight away.',
-    'Grab your emergency bag if you can, and move to higher ground.',
-    'Stay away from floodwater. It can be deep and dirty.',
-    'Listen to the adults around you and follow official instructions.',
-    'If told to evacuate, go with your family to somewhere safe and dry.',
+    'Tell a trusted adult near you straight away',
+    'Grab your emergency bag if you can, and move to higher ground',
+    'Stay away from floodwater. It can be deep and dirty',
+    'Listen to the adults around you and follow official instructions',
+    'If told to evacuate, go with your family to somewhere safe and dry',
     
   ];
 
@@ -306,7 +306,7 @@ class _PreparePageState extends State<PreparePage> {
           ),
           const SizedBox(height: 10),
           const Text(
-            'Pack a bag you can carry quickly if you need to leave home fast.',
+            'Pack a bag you can carry quickly if you need to leave home fast',
             style: TextStyle(
               fontSize: 12,
               color: Colors.black,
