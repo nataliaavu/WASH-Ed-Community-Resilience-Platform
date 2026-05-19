@@ -1,10 +1,4 @@
     import 'package:flutter/material.dart';
-    import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
-    import 'package:wash_ed_app/views/onboarding/init_page.dart';
-    import 'package:wash_ed_app/views/learn/learn_page.dart';
-    import 'package:wash_ed_app/views/prepare/prepare_page.dart';
-    import 'package:wash_ed_app/views/setup/setup_page.dart';
-    import 'package:wash_ed_app/views/home/home_page.dart';
 
     class HomePage extends StatefulWidget {
       final Function(int) onTabSelected;
@@ -33,14 +27,30 @@
 
       @override
       Widget build(BuildContext context) {
-        final screenWidth = MediaQuery.of(context).size.width;
+        final screen = MediaQuery.of(context).size;
+        final screenWidth = screen.width;
         return Scaffold(
           appBar: AppBar(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Hello Miguel!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue)), // Spacing between text and logo
-                Image(image: AssetImage('assets/wash-ed/WASHEd_logo_2022_og_no-shadow.png'), height: 50),
+                Expanded(
+                  child: Text(
+                    'Hello Miguel!',
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Flexible(
+                  child: Image.asset(
+                    'assets/wash-ed/WASHEd_logo_2022_og_no-shadow.png',
+                    height: screen.height * 0.06,
+                    fit: BoxFit.contain,
+                  )
+                )
               ]
             ),
             bottom: PreferredSize( //Thin yellow line below the AppBar
@@ -70,106 +80,100 @@
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
-                  
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          width: screenWidth * 0.4, 
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.yellow, width: 2),
-                          ),
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            
-                            children: [
-                              
-                              const Text(
-                                "Location", 
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.yellow, width: 2),
+                            ),
 
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.location_on_outlined,
-                                    color: Colors.blue,
-                                    size: 22,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+
+                              children: [
+                                const Text(
+                                  "Location", 
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
                                   ),
+                                ),
+                                const SizedBox(height: 5),
 
-                                  DropdownButton<String>(
-                                    value: selectedCity,
-                                    isDense: true,
-                                    underline: SizedBox(),
-                                    icon: Icon(Icons.arrow_drop_down_rounded, color: Colors.black),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on_outlined,
+                                      color: Colors.blue,
                                     ),
 
-                                    items: cities.map((city) {
-                                      return DropdownMenuItem(
-                                        value: city,
-                                        child: Text(city),
-                                      );
-                                    }).toList(),
+                                    Expanded(
+                                      child:DropdownButton<String>(
+                                        value: selectedCity,
+                                        isDense: true,
+                                        underline: SizedBox(),
+                                        icon: Icon(Icons.arrow_drop_down_rounded, color: Colors.black),
+                                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
 
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedCity = value!;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ], 
-                          ),
-                          
-                        ),
+                                        items: cities.map((city) {
+                                          return DropdownMenuItem(
+                                            value: city,
+                                            child: Text(city),
+                                          );
+                                        }).toList(),
 
-                        Container(
-                          width: screenWidth * 0.35, 
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.yellow, width: 2),
-                          ),
-
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.sunny,
-                                color: Colors.orange,
-                                size: 40,
-                              ),
-                              SizedBox(width: 15), 
-                              const Text(
-                                "30°",
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            selectedCity = value!;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ], 
+                            ),
+                            
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.yellow, width: 2),
+                            ),
+
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.sunny,
+                                  color: Colors.orange,
+                                  size: 30,
+                                ),
+                                const SizedBox(width: 10), 
+                                Text(
+                                  "30°",
+                                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                                    fontWeight: FontWeight.bold
+                                  ), 
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ]
@@ -179,47 +183,47 @@
                     const SizedBox(height: 20),
                     kikoBox(riskLevel),
                     const SizedBox(height: 20),
-                    weatherBox('Weather by Hour', screenWidth * 1, 180),
+                    weatherBox('Weather by Hour', screenWidth, null),
                     const SizedBox(height: 20),
-                    riskBox('Flood Risk', screenWidth * 1, 140),
+                    riskBox('Flood Risk', screenWidth, null),
                     const SizedBox(height: 20),
 
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        InkWell(
-                          onTap: () {
-                            widget.onTabSelected(2);
-                          },
-                          child: buttonBox('Learning Module', screenWidth * 0.27, 100, Icons.cast_for_education),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              widget.onTabSelected(2);
+                            },
+                            child: buttonBox('Learning Module', screenWidth * 0.27, 100, Icons.cast_for_education),
+                          ),
                         ),
-                        SizedBox(width: 10),
 
-                        InkWell(
-                          onTap: () {
-                            widget.onTabSelected(3);
-                          },
-                          child: buttonBox('Flood Prep', screenWidth * 0.27, 100, Icons.checklist_sharp),
+                        const SizedBox(width: 10),
+
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              widget.onTabSelected(3);
+                            },
+                            child: buttonBox('Flood Prep', screenWidth * 0.27, 100, Icons.checklist_sharp),
+                          ),
                         ),
-                        SizedBox(width: 10),
 
-                        InkWell(
-                          onTap: () {
-                            //TODO: Replace with games page
-                          },
-                          child: buttonBox('Play Games', screenWidth * 0.27, 100, Icons.gamepad_outlined),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              //TODO: Replace with games page
+                            },
+                            child: buttonBox('Play Games', screenWidth * 0.27, 100, Icons.gamepad_outlined),
+                          ),
                         ),
                       ],
                     ),
 
-                    SizedBox(height: 20),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Our Sponsors"
-                      ),
-                    ),
+                    const SizedBox(height: 20),
+                    const Center(child: Text("Our Sponsors")),
                     
                   ],
                 ),
@@ -259,8 +263,7 @@
         }
         
         return Container(
-          height: 190,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          padding: const EdgeInsets.all(12),
           decoration : BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: boxColor,
@@ -277,7 +280,7 @@
           child : Row(
             children: [
               Expanded( 
-                flex: 3,
+                flex: 1,
                 child: Column (
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -285,8 +288,8 @@
                     Row(
                       children: [
                         Container(
-                          width: 20,
-                          height: 20, 
+                          width: 18,
+                          height: 18, 
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.3),
                             shape: BoxShape.circle,
@@ -295,51 +298,39 @@
                         const SizedBox(width: 10),
                         Text(
                           statusText,
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
                         ),
                       ],
                     ),
                     
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
 
                     Text(
                       messageText,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight : FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
                     ),
 
-                    SizedBox(height: 20),
+                    SizedBox(height: 12),
                     Text(
                       kikoMessage,
-                      style : TextStyle(fontSize: 12),
+                      style : Theme.of(context).textTheme.bodySmall
                     ),
                   ]
                 ),
               ),
               
-              Align(
-              alignment: Alignment.centerRight,
-                child: SizedBox(
-                  child: Image(
-                    image: image,
-                    fit: BoxFit.contain,
-                  ),
-                ),
+              Flexible(
+                child: Image(image: image, fit: BoxFit.contain), 
               ),
             ], 
           ),
         );
       }
 
-      Widget weatherBox(String text, double width, double height){
+      Widget weatherBox(String text, double width, double? height){
         return Container(
-          width: width,
-          height: height,
-          padding: const EdgeInsets.all(10), 
+          width: double.infinity,
+          padding: const EdgeInsets.all(12), 
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20), 
             color: Colors.white,
@@ -348,25 +339,21 @@
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 "Weather by Hour",
-                style: TextStyle(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                   color: Colors.blue,
-                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                ),
+                )
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  bubble("30°"),
-                  bubble("29°"),
-                  bubble("29°"), 
-                  bubble("25°"), 
-                  bubble("30°"),
+                  for (var temp in ["30°", "29°", "29°", "25°", "30°"])
+                    Expanded(child: bubble(temp)),
                 ],
               ),
             ],
@@ -375,121 +362,125 @@
       }
 
       Widget bubble(String temp){
-        return Container(
-          width: 50,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(40),
-            border: Border.all(color: Colors.grey),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            temp,
-            style: TextStyle(
-              fontSize: 16,
+        return AspectRatio(
+          aspectRatio: 0.7,
+          child:Container(
+            margin: const EdgeInsets.symmetric(horizontal: 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(40),
+              border: Border.all(color: Colors.grey),
             ),
+            alignment: Alignment.center,
+            child: Text(temp, style: Theme.of(context).textTheme.bodyMedium),
           ),
         );
       }
 
-      Widget riskBox(String text, double width, double height){
-        double barWidth = 
-        riskLevel == "low" ? 70:
-        riskLevel == "medium" ? 160:
-        210;
-
-        Color barColor =
-        riskLevel == "low" ? Colors.green:
-        riskLevel == "medium" ? Colors.orange:
-        Colors.red;
+      Widget riskBox(String text, double width, double? height){
         
-        return Container(
-          width: width,
-          height: height,
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20), 
-            color: Colors.white,
-            border: Border.all(color: Colors.yellow, width: 2),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Risk",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ), 
-                  Text(
-                    riskLevel.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: riskLevel == "low" ? Colors.green : riskLevel == "medium" ? Colors.orange : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            double barWidth = riskLevel == "low"
+              ? constraints.maxWidth * 0.3
+              : riskLevel == "medium"
+                ? constraints.maxWidth * 0.6
+                :constraints.maxWidth * 0.9;
+            Color barColor = riskLevel == "low"
+              ? Colors.green
+              : riskLevel == "medium"
+                ? Colors.orange
+                : Colors.red;
+
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20), 
+                color: Colors.white,
+                border: Border.all(color: Colors.yellow, width: 2),
               ),
-
-              const SizedBox(height: 15),
-
-              Stack(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 240, 239, 239),
-                      borderRadius: BorderRadius.circular(40),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                  ),
-
-                  Positioned(
-                    left: 0,
-                    child: Container(
-                      width: barWidth, 
-                      height: 30, 
-                      decoration: BoxDecoration(
-                        color: barColor, 
-                        borderRadius: BorderRadius.circular(40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Risk",
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        )
+                      ), 
+                      Text(
+                        riskLevel.toUpperCase(),
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: riskLevel == "low"
+                            ? Colors.green
+                            : riskLevel == "medium"
+                              ?Colors.orange
+                              :Colors.red,
+                          fontWeight: FontWeight.bold,
+                        )
                       ),
-                    )
+                    ],
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  Stack(
+                    children: [
+                      Container(
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 240, 239, 239),
+                          borderRadius: BorderRadius.circular(40),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                      ),
+
+                      Positioned(
+                        left: 0,
+                        child: Container(
+                          width: barWidth, 
+                          height: 28, 
+                          decoration: BoxDecoration(
+                            color: barColor, 
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                        )
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10), 
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Safe",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                        ),
+                      ), 
+                      const Text(
+                        "Warning",
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 10), 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Safe",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                    ),
-                  ), 
-                  const Text(
-                    "Warning",
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            );
+          },
         );
       }
       
-      Widget buttonBox(String text, double width, double height, IconData icon) {
+      Widget buttonBox(String text, double? width, double? height, IconData icon) {
         return Container(
           width: width,
           height: height,
