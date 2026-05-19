@@ -68,28 +68,27 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 ![UI Workflow](assets/UI_Workflow.png)
 
 ## 6. Tech Stack
-| Layer | Technology |
-|-------|------------|
-| Mobile Framework | Flutter (Dart) |
-| Backend | |
-| Database & Auth | |
-| Push Notifications | |
-| Offline Storage ||
-| API | |
-| UI/UX Design | Figma |
-| Mini Games | Links to itch.io |
-| Version Control | GitHub |
-| Project Management | JIRA |
+| Layer | Technology | Description |
+|-------|------------|-------------|
+| Mobile Framework | Flutter (Dart) | Cross-platform app for Android and iOS |
+| Database | Firestore | User profiles, squad members, and module progress - syncs across devices |
+| Cloud Storage | Firebase Storage | Hosts PDF learning modules - downloaded once and cached on device |
+| API | MeteoSource | Weather and flood alert data for location-based warnings |
+| API Cache | SQLite | Caches API responses locally within the app for offline and low-bandwidth access |
+| UI/UX Design | Figma | Wireframes and UI prototyping |
+| Mini Games | Links to itch.io | WASH learning games opened via in-app WebView |
+| Version Control | GitHub | Source control and collaboration |
+| Project Management | JIRA | Sprint planning and task tracking |
 
 ## 7. Configuration / Environment Variables
 
 ## 8. System Prerequisites
-1. Flutter SDK - [https://docs.flutter.dev/install]
-2. Dart SDK (included with Flutter)
-3. Android Studio - for Android builds
-[https://docs.flutter.dev/platform-integration/android/setup]
-[https://docs.flutter.dev/tools/android-studio]
-4. Git
+1. [Flutter SDK](https://docs.flutter.dev/install) - includes Dart SDK
+2. Integrated Development Environment - e.g. [Visual Studio Code](https://code.visualstudio.com/) with the Flutter extension
+3. [Android Studio](https://developer.android.com/studio) - required for Android builds
+   - Flutter Android setup guide: [docs.flutter.dev/platform-integration/android/setup](https://docs.flutter.dev/platform-integration/android/setup)
+   - Flutter Android Studio guide: [docs.flutter.dev/tools/android-studio](https://docs.flutter.dev/tools/android-studio)
+4. [Git](https://git-scm.com/downloads)
 
 ## 9. Installation Instructions
 ### 9.1 Clone the Repository
@@ -103,13 +102,21 @@ cd wash-ed-community-resilience-platform
 flutter pub get
 ```
 
-### 9.3 ?
+### 9.3 Set Up an Emulator
+To run the app you need an Android emulator:
+1. Open Android Studio -> Virtual Device Manager
+2. Click Create device and follow setup steps
+3. Start emulator
 
-IDK WHAT TO DO FOR INSTALLATION INSTRUCTIONS
-
-### 9.4 Run the app
+### 9.4 Verify Flutter is Set Up Correctly
+Run the following command and fix any issues flagged before continuing
 ```
-flutter run   # Run on a connected Android device or emulator
+flutter doctor
+```
+
+### 9.5 Run the App
+```
+flutter run
 ```
 
 ## 10. API Integrations
