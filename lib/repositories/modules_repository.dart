@@ -10,4 +10,7 @@ class ModulesRepository {
 
   Future<List<LearningModule>> getModulesByCategory(String category) =>
       _db.getModulesByCategory(category);
+
+  Future<List<LearningModule>> getModulesByRole(String userRole) =>
+      _db.getModulesByRole(userRole);
 }

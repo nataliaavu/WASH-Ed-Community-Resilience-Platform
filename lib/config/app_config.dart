@@ -4,21 +4,15 @@ class AppConfig {
   // Change this to your deployed proxy URL (e.g. Render, Railway) when ready.
   static const String proxyBaseUrl = 'http://10.0.2.2:3000'; // Android emulator → localhost
 
-  // ── Real API base URLs (used by the proxy server, not the Flutter app) ─────
-  // Kept here for reference only.
-  static const String tenDayApiBaseUrl = 'https://api.pagasa.dost.gov.ph/tenday';
-  static const String googleFloodApiBaseUrl =
-      'https://floodforecasting.googleapis.com/v1';
-
-  // ── Mock / real switch ─────────────────────────────────────────────────────
-  // true  → use mock data (no server needed)
-  // false → call the proxy server (which calls the real APIs)
-  static const bool useMockApi = true;
-
   // ── Database ───────────────────────────────────────────────────────────────
   static const String dbName = 'washedapp.db';
-  static const int dbVersion = 2;
+  static const int dbVersion = 3;
 
-  static const String defaultMunicity = 'Marikina City';
-  static const String defaultProvince = 'Metro Manila';
+  static const String defaultMunicity = 'Bulacan';
+  static const String defaultProvince = 'Bulacan';
+
+  // Default coordinates for Bulacan, Bulacan.
+  static const double defaultLat = 14.7937;
+  static const double defaultLng = 120.8783;
+  static const double defaultRadiusKm = 50.0;
 }

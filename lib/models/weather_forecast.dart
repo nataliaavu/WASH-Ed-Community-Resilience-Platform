@@ -1,6 +1,3 @@
-// Mirrors the TenDay Weather Forecast API response structure.
-// Field names match the API JSON keys exactly for easy fromJson/toJson.
-
 class WeatherForecast {
   final String date;
   final String province;
@@ -32,42 +29,41 @@ class WeatherForecast {
 
   factory WeatherForecast.fromJson(Map<String, dynamic> json) {
     return WeatherForecast(
-      date: json['date'] as String,
-      province: json['province'] as String,
-      municity: json['municity'] as String,
-      rainfallDesc: json['rainfall_desc'] as String,
+      date:          json['date'] as String,
+      province:      json['province'] as String,
+      municity:      json['municity'] as String,
+      rainfallDesc:  json['rainfall_desc'] as String,
       rainfallTotal: (json['rainfall_total'] as num).toDouble(),
-      cloudCover: json['cloud_cover'] as String,
-      tmean: (json['tmean'] as num).toDouble(),
-      tmin: (json['tmin'] as num).toDouble(),
-      tmax: (json['tmax'] as num).toDouble(),
-      humidity: json['humidity'] as int,
-      windSpeed: (json['wind_speed'] as num).toDouble(),
+      cloudCover:    json['cloud_cover'] as String,
+      tmean:         (json['tmean'] as num).toDouble(),
+      tmin:          (json['tmin'] as num).toDouble(),
+      tmax:          (json['tmax'] as num).toDouble(),
+      humidity:      (json['humidity'] as num).toInt(),
+      windSpeed:     (json['wind_speed'] as num).toDouble(),
       windDirection: json['wind_direction'] as String,
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'date': date,
-    'province': province,
-    'municity': municity,
-    'rainfall_desc': rainfallDesc,
+    'date':           date,
+    'province':       province,
+    'municity':       municity,
+    'rainfall_desc':  rainfallDesc,
     'rainfall_total': rainfallTotal,
-    'cloud_cover': cloudCover,
-    'tmean': tmean,
-    'tmin': tmin,
-    'tmax': tmax,
-    'humidity': humidity,
-    'wind_speed': windSpeed,
+    'cloud_cover':    cloudCover,
+    'tmean':          tmean,
+    'tmin':           tmin,
+    'tmax':           tmax,
+    'humidity':       humidity,
+    'wind_speed':     windSpeed,
     'wind_direction': windDirection,
   };
 
-  // SQLite column names match JSON keys, so fromMap delegates to fromJson.
   factory WeatherForecast.fromMap(Map<String, dynamic> map) =>
       WeatherForecast.fromJson(map);
 }
 
-class TenDayMetadata {
+class WeatherMetadata {
   final int requestNo;
   final String api;
   final String forecast;
@@ -76,7 +72,7 @@ class TenDayMetadata {
   final String province;
   final String municity;
 
-  const TenDayMetadata({
+  const WeatherMetadata({
     required this.requestNo,
     required this.api,
     required this.forecast,
@@ -86,31 +82,66 @@ class TenDayMetadata {
     required this.municity,
   });
 
-  factory TenDayMetadata.fromJson(Map<String, dynamic> json) {
-    return TenDayMetadata(
-      requestNo: json['request_no'] as int,
-      api: json['api'] as String,
-      forecast: json['forecast'] as String,
+  factory WeatherMetadata.fromJson(Map<String, dynamic> json) {
+    return WeatherMetadata(
+      requestNo:    (json['request_no'] as num).toInt(),
+      api:          json['api'] as String,
+      forecast:     json['forecast'] as String,
       issuanceDate: json['issuance_date'] as String,
-      region: json['region'] as String,
-      province: json['province'] as String,
-      municity: json['municity'] as String,
+      region:       json['region'] as String,
+      province:     json['province'] as String,
+      municity:     json['municity'] as String,
     );
   }
 }
 
-class TenDayApiResponse {
+class HourlyForecast {
+  final String time;
+  final double temperature;
+  final String weather;
+  final double precipitationTotal;
+  final String precipitationType;
+  final int cloudCover;
+
+  const HourlyForecast({
+    required this.time,
+    required this.temperature,
+    required this.weather,
+    required this.precipitationTotal,
+    required this.precipitationType,
+    required this.cloudCover,
+  });
+
+  factory HourlyForecast.fromJson(Map<String, dynamic> json) {
+    return HourlyForecast(
+      time:               json['time'] as String,
+      temperature:        (json['temperature'] as num).toDouble(),
+      weather:            json['weather'] as String,
+      precipitationTotal: (json['precipitation_total'] as num).toDouble(),
+      precipitationType:  json['precipitation_type'] as String,
+      cloudCover:         (json['cloud_cover'] as num).toInt(),
+    );
+  }
+}
+
+class WeatherApiResponse {
   final WeatherForecast data;
-  final TenDayMetadata metadata;
+  final WeatherMetadata metadata;
+  final List<HourlyForecast> hourly;
 
-  const TenDayApiResponse({required this.data, required this.metadata});
+  const WeatherApiResponse({
+    required this.data,
+    required this.metadata,
+    this.hourly = const [],
+  });
 
-  factory TenDayApiResponse.fromJson(Map<String, dynamic> json) {
-    return TenDayApiResponse(
-      data: WeatherForecast.fromJson(json['data'] as Map<String, dynamic>),
-      metadata: TenDayMetadata.fromJson(
-        json['metadata'] as Map<String, dynamic>,
-      ),
+  factory WeatherApiResponse.fromJson(Map<String, dynamic> json) {
+    return WeatherApiResponse(
+      data:     WeatherForecast.fromJson(json['data'] as Map<String, dynamic>),
+      metadata: WeatherMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
+      hourly:   (json['hourly'] as List<dynamic>? ?? [])
+          .map((h) => HourlyForecast.fromJson(h as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

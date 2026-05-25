@@ -19,13 +19,11 @@ class FloodRepository {
 
   Future<List<FloodStatus>> getFloodStatuses({
     required bool isOnline,
-    double lat = 14.5995,
-    double lng = 120.9842,
-    double radiusKm = 200,
+    double lat = AppConfig.defaultLat,
+    double lng = AppConfig.defaultLng,
+    double radiusKm = AppConfig.defaultRadiusKm,
   }) async {
-    if (AppConfig.useMockApi || !isOnline) {
-      return _fromMockOrCache();
-    }
+    if (!isOnline) return _fromCacheOrMock(lat, lng, radiusKm);
 
     try {
       final statuses = await _http.searchFloodStatus(lat, lng, radiusKm);
@@ -33,33 +31,42 @@ class FloodRepository {
       await _db.cacheFloodStatuses(statuses);
       return statuses;
     } catch (_) {
-      return _fromMockOrCache();
+      return _fromCacheOrMock(lat, lng, radiusKm);
     }
-  }
-
-  Future<List<FloodStatus>> _fromMockOrCache() async {
-    final cached = await _db.getCachedFloodStatuses();
-    if (cached.isNotEmpty) return cached;
-
-    final statuses = _mock.getFloodStatuses();
-    await _db.cacheFloodStatuses(statuses);
-    return statuses;
   }
 
   Future<List<FlashFloodEvent>> getFlashFloods({
     required bool isOnline,
-    double lat = 14.5995,
-    double lng = 120.9842,
-    double radiusKm = 200,
+    double lat = AppConfig.defaultLat,
+    double lng = AppConfig.defaultLng,
+    double radiusKm = AppConfig.defaultRadiusKm,
   }) async {
-    if (AppConfig.useMockApi || !isOnline) {
-      return _mock.getFlashFloods();
-    }
+    if (!isOnline) return _mock.getFlashFloods(lat, lng, radiusKm);
 
     try {
       return await _http.searchFlashFloods(lat, lng, radiusKm);
     } catch (_) {
-      return _mock.getFlashFloods();
+      return _mock.getFlashFloods(lat, lng, radiusKm);
     }
+  }
+
+  Future<List<FloodStatus>> _fromCacheOrMock(
+      double lat, double lng, double radiusKm) async {
+    bool inRadius(FloodStatus s) {
+      final dx = (s.longitude - lng) * 90;
+      final dy = (s.latitude - lat) * 111;
+      return dx * dx + dy * dy <= radiusKm * radiusKm;
+    }
+
+    final cached = await _db.getCachedFloodStatuses();
+    if (cached.isNotEmpty) {
+      final filtered = cached.where(inRadius).toList();
+      if (filtered.isNotEmpty) return filtered;
+    }
+
+    // Cache empty — seed from mock data so the UI is never blank offline.
+    final statuses = _mock.getFloodStatuses(lat, lng, radiusKm);
+    await _db.cacheFloodStatuses(statuses);
+    return statuses;
   }
 }

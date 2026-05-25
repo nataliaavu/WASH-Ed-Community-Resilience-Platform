@@ -41,6 +41,7 @@ class DatabaseHelper {
         title       TEXT NOT NULL,
         description TEXT NOT NULL,
         category    TEXT NOT NULL,
+        target_role TEXT NOT NULL DEFAULT 'student',
         asset_path  TEXT NOT NULL,
         is_downloaded INTEGER NOT NULL DEFAULT 1
       )
@@ -117,7 +118,6 @@ class DatabaseHelper {
     await _seedModules(db);
   }
 
-  // Migration path for devices that have v1 installed.
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await db.execute('''
@@ -146,44 +146,105 @@ class DatabaseHelper {
         )
       ''');
     }
+    if (oldVersion < 3) {
+      await db.execute(
+        "ALTER TABLE learning_modules ADD COLUMN target_role TEXT NOT NULL DEFAULT 'student'",
+      );
+      // Replace old seed data with the new 12 role-split modules.
+      await db.delete('learning_modules');
+      await _seedModules(db);
+    }
   }
 
   // ── Seed ──────────────────────────────────────────────────────────────────
-  // Update asset_path values to match your actual PDF filenames in assets/pdfs/
 
   Future<void> _seedModules(Database db) async {
     const modules = [
+      // ── Student modules (Educator PDFs) ───────────────────────────────────
       LearningModule(
-        title: 'Water Purification at Home',
-        description:
-            'Learn how to make water safe to drink using boiling, '
-            'chlorination, and SODIS. Essential knowledge during flood events.',
+        title: 'Water Resources and Accessibility',
+        description: 'Understand where water comes from and how communities access safe water sources.',
         category: 'water',
-        assetPath: 'assets/pdfs/water_purification.pdf',
+        targetRole: 'student',
+        assetPath: 'assets/pdfs/student/MOD-1 - Water Resources and Accessibility - Educator (v2.0).pdf',
       ),
       LearningModule(
-        title: 'Community Sanitation Basics',
-        description:
-            'Proper waste disposal, latrine use, and sanitation practices '
-            'that prevent disease outbreaks after flooding.',
+        title: 'Water Safety & Health',
+        description: 'Learn how water quality affects health and how to keep water safe for drinking.',
+        category: 'water',
+        targetRole: 'student',
+        assetPath: 'assets/pdfs/student/MOD-2 - Water Safety & Health - Educator (v2.0).pdf',
+      ),
+      LearningModule(
+        title: 'Water Sustainability',
+        description: 'Explore how to conserve water and protect sources for future generations.',
+        category: 'water',
+        targetRole: 'student',
+        assetPath: 'assets/pdfs/student/MOD-3 - Water Sustainability - Educator (v2.0).pdf',
+      ),
+      LearningModule(
+        title: 'Sanitation',
+        description: 'Proper waste disposal and sanitation practices that prevent disease outbreaks.',
         category: 'sanitation',
-        assetPath: 'assets/pdfs/sanitation_basics.pdf',
+        targetRole: 'student',
+        assetPath: 'assets/pdfs/student/MOD-4 - Sanitation - Educator (v2.0).pdf',
       ),
       LearningModule(
-        title: 'Handwashing and Personal Hygiene',
-        description:
-            'Correct handwashing technique and hygiene practices that stop '
-            'the spread of cholera and leptospirosis during flood season.',
+        title: 'Hand Hygiene',
+        description: 'Correct handwashing technique and hygiene practices that stop disease spread.',
         category: 'hygiene',
-        assetPath: 'assets/pdfs/hygiene_handwashing.pdf',
+        targetRole: 'student',
+        assetPath: 'assets/pdfs/student/MOD-5 - Hand Hygiene - Educator (v2.0).pdf',
       ),
       LearningModule(
-        title: 'Flood Safety and Evacuation',
-        description:
-            'PAGASA flood warning signals, 72-hour go-bag checklist, safe '
-            'evacuation routes, and what to do when floodwaters enter your home.',
-        category: 'flood',
-        assetPath: 'assets/pdfs/flood_safety.pdf',
+        title: 'Disinfection & Other Hygienic Practices',
+        description: 'Methods for disinfecting water and maintaining hygiene in the community.',
+        category: 'hygiene',
+        targetRole: 'student',
+        assetPath: 'assets/pdfs/student/MOD-6 - Disinfection & Other Hygienic Practices - Educator (v2.0).pdf',
+      ),
+      // ── Teacher modules (Facilitator PDFs) ────────────────────────────────
+      LearningModule(
+        title: 'Water Resources and Accessibility',
+        description: 'Facilitate discussions on water resource management and community water access.',
+        category: 'water',
+        targetRole: 'teacher',
+        assetPath: 'assets/pdfs/teacher/MOD-1 - Water Resources and Accessibility - Facilitator (v2.0).pdf',
+      ),
+      LearningModule(
+        title: 'Water Safety & Health',
+        description: 'Guide learners through water quality, health risks, and safe water practices.',
+        category: 'water',
+        targetRole: 'teacher',
+        assetPath: 'assets/pdfs/teacher/MOD-2 - Water Safety & Health - Facilitator (v2.0).pdf',
+      ),
+      LearningModule(
+        title: 'Water Sustainability',
+        description: 'Lead sessions on water conservation and sustainable community water use.',
+        category: 'water',
+        targetRole: 'teacher',
+        assetPath: 'assets/pdfs/teacher/MOD-3 - Water Sustainability - Facilitator (v2.0).pdf',
+      ),
+      LearningModule(
+        title: 'Sanitation',
+        description: 'Facilitate learning on proper sanitation systems and disease prevention.',
+        category: 'sanitation',
+        targetRole: 'teacher',
+        assetPath: 'assets/pdfs/teacher/MOD-4 - Sanitation - Facilitator (v2.0).pdf',
+      ),
+      LearningModule(
+        title: 'Hand Hygiene',
+        description: 'Lead handwashing demonstrations and hygiene education activities.',
+        category: 'hygiene',
+        targetRole: 'teacher',
+        assetPath: 'assets/pdfs/teacher/MOD-5 - Hand Hygiene - Facilitator (v2.0).pdf',
+      ),
+      LearningModule(
+        title: 'Disinfection & Other Hygienic Practices',
+        description: 'Guide community sessions on disinfection techniques and hygienic practices.',
+        category: 'hygiene',
+        targetRole: 'teacher',
+        assetPath: 'assets/pdfs/teacher/MOD-6 - Disinfection & Other Hygienic Practices - Facilitator (v2.0).pdf',
       ),
     ];
 
@@ -206,6 +267,19 @@ class DatabaseHelper {
       'learning_modules',
       where: 'category = ?',
       whereArgs: [category],
+    );
+    return rows.map(LearningModule.fromMap).toList();
+  }
+
+  // userRole: 'student' | 'parent' → shows student PDFs
+  //           'educator'           → shows teacher PDFs
+  Future<List<LearningModule>> getModulesByRole(String userRole) async {
+    final db = await database;
+    final targetRole = userRole == 'educator' ? 'teacher' : 'student';
+    final rows = await db.query(
+      'learning_modules',
+      where: 'target_role = ?',
+      whereArgs: [targetRole],
     );
     return rows.map(LearningModule.fromMap).toList();
   }

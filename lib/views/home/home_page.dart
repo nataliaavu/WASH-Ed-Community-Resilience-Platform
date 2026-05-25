@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ApiController _api = ApiController();
-  TenDayApiResponse? _weather;
+  WeatherApiResponse? _weather;
   List<FloodStatus> _floodStatuses = [];
   bool _loading = true;
 
@@ -242,7 +242,7 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 20),
                     _kikoBox(screenWidth),
                     const SizedBox(height: 20),
-                    _weatherBox(screenWidth, weather),
+                    _weatherBox(screenWidth, _weather),
                     const SizedBox(height: 20),
                     _riskBox(screenWidth),
                     const SizedBox(height: 20),
@@ -408,19 +408,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _weatherBox(double width, WeatherForecast? weather) {
-    final icon = weather != null
+  Widget _weatherBox(double width, WeatherApiResponse? weatherResp) {
+    final weather = weatherResp?.data;
+    final hourlyList = weatherResp?.hourly ?? [];
+
+    final fallbackIcon = weather != null
         ? _weatherIcon(weather.cloudCover, weather.rainfallDesc)
         : Icons.wb_sunny;
-    final iconColor = weather != null
+    final fallbackColor = weather != null
         ? _weatherIconColor(weather.cloudCover, weather.rainfallDesc)
         : Colors.orange;
-    final temp =
-        weather != null ? '${weather.tmean.round()}°' : '--°';
+    final fallbackTemp = weather != null ? '${weather.tmean.round()}°' : '--°';
+
+    List<Widget> bubbles;
+    if (hourlyList.isNotEmpty) {
+      bubbles = hourlyList.take(5).map((h) {
+        final rainfallDesc = h.precipitationTotal == 0 || h.precipitationType == 'none'
+            ? h.weather.toUpperCase()
+            : h.precipitationTotal >= 15
+                ? 'HEAVY RAINS'
+                : 'LIGHT RAINS';
+        final cloudDesc = h.weather.toUpperCase().replaceAll('_', ' ');
+        return _bubble(
+          '${h.temperature.round()}°',
+          _weatherIcon(cloudDesc, rainfallDesc),
+          _weatherIconColor(cloudDesc, rainfallDesc),
+          time: h.time,
+        );
+      }).toList();
+    } else {
+      bubbles = List.generate(
+          5, (_) => _bubble(fallbackTemp, fallbackIcon, fallbackColor));
+    }
 
     return Container(
       width: width,
-      height: 180,
+      height: 190,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -437,21 +460,20 @@ class _HomePageState extends State<HomePage> {
                 fontSize: 20,
                 fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(
-                5, (_) => _bubble(temp, icon, iconColor)),
+            children: bubbles,
           ),
         ],
       ),
     );
   }
 
-  Widget _bubble(String temp, IconData icon, Color iconColor) {
+  Widget _bubble(String temp, IconData icon, Color iconColor, {String? time}) {
     return Container(
       width: 50,
-      height: 100,
+      height: 110,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(40),
@@ -460,9 +482,13 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          if (time != null)
+            Text(time,
+                style: const TextStyle(fontSize: 9, color: Colors.grey)),
+          if (time != null) const SizedBox(height: 4),
           Icon(icon, color: iconColor, size: 22),
-          const SizedBox(height: 6),
-          Text(temp, style: const TextStyle(fontSize: 14)),
+          const SizedBox(height: 4),
+          Text(temp, style: const TextStyle(fontSize: 13)),
         ],
       ),
     );
@@ -541,6 +567,28 @@ class _HomePageState extends State<HomePage> {
               Text("Warning",
                   style: TextStyle(fontSize: 15, color: Colors.black)),
             ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.amber.shade50,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Colors.amber.shade300),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.info_outline, size: 13, color: Colors.orange),
+                SizedBox(width: 5),
+                Expanded(
+                  child: Text(
+                    'Flood data is simulated for demo purposes only. '
+                    'Real-time data requires a Google Flood API key.',
+                    style: TextStyle(fontSize: 10, color: Colors.black54),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

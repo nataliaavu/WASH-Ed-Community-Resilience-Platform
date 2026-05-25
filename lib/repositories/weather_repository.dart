@@ -2,8 +2,6 @@ import 'package:wash_ed_app/data/database_helper.dart';
 import 'package:wash_ed_app/models/weather_api.dart';
 import 'package:wash_ed_app/models/weather_forecast.dart';
 
-// Model Layer — owns caching and offline fallback for weather data.
-// Calls WeatherApi (API Layer) for raw data; persists results to SQLite.
 class WeatherRepository {
   final DatabaseHelper _db;
   final WeatherApi _api;
@@ -12,17 +10,18 @@ class WeatherRepository {
       : _db = db ?? DatabaseHelper(),
         _api = api ?? WeatherApi();
 
-  Future<TenDayApiResponse> getForecast({
+  Future<WeatherApiResponse> getForecast({
     required String municity,
     required String province,
     required bool isOnline,
+    double? lat,
+    double? lon,
   }) async {
-    if (!isOnline) {
-      return _fromCacheOrApi(municity, province);
-    }
+    if (!isOnline) return _fromCache(municity, province, lat, lon);
 
     try {
-      final response = await _api.fetchForecast(municity, province);
+      final response =
+          await _api.fetchForecast(municity, province, lat: lat, lon: lon);
       await _db.cacheWeather(
         response.data,
         response.metadata.issuanceDate,
@@ -30,35 +29,29 @@ class WeatherRepository {
       );
       return response;
     } catch (_) {
-      return _fromCacheOrApi(municity, province);
+      return _fromCache(municity, province, lat, lon);
     }
   }
 
-  Future<TenDayApiResponse> _fromCacheOrApi(
-      String municity, String province) async {
+  Future<WeatherApiResponse> _fromCache(
+      String municity, String province, double? lat, double? lon) async {
     final cached = await _db.getCachedWeather(municity);
     if (cached != null) {
       final issuanceDate = await _db.getCachedIssuanceDate(municity) ?? '';
-      return TenDayApiResponse(
+      return WeatherApiResponse(
         data: cached,
-        metadata: TenDayMetadata(
-          requestNo: 0,
-          api: 'Forecast by Date',
-          forecast: '10-day Forecast',
+        metadata: WeatherMetadata(
+          requestNo:    0,
+          api:          'Meteosource',
+          forecast:     '10-day Forecast',
           issuanceDate: issuanceDate,
-          region: '',
-          province: province,
-          municity: municity,
+          region:       '',
+          province:     province,
+          municity:     municity,
         ),
       );
     }
-
-    final response = await _api.fetchForecast(municity, province);
-    await _db.cacheWeather(
-      response.data,
-      response.metadata.issuanceDate,
-      response.metadata.region,
-    );
-    return response;
+    // No cache — attempt live fetch as last resort.
+    return _api.fetchForecast(municity, province, lat: lat, lon: lon);
   }
 }

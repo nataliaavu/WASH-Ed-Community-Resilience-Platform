@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:wash_ed_app/config/app_config.dart';
 import 'package:wash_ed_app/models/flood_status.dart';
 import 'package:wash_ed_app/models/module_model.dart';
 import 'package:wash_ed_app/models/weather_forecast.dart';
@@ -35,9 +36,13 @@ class ApiController {
   Future<List<LearningModule>> getModulesByCategory(String category) =>
       _modulesRepo.getModulesByCategory(category);
 
-  // ── TenDay Weather Forecast API ───────────────────────────────────────────
+  // userRole comes from UserProfile.role ('student' | 'parent' | 'educator')
+  Future<List<LearningModule>> getModulesByRole(String userRole) =>
+      _modulesRepo.getModulesByRole(userRole);
 
-  Future<TenDayApiResponse> getForecast(
+  // ── Weather Forecast (Meteosource) ───────────────────────────────────────
+
+  Future<WeatherApiResponse> getForecast(
       String municity, String province) async {
     final online = await isOnline();
     return _weatherRepo.getForecast(
@@ -50,9 +55,9 @@ class ApiController {
   // ── Google Flood Forecasting API ──────────────────────────────────────────
 
   Future<List<FloodStatus>> getFloodStatuses({
-    double lat = 14.5995,
-    double lng = 120.9842,
-    double radiusKm = 200,
+    double lat = AppConfig.defaultLat,
+    double lng = AppConfig.defaultLng,
+    double radiusKm = AppConfig.defaultRadiusKm,
   }) async {
     final online = await isOnline();
     return _floodRepo.getFloodStatuses(

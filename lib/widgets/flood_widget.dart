@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:wash_ed_app/controllers/api_controller.dart';
 import 'package:wash_ed_app/models/flood_status.dart';
+
+const _kCooldown = Duration(minutes: 20);
 
 class FloodWidget extends StatefulWidget {
   const FloodWidget({super.key});
@@ -14,14 +17,50 @@ class _FloodWidgetState extends State<FloodWidget> {
   List<FloodStatus> _statuses = [];
   bool _loading = true;
   String? _error;
+  Timer? _tick;
+
+  // Static: survives widget rebuild and page navigation within the same session.
+  static DateTime? _lastRefreshed;
 
   @override
   void initState() {
     super.initState();
     _load();
+    // Tick every 30 s so the countdown and "X min ago" text stay current.
+    _tick = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tick?.cancel();
+    super.dispose();
+  }
+
+  bool get _canRefresh {
+    if (_lastRefreshed == null) return true;
+    return DateTime.now().difference(_lastRefreshed!) >= _kCooldown;
+  }
+
+  String get _statusText {
+    if (_lastRefreshed == null) return '';
+    if (_canRefresh) {
+      final diff = DateTime.now().difference(_lastRefreshed!);
+      if (diff.inSeconds < 60) return 'Updated just now';
+      if (diff.inMinutes < 60) return 'Updated ${diff.inMinutes} min ago';
+      return 'Updated ${diff.inHours}h ago';
+    }
+    // Show countdown while locked.
+    final remaining = _kCooldown - DateTime.now().difference(_lastRefreshed!);
+    final mins = remaining.inMinutes;
+    final secs = remaining.inSeconds % 60;
+    if (mins > 0) return 'Refresh in ${mins}m ${secs}s';
+    return 'Refresh in ${secs}s';
   }
 
   Future<void> _load() async {
+    if (!_canRefresh) return;
     setState(() {
       _loading = true;
       _error = null;
@@ -31,11 +70,13 @@ class _FloodWidgetState extends State<FloodWidget> {
       setState(() {
         _statuses = statuses;
         _loading = false;
+        _lastRefreshed = DateTime.now();
       });
     } catch (e) {
       setState(() {
         _error = e.toString();
         _loading = false;
+        _lastRefreshed = DateTime.now();
       });
     }
   }
@@ -58,7 +99,7 @@ class _FloodWidgetState extends State<FloodWidget> {
             const Expanded(
                 child: Text('Flood data unavailable.',
                     style: TextStyle(color: Colors.grey))),
-            TextButton(onPressed: _load, child: const Text('Retry')),
+            TextButton(onPressed: _canRefresh ? _load : null, child: const Text('Retry')),
           ],
         ),
       );
@@ -74,13 +115,37 @@ class _FloodWidgetState extends State<FloodWidget> {
               const Icon(Icons.flood, color: Color(0xFF3D5AFE)),
               const SizedBox(width: 8),
               const Text('River Gauge Status',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16)),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const Spacer(),
-              TextButton.icon(
-                onPressed: _load,
-                icon: const Icon(Icons.refresh, size: 16),
-                label: const Text('Refresh'),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    onPressed: _canRefresh ? _load : null,
+                    icon: Icon(
+                      Icons.refresh,
+                      size: 16,
+                      color: _canRefresh ? const Color(0xFF3D5AFE) : Colors.grey,
+                    ),
+                    label: Text(
+                      'Refresh',
+                      style: TextStyle(
+                        color: _canRefresh ? const Color(0xFF3D5AFE) : Colors.grey,
+                      ),
+                    ),
+                  ),
+                  if (_statusText.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Text(
+                        _statusText,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.black45,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ],
           ),
@@ -129,8 +194,8 @@ class _GaugeTile extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
@@ -153,8 +218,8 @@ class _GaugeTile extends StatelessWidget {
                     style: const TextStyle(fontSize: 12)),
                 const SizedBox(width: 8),
                 Text('Alert: ${status.alertLevel.toStringAsFixed(1)} m',
-                    style: const TextStyle(
-                        fontSize: 12, color: Colors.black54)),
+                    style:
+                        const TextStyle(fontSize: 12, color: Colors.black54)),
               ],
             ),
             const SizedBox(height: 6),
