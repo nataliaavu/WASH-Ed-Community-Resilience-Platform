@@ -1,61 +1,26 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:wash_ed_app/controllers/api_controller.dart';
+import 'package:wash_ed_app/data/database_helper.dart';
+import 'package:wash_ed_app/models/module_model.dart';
 
-// ─────────────────────────────────────────────
-// Data models – swap these out for real data
-// ─────────────────────────────────────────────
-
-class ModuleItem {
-  final String title;
-  const ModuleItem(this.title);
-}
-
-class ResourceItem {
-  final String title;
-  const ResourceItem(this.title);
-}
-
-// ─────────────────────────────────────────────
-// Sample data
-// ─────────────────────────────────────────────
-
-const List<ModuleItem> kModules = [
-  ModuleItem('*Module Title 1*'),
-  ModuleItem('*Module Title 2*'),
-  ModuleItem('*Module Title 3*'),
-  ModuleItem('*Module Title 4*'),
-  ModuleItem('*Module Title 5*'),
-  ModuleItem('*Module Title 6*'),
-];
-
-const List<ResourceItem> kResources = [
-  ResourceItem('*Resource Title 1*'),
-  ResourceItem('*Resource Title 2*'),
-  ResourceItem('*Resource Title 3*'),
-  ResourceItem('*Resource Title 4*'),
-  ResourceItem('*Resource Title 5*'),
-  ResourceItem('*Resource Title 6*'),
-];
-
-// ─────────────────────────────────────────────
-// Colours & constants
-// ─────────────────────────────────────────────
+// ── Colours & constants ───────────────────────────────────────────────────────
 
 const Color kPink = Color(0xFFE91E8C);
 const Color kYellow = Color(0xFFFFCC00);
 const Color kNavyText = Color(0xFF1A237E);
 const Color kCardBg = Color(0xFFFFFFFF);
-const Color kPageBg = Color(0xFFFFF8F0); // warm cream
 
-// Gradient that fades from lavender-pink → peach (matches the screenshots)
 const LinearGradient kMascotBgGradient = LinearGradient(
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
   colors: [Color(0xFFE8D5F0), Color(0xFFFFE4D6)],
 );
 
-// ─────────────────────────────────────────────
-// LearnPage – top-level widget
-// ─────────────────────────────────────────────
+// ── LearnPage ─────────────────────────────────────────────────────────────────
 
 class LearnPage extends StatefulWidget {
   const LearnPage({super.key});
@@ -67,12 +32,30 @@ class LearnPage extends StatefulWidget {
 class _LearnPageState extends State<LearnPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  final _api = ApiController();
+  final _db = DatabaseHelper();
+
+  List<LearningModule> _modules = [];
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() => setState(() {}));
+    _loadModules();
+  }
+
+  Future<void> _loadModules() async {
+    final profile = await _db.getUserProfile();
+    final role = profile?.role ?? 'student';
+    final modules = await _api.getModulesByRole(role);
+    if (mounted) {
+      setState(() {
+        _modules = modules;
+        _loading = false;
+      });
+    }
   }
 
   @override
@@ -90,28 +73,17 @@ class _LearnPageState extends State<LearnPage>
         child: SafeArea(
           child: Column(
             children: [
-              // ── Tab bar ──────────────────────────────
               _LearnTabBar(controller: _tabController),
-
-              // ── Tab content ──────────────────────────
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    _ItemListView<ModuleItem>(
-                      items: kModules,
-                      itemTitle: (m) => m.title,
-                      onTap: (m) {
-                        // TODO: navigate to module detail
-                      },
-                    ),
-                    _ItemListView<ResourceItem>(
-                      items: kResources,
-                      itemTitle: (r) => r.title,
-                      onTap: (r) {
-                        // TODO: navigate to resource detail
-                      },
-                    ),
+                    _loading
+                        ? const Center(
+                            child:
+                                CircularProgressIndicator(color: kPink))
+                        : _ModuleListView(modules: _modules),
+                    const _ResourcesTab(),
                   ],
                 ),
               ),
@@ -123,9 +95,143 @@ class _LearnPageState extends State<LearnPage>
   }
 }
 
-// ─────────────────────────────────────────────
-// Custom tab bar
-// ─────────────────────────────────────────────
+// ── Module list ───────────────────────────────────────────────────────────────
+
+class _ModuleListView extends StatelessWidget {
+  final List<LearningModule> modules;
+  const _ModuleListView({required this.modules});
+
+  @override
+  Widget build(BuildContext context) {
+    if (modules.isEmpty) {
+      return const Center(
+        child: Text('No modules found.',
+            style: TextStyle(color: kNavyText, fontSize: 16)),
+      );
+    }
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: _MascotHeader()),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, i) => Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: _ModuleCard(module: modules[i], moduleNumber: i + 1),
+              ),
+              childCount: modules.length,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Module card ───────────────────────────────────────────────────────────────
+
+class _ModuleCard extends StatelessWidget {
+  final LearningModule module;
+  final int moduleNumber;
+
+  const _ModuleCard({required this.module, required this.moduleNumber});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+      decoration: BoxDecoration(
+        color: kCardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: kYellow, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: kYellow.withValues(alpha: 1),
+            blurRadius: 6,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Module $moduleNumber',
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: kPink,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            module.title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: kNavyText,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            module.description,
+            style: TextStyle(
+              fontSize: 13,
+              color: kNavyText.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PdfViewerPage(
+                    module: module,
+                    moduleNumber: moduleNumber,
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.menu_book_rounded, size: 18),
+              label: const Text('Open Module'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: kPink,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Resources tab placeholder ─────────────────────────────────────────────────
+
+class _ResourcesTab extends StatelessWidget {
+  const _ResourcesTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text(
+        'Resources coming soon.',
+        style: TextStyle(color: kNavyText, fontSize: 16),
+      ),
+    );
+  }
+}
+
+// ── Tab bar ───────────────────────────────────────────────────────────────────
 
 class _LearnTabBar extends StatelessWidget {
   final TabController controller;
@@ -134,15 +240,12 @@ class _LearnTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activeIdx = controller.index;
-
     return Row(
       children: [
         _TabButton(
           label: 'Modules',
           isActive: activeIdx == 0,
           onTap: () => controller.animateTo(0),
-          // Active tab: pink background + white text
-          // Inactive tab: white/transparent background + dark text
         ),
         _TabButton(
           label: 'Resources',
@@ -212,52 +315,7 @@ class _TabButton extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// Generic list view used by both tabs
-// ─────────────────────────────────────────────
-
-class _ItemListView<T> extends StatelessWidget {
-  final List<T> items;
-  final String Function(T) itemTitle;
-  final void Function(T) onTap;
-
-  const _ItemListView({
-    required this.items,
-    required this.itemTitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        // ── Mascot header area ────────────────
-        SliverToBoxAdapter(child: _MascotHeader()),
-
-        // ── Item cards ───────────────────────
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          sliver: SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              final item = items[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: _ItemCard(
-                  title: itemTitle(item),
-                  onTap: () => onTap(item),
-                ),
-              );
-            }, childCount: items.length),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// Mascot header widget
-// ─────────────────────────────────────────────
+// ── Mascot header ─────────────────────────────────────────────────────────────
 
 class _MascotHeader extends StatelessWidget {
   @override
@@ -276,46 +334,85 @@ class _MascotHeader extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// Individual item card
-// ─────────────────────────────────────────────
+// ── PDF Viewer Page ───────────────────────────────────────────────────────────
 
-class _ItemCard extends StatelessWidget {
-  final String title;
-  final VoidCallback onTap;
+class PdfViewerPage extends StatefulWidget {
+  final LearningModule module;
+  final int moduleNumber;
 
-  const _ItemCard({required this.title, required this.onTap});
+  const PdfViewerPage({
+    super.key,
+    required this.module,
+    required this.moduleNumber,
+  });
+
+  @override
+  State<PdfViewerPage> createState() => _PdfViewerPageState();
+}
+
+class _PdfViewerPageState extends State<PdfViewerPage> {
+  String? _localPath;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPdf();
+  }
+
+  Future<void> _loadPdf() async {
+    try {
+      final bytes = await rootBundle.load(widget.module.assetPath);
+      final dir = await getTemporaryDirectory();
+      final filename = widget.module.assetPath.split('/').last;
+      final file = File('${dir.path}/$filename');
+      await file.writeAsBytes(bytes.buffer.asUint8List());
+      if (mounted) setState(() => _localPath = file.path);
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-        decoration: BoxDecoration(
-          color: kCardBg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: kYellow, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: kYellow.withOpacity(1),
-              blurRadius: 6,
-              offset: const Offset(0, 5),
-            ),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Module ${widget.moduleNumber}: ${widget.module.title}',
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: kNavyText,
-            letterSpacing: 0.3,
-          ),
-        ),
+        backgroundColor: kPink,
+        foregroundColor: Colors.white,
       ),
+      body: _error != null
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'Could not load PDF:\n$_error',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            )
+          : _localPath == null
+              ? const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(color: kPink),
+                      SizedBox(height: 16),
+                      Text('Loading module...', style: TextStyle(color: kNavyText)),
+                    ],
+                  ),
+                )
+              : PDFView(
+                  filePath: _localPath!,
+                  enableSwipe: true,
+                  swipeHorizontal: false,
+                  autoSpacing: true,
+                  pageFling: true,
+                ),
     );
   }
 }
