@@ -238,19 +238,16 @@ class _ItemListView<T> extends StatelessWidget {
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final item = items[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: _ItemCard(
-                    title: itemTitle(item),
-                    onTap: () => onTap(item),
-                  ),
-                );
-              },
-              childCount: items.length,
-            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final item = items[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: _ItemCard(
+                  title: itemTitle(item),
+                  onTap: () => onTap(item),
+                ),
+              );
+            }, childCount: items.length),
           ),
         ),
       ],

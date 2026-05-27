@@ -42,11 +42,8 @@ class AppMain extends StatefulWidget {
 class _AppMainState extends State<AppMain> {
   int _currentIndex = 0;
 
-  // TODO: Replace these placeholders with your actual pages from
-  // lib\views, e.g. `const HomePage()`.
   final List<Widget> _pages = const <Widget>[
-    HomePage(), // replace with HomePage()
-    Center(child: Text('Modules page')), // replace with ModulesPage()
+    HomePage(),
     LearnPage(),
     PreparePage(),
     Center(child: Text('Profile page')), // replace with ProfilePage()
