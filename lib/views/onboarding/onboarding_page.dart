@@ -91,58 +91,56 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     String backButtonText,
     String nextButtonText,
   ) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFE3F2FD), Color(0xFFFFFDE7)],
-          ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFE3F2FD), Color(0xFFFFFDE7)],
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsetsGeometry.symmetric(
-              vertical: 10,
-              horizontal: 40,
-            ),
-            child: Column(
-              children: <Widget>[
-                Spacer(),
-                image,
-                Padding(
-                  padding: const EdgeInsetsGeometry.symmetric(
-                    horizontal: 30,
-                    vertical: 10,
-                  ),
-                  child: Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Color(0xFF1A47C8),
-                      fontSize: 28,
-                      fontWeight: FontWeight(1000),
-                      height: 0,
-                    ),
-                  ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsetsGeometry.symmetric(
+            vertical: 10,
+            horizontal: 40,
+          ),
+          child: Column(
+            children: <Widget>[
+              Spacer(),
+              image,
+              Padding(
+                padding: const EdgeInsetsGeometry.symmetric(
+                  horizontal: 30,
+                  vertical: 10,
                 ),
-                Text(
-                  body,
+                child: Text(
+                  title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: Color(0xFF1A1A2E),
-                    fontSize: 18,
+                    color: Color(0xFF1A47C8),
+                    fontSize: 28,
+                    fontWeight: FontWeight(1000),
                     height: 0,
                   ),
                 ),
-                NavigationButtons(
-                  currentPageIndex: _currentPageIndex,
-                  onUpdateCurrentPageIndex: _onUpdateCurrentPageIndex,
-                  backButtonText: backButtonText,
-                  nextButtonText: nextButtonText,
+              ),
+              Text(
+                body,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF1A1A2E),
+                  fontSize: 18,
+                  height: 0,
                 ),
-              ],
-            ),
+              ),
+              NavigationButtons(
+                currentPageIndex: _currentPageIndex,
+                onUpdateCurrentPageIndex: _onUpdateCurrentPageIndex,
+                backButtonText: backButtonText,
+                nextButtonText: nextButtonText,
+              ),
+            ],
           ),
         ),
       ),
