@@ -24,7 +24,7 @@ class SetupRolePageState extends State<SetupRolePage> {
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: Column(
               children: [
-                const SizedBox(height: 60),
+                const SizedBox(height: 20),
                 const Text(
                   "Welcome to\nKiko's Hub!",
                   textAlign: TextAlign.center,
@@ -42,6 +42,8 @@ class SetupRolePageState extends State<SetupRolePage> {
                 ),
                 const SizedBox(height: 40),
                 _buildRoleCard("I am a Student", Icons.school),
+                const SizedBox(height: 20),
+                _buildRoleCard("I am a Parent", Icons.supervisor_account),
                 const SizedBox(height: 20),
                 _buildRoleCard("I am an Educator", Icons.groups),
               ],
@@ -67,14 +69,14 @@ class SetupRolePageState extends State<SetupRolePage> {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         children: [
           CircleAvatar(
-            radius: 35,
+            radius: 25,
             backgroundColor: Color(0xFF_E91E63),
-            child: Icon(icon, color: Colors.white, size: 35),
+            child: Icon(icon, color: Colors.white, size: 30),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(width: 16),
           Text(
             title,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
