@@ -45,7 +45,7 @@ class _AppMainState extends State<AppMain> {
 
   // lib\views, e.g. `const HomePage()`.
   final List<Widget> _pages = const <Widget>[
-    HomePage(), 
+    HomePage(),
     LearnPage(),
     PreparePage(),
     GamesPage(),
