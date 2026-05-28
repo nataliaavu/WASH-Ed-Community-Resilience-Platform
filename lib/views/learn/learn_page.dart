@@ -21,6 +21,23 @@ const LinearGradient kMascotBgGradient = LinearGradient(
   colors: [Color(0xFFE8D5F0), Color(0xFFFFE4D6)],
 );
 
+// ── Module group ──────────────────────────────────────────────────────────────
+
+class _ModuleGroup {
+  final LearningModule student;
+  final LearningModule? teacher;
+  const _ModuleGroup({required this.student, this.teacher});
+}
+
+List<_ModuleGroup> _groupModules(List<LearningModule> modules) {
+  final studentMods = modules.where((m) => m.targetRole == 'student').toList();
+  final teacherMods = modules.where((m) => m.targetRole == 'teacher').toList();
+  return List.generate(studentMods.length, (i) => _ModuleGroup(
+    student: studentMods[i],
+    teacher: i < teacherMods.length ? teacherMods[i] : null,
+  ));
+}
+
 // ── LearnPage ─────────────────────────────────────────────────────────────────
 
 class LearnPage extends StatefulWidget {
@@ -36,7 +53,7 @@ class _LearnPageState extends State<LearnPage>
   final _api = ApiController();
   final _db = DatabaseHelper();
 
-  List<LearningModule> _modules = [];
+  List<_ModuleGroup> _groups = [];
   bool _loading = true;
 
   @override
@@ -54,7 +71,7 @@ class _LearnPageState extends State<LearnPage>
     final modules = await _api.getModulesByRole(role);
     if (mounted) {
       setState(() {
-        _modules = modules;
+        _groups = _groupModules(modules);
         _loading = false;
       });
     }
@@ -85,7 +102,7 @@ class _LearnPageState extends State<LearnPage>
                         ? const Center(
                             child:
                                 CircularProgressIndicator(color: kPink))
-                        : _ModuleListView(modules: _modules),
+                        : _ModuleListView(groups: _groups),
                     const _ResourcesTab(),
                   ],
                 ),
@@ -101,12 +118,12 @@ class _LearnPageState extends State<LearnPage>
 // ── Module list ───────────────────────────────────────────────────────────────
 
 class _ModuleListView extends StatelessWidget {
-  final List<LearningModule> modules;
-  const _ModuleListView({required this.modules});
+  final List<_ModuleGroup> groups;
+  const _ModuleListView({required this.groups});
 
   @override
   Widget build(BuildContext context) {
-    if (modules.isEmpty) {
+    if (groups.isEmpty) {
       return const Center(
         child: Text('No modules found.',
             style: TextStyle(color: kNavyText, fontSize: 16)),
@@ -121,9 +138,9 @@ class _ModuleListView extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, i) => Padding(
                 padding: const EdgeInsets.only(bottom: 20),
-                child: _ModuleCard(module: modules[i], moduleNumber: i + 1),
+                child: _ModuleCard(group: groups[i], moduleNumber: i + 1),
               ),
-              childCount: modules.length,
+              childCount: groups.length,
             ),
           ),
         ),
@@ -135,13 +152,23 @@ class _ModuleListView extends StatelessWidget {
 // ── Module card ───────────────────────────────────────────────────────────────
 
 class _ModuleCard extends StatelessWidget {
-  final LearningModule module;
+  final _ModuleGroup group;
   final int moduleNumber;
 
-  const _ModuleCard({required this.module, required this.moduleNumber});
+  const _ModuleCard({required this.group, required this.moduleNumber});
+
+  void _open(BuildContext context, LearningModule module) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PdfViewerPage(module: module, moduleNumber: moduleNumber),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final hasTeacher = group.teacher != null;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
@@ -171,7 +198,7 @@ class _ModuleCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            module.title,
+            group.student.title,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -181,37 +208,67 @@ class _ModuleCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            module.description,
+            group.student.description,
             style: TextStyle(
               fontSize: 13,
               color: kNavyText.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PdfViewerPage(
-                    module: module,
-                    moduleNumber: moduleNumber,
+          if (hasTeacher) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _open(context, group.student),
+                    icon: const Icon(Icons.person, size: 16),
+                    label: const Text('Student'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kNavyText,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _open(context, group.teacher!),
+                    icon: const Icon(Icons.school, size: 16),
+                    label: const Text('Educator'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kPink,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _open(context, group.student),
+                icon: const Icon(Icons.menu_book_rounded, size: 18),
+                label: const Text('Open Module'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kPink,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
-              icon: const Icon(Icons.menu_book_rounded, size: 18),
-              label: const Text('Open Module'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: kPink,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
             ),
-          ),
+          ],
         ],
       ),
     );
