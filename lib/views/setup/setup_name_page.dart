@@ -43,7 +43,7 @@ class SetupNamePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Image.asset(
-              'assets/kiko/WashEd_kiko_sprite_cheer.png',
+              'assets/kiko/washed-kiko_sprite_whats-your-name.png',
               height: 290,
               fit: BoxFit.contain,
             ),

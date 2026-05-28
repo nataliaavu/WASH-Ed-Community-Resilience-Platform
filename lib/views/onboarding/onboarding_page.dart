@@ -29,7 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _buildOnboardingPage(
         "Welcome to Kiko's Hub!",
         "A safe place to learn, play, and stay prepared for the rising tides",
-        Image.asset("assets/kiko/WashEd_kiko_sprite_cheer.png"),
+        Image.asset("assets/kiko/washed-kiko_sprite_get-started_00_wave-welcome.png"),
         "",
         "Get started",
       ),
@@ -43,7 +43,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _buildOnboardingPage(
         "Stay safe!",
         "Prepare for the rainy season with helpful guides and flood alerts",
-        Image.asset("assets/kiko/WashEd_kiko_sprite_side-jump.png"),
+        Image.asset("assets/kiko/washed-kiko_sprite_get-started_02_stay-safe-realtime-updates-icons.png"),
         "Back",
         "Next",
       ),
