@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:wash_ed_app/controllers/api_controller.dart';
 import 'package:wash_ed_app/data/database_helper.dart';
 import 'package:wash_ed_app/models/module_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ── Colours & constants ───────────────────────────────────────────────────────
 
@@ -113,7 +114,7 @@ class _ModuleListView extends StatelessWidget {
       slivers: [
         SliverToBoxAdapter(child: _MascotHeader()),
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, i) => Padding(
@@ -220,12 +221,138 @@ class _ModuleCard extends StatelessWidget {
 class _ResourcesTab extends StatelessWidget {
   const _ResourcesTab();
 
+  static const List<Map<String, String>> _resources = [
+    {
+      'title': 'WASH-Ed',
+      'description': 'Explore our Learning Portal for videos and resources on clean water, handwashing, and staying healthy at school.',
+      'url': 'https://www.wash-ed.org',
+    },
+    {
+      'title': 'Resource 2',
+      'description': 'Placeholder description for resource 2.',
+      'url': 'https://www.example.com',
+    },
+    {
+      'title': 'Resource 3',
+      'description': 'Placeholder description for resource 3.',
+      'url': 'https://www.example.com',
+    },
+    {
+      'title': 'Resource 4',
+      'description': 'Placeholder description for resource 4.',
+      'url': 'https://www.example.com',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Resources coming soon.',
-        style: TextStyle(color: kNavyText, fontSize: 16),
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: _MascotHeader()),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, i) => Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: _ResourceCard(
+                  resourceNumber: i + 1,
+                  title: _resources[i]['title']!,
+                  description: _resources[i]['description']!,
+                  url: _resources[i]['url']!,
+                ),
+              ),
+              childCount: _resources.length,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ResourceCard extends StatelessWidget {
+  final int resourceNumber;
+  final String title;
+  final String description;
+  final String url;
+
+  const _ResourceCard({
+    required this.resourceNumber,
+    required this.title,
+    required this.description,
+    required this.url,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+      decoration: BoxDecoration(
+        color: kCardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: kYellow, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: kYellow.withValues(alpha: 1),
+            blurRadius: 6,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Resource $resourceNumber',
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: kPink,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: kNavyText,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            description,
+            style: TextStyle(
+              fontSize: 13,
+              color: kNavyText.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () async {
+                final uri = Uri.parse(url);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: kPink,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Open Resource'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -321,14 +448,45 @@ class _MascotHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: 24, bottom: 20),
-      child: Center(
-        child: Image.asset(
-          'assets/kiko/WashEd_kiko_sprite_thumbs-up.png',
-          height: 300,
-          fit: BoxFit.contain,
-        ),
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      decoration: BoxDecoration(
+        color: const Color(0xFF3B3DBF), // deep blue/purple
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "Let's Learn",
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  'Discover how to stay safe, dry, and prepared for floods with our fun lessons!',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Image.asset(
+            'assets/kiko/washed-kiko_sprite_learn-modules-resources.png',
+            height: 150,
+            fit: BoxFit.contain,
+          ),
+        ],
       ),
     );
   }
