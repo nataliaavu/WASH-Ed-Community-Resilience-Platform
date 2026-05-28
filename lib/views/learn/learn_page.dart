@@ -1,9 +1,11 @@
+// learn_page version 2
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wash_ed_app/controllers/api_controller.dart';
+import 'package:wash_ed_app/data/app_notifiers.dart';
 import 'package:wash_ed_app/data/database_helper.dart';
 import 'package:wash_ed_app/models/module_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,6 +23,23 @@ const LinearGradient kMascotBgGradient = LinearGradient(
   colors: [Color(0xFFE8D5F0), Color(0xFFFFE4D6)],
 );
 
+// ── Module group ──────────────────────────────────────────────────────────────
+
+class _ModuleGroup {
+  final LearningModule student;
+  final LearningModule? teacher;
+  const _ModuleGroup({required this.student, this.teacher});
+}
+
+List<_ModuleGroup> _groupModules(List<LearningModule> modules) {
+  final studentMods = modules.where((m) => m.targetRole == 'student').toList();
+  final teacherMods = modules.where((m) => m.targetRole == 'teacher').toList();
+  return List.generate(studentMods.length, (i) => _ModuleGroup(
+    student: studentMods[i],
+    teacher: i < teacherMods.length ? teacherMods[i] : null,
+  ));
+}
+
 // ── LearnPage ─────────────────────────────────────────────────────────────────
 
 class LearnPage extends StatefulWidget {
@@ -36,7 +55,7 @@ class _LearnPageState extends State<LearnPage>
   final _api = ApiController();
   final _db = DatabaseHelper();
 
-  List<LearningModule> _modules = [];
+  List<_ModuleGroup> _groups = [];
   bool _loading = true;
 
   @override
@@ -44,6 +63,7 @@ class _LearnPageState extends State<LearnPage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() => setState(() {}));
+    profileRoleVersion.addListener(_loadModules);
     _loadModules();
   }
 
@@ -53,7 +73,7 @@ class _LearnPageState extends State<LearnPage>
     final modules = await _api.getModulesByRole(role);
     if (mounted) {
       setState(() {
-        _modules = modules;
+        _groups = _groupModules(modules);
         _loading = false;
       });
     }
@@ -61,6 +81,7 @@ class _LearnPageState extends State<LearnPage>
 
   @override
   void dispose() {
+    profileRoleVersion.removeListener(_loadModules);
     _tabController.dispose();
     super.dispose();
   }
@@ -83,7 +104,7 @@ class _LearnPageState extends State<LearnPage>
                         ? const Center(
                             child:
                                 CircularProgressIndicator(color: kPink))
-                        : _ModuleListView(modules: _modules),
+                        : _ModuleListView(groups: _groups),
                     const _ResourcesTab(),
                   ],
                 ),
@@ -99,12 +120,12 @@ class _LearnPageState extends State<LearnPage>
 // ── Module list ───────────────────────────────────────────────────────────────
 
 class _ModuleListView extends StatelessWidget {
-  final List<LearningModule> modules;
-  const _ModuleListView({required this.modules});
+  final List<_ModuleGroup> groups;
+  const _ModuleListView({required this.groups});
 
   @override
   Widget build(BuildContext context) {
-    if (modules.isEmpty) {
+    if (groups.isEmpty) {
       return const Center(
         child: Text('No modules found.',
             style: TextStyle(color: kNavyText, fontSize: 16)),
@@ -119,9 +140,9 @@ class _ModuleListView extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, i) => Padding(
                 padding: const EdgeInsets.only(bottom: 20),
-                child: _ModuleCard(module: modules[i], moduleNumber: i + 1),
+                child: _ModuleCard(group: groups[i], moduleNumber: i + 1),
               ),
-              childCount: modules.length,
+              childCount: groups.length,
             ),
           ),
         ),
@@ -133,13 +154,23 @@ class _ModuleListView extends StatelessWidget {
 // ── Module card ───────────────────────────────────────────────────────────────
 
 class _ModuleCard extends StatelessWidget {
-  final LearningModule module;
+  final _ModuleGroup group;
   final int moduleNumber;
 
-  const _ModuleCard({required this.module, required this.moduleNumber});
+  const _ModuleCard({required this.group, required this.moduleNumber});
+
+  void _open(BuildContext context, LearningModule module) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PdfViewerPage(module: module, moduleNumber: moduleNumber),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final hasTeacher = group.teacher != null;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
@@ -169,7 +200,7 @@ class _ModuleCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            module.title,
+            group.student.title,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -179,37 +210,67 @@ class _ModuleCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            module.description,
+            group.student.description,
             style: TextStyle(
               fontSize: 13,
               color: kNavyText.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PdfViewerPage(
-                    module: module,
-                    moduleNumber: moduleNumber,
+          if (hasTeacher) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _open(context, group.student),
+                    icon: const Icon(Icons.person, size: 16),
+                    label: const Text('Student'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kNavyText,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _open(context, group.teacher!),
+                    icon: const Icon(Icons.school, size: 16),
+                    label: const Text('Educator'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kPink,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _open(context, group.student),
+                icon: const Icon(Icons.menu_book_rounded, size: 18),
+                label: const Text('Open Module'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kPink,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
-              icon: const Icon(Icons.menu_book_rounded, size: 18),
-              label: const Text('Open Module'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: kPink,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -228,19 +289,19 @@ class _ResourcesTab extends StatelessWidget {
       'url': 'https://www.wash-ed.org',
     },
     {
-      'title': 'Resource 2',
-      'description': 'Placeholder description for resource 2.',
-      'url': 'https://www.example.com',
+      'title': 'PAGASA Weather Forecasts',
+      'description': 'Access comprehensive weather forecasts, storm tracking, and typhoon updates directly from the national weather authority',
+      'url': 'https://bagong.pagasa.dost.gov.ph/',
     },
     {
-      'title': 'Resource 3',
-      'description': 'Placeholder description for resource 3.',
-      'url': 'https://www.example.com',
+      'title': 'DepEd WinS (WASH in Schools)',
+      'description': 'Find official WASH resources, guides, and tools to support schools',
+      'url': 'https://wins.deped.gov.ph/',
     },
     {
-      'title': 'Resource 4',
-      'description': 'Placeholder description for resource 4.',
-      'url': 'https://www.example.com',
+      'title': 'NDRRMC Disaster Alerts',
+      'description': 'Stay informed about emergencies and how to keep your family safe',
+      'url': 'https://ndrrmc.gov.ph/',
     },
   ];
 
@@ -305,7 +366,7 @@ class _ResourceCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Resource $resourceNumber',
+            'Resource $resourceNumber', // the pink text in the box e.g. "Resource 1"
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -349,7 +410,14 @@ class _ResourceCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text('Open Resource'),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.open_in_new, size: 16),
+                  SizedBox(width: 8),
+                  Text('Open Resource'),
+                ],
+              ),
             ),
           ),
         ],
@@ -451,7 +519,7 @@ class _MascotHeader extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: const Color(0xFF3B3DBF), // deep blue/purple
+        color: const Color(0xFF1A47C8), // brand blue
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

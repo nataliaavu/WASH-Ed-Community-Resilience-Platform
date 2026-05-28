@@ -29,114 +29,122 @@ class _PreparePageState extends State<PreparePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F4FF), // light lavender background
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFE8D5F0), Color(0xFFFFE4D6)],
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionLabel('Need help? Call now'),
+                          const SizedBox(height: 10),
+                          _buildEmergencyServicesCard(),
+                          const SizedBox(height: 10),
+                          _buildEmergencyContactsCard(),
+                          const SizedBox(height: 24),
+                          _buildSectionLabel('Quick Safety Steps'),
+                          const SizedBox(height: 10),
+                          ..._safetySteps.asMap().entries.map(
+                            (e) => _buildSafetyStepCard(e.key + 1, e.value),
+                          ),
+                          const SizedBox(height: 24),
+                          _buildChecklistSection(),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  // ── HEADER ──────────────────────────────────────────────────────────────────
+
+  Widget _buildHeader() {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A47C8),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSectionLabel('Need help? Call now'),
-                        const SizedBox(height: 10),
-                        _buildEmergencyServicesCard(),
-                        const SizedBox(height: 10),
-                        _buildEmergencyContactsCard(),
-                        const SizedBox(height: 24),
-                        _buildSectionLabel('Quick Safety Steps'),
-                        const SizedBox(height: 10),
-                        ..._safetySteps.asMap().entries.map(
-                          (e) => _buildSafetyStepCard(e.key + 1, e.value),
-                        ),
-                        const SizedBox(height: 24),
-                        _buildChecklistSection(),
-                        const SizedBox(height: 24),
-                      ],
+                  Text(
+                    'Flood\nGuidance',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      height: 1.1,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Wherever you are, \n here's what to do!",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                      height: 1.4,
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
+            // Kiko character — replace with Image.asset once asset added
+            SizedBox(
+              width: 150,
+              height: 160,
+              child: Image.asset(
+                'assets/kiko/WashEd_kiko_sprite_cheer.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ],
+        ),      // closes Row
+      ),        // closes Container
+    );          // closes SafeArea
   }
 
-  // ── HEADER ──────────────────────────────────────────────────────────────────
+    // ── SECTION LABEL ───────────────────────────────────────────────────────────
 
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-      decoration: const BoxDecoration(
-        color: Color(0xFF3D5AFE), // blue from wireframe
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
+    Widget _buildSectionLabel(String title) {
+      return Text(
+        title,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF3D5AFE),
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Flood\nGuidance',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    height: 1.1,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Wherever you are, \n here's what to do!",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.white70,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Kiko character — replace with Image.asset once team adds the asset
-          SizedBox(
-            width: 150,
-            height: 160,
-            child: Image.asset(
-              'assets/kiko/WashEd_kiko_sprite_cheer.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── SECTION LABEL ───────────────────────────────────────────────────────────
-
-  Widget _buildSectionLabel(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF3D5AFE),
-      ),
-    );
-  }
+      );
+    }
 
   // ── CALL FOR HELP CARDS ─────────────────────────────────────────────────────
 
@@ -144,8 +152,8 @@ class _PreparePageState extends State<PreparePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(50), // very rounded like wireframe
+        color: const Color(0xFFFFCDD2),
+        borderRadius: BorderRadius.circular(50), // rounded edge
         border: Border.all(color: const Color(0xFFFFCDD2)),
       ),
       child: Row(
@@ -171,7 +179,7 @@ class _PreparePageState extends State<PreparePage> {
                 ),
                 Text(
                   'Police, Fire, Ambulance',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 88, 88, 88)),
                 ),
               ],
             ),
@@ -194,7 +202,7 @@ class _PreparePageState extends State<PreparePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFFFCDD2),
         borderRadius: BorderRadius.circular(50), // very rounded like wireframe
         border: Border.all(color: const Color(0xFFFFCDD2)),
       ),
@@ -205,7 +213,7 @@ class _PreparePageState extends State<PreparePage> {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: Colors.red.shade300,
+              color: Colors.red,
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.people, color: Colors.white, size: 18),
@@ -216,12 +224,12 @@ class _PreparePageState extends State<PreparePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Phillipine Red Cross',
+                  'Philippine Red Cross',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 Text(
                   'Disaster Relief',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 88, 88, 88)),
                 ),
               ],
             ),
@@ -259,7 +267,7 @@ class _PreparePageState extends State<PreparePage> {
             height: 30,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0xFF3D5AFE),
+              color: const Color(0xFF1A47C8),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(

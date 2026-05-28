@@ -1,68 +1,74 @@
 import 'package:flutter/material.dart';
 
-class SetupNamePage extends StatefulWidget {
-  const SetupNamePage({super.key});
+class SetupNamePage extends StatelessWidget {
+  final TextEditingController controller;
 
-  @override
-  State<SetupNamePage> createState() => SetupNamePageState();
-}
+  const SetupNamePage({super.key, required this.controller});
 
-class SetupNamePageState extends State<SetupNamePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFE3F2FD), Color(0xFFFFFDE7)],
-          ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFFCE4EC), Color(0xFFF3E5F5)],
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              // Speech Bubble logic
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 40),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+      ),
+      child: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 52),
+            // Speech bubble
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 22),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 14),
+                ],
+              ),
+              child: const Text(
+                "Hello I'm Kiko!\nWhat's your name?",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A45A0),
+                  height: 1.4,
                 ),
-                child: const Text(
-                  "Hello I'm Kiko!\nWhat's your name?",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF_1A45A0),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Image.asset(
+              'assets/kiko/WashEd_kiko_sprite_cheer.png',
+              height: 290,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 28),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: TextField(
+                controller: controller,
+                textCapitalization: TextCapitalization.words,
+                style: const TextStyle(fontSize: 17),
+                decoration: InputDecoration(
+                  hintText: 'Type here',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
                   ),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 22, vertical: 20),
                 ),
               ),
-              const SizedBox(height: 20),
-              Image(
-                image: AssetImage("assets/kiko/WashEd_kiko_sprite_cheer.png"),
-              ),
-              const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Type here",
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
