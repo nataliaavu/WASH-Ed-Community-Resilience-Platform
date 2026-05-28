@@ -125,7 +125,7 @@ class _HeaderBanner extends StatelessWidget {
             ),
           ),
           Image.asset(
-            'assets/kiko/WashEd_kiko_sprite_cheer.png',
+            'assets/kiko/washed-kiko_sprite_games-ready-to-play.png',
             height: 150,
             fit: BoxFit.contain,
           ),

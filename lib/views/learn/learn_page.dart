@@ -385,7 +385,7 @@ class _MascotHeader extends StatelessWidget {
       padding: const EdgeInsets.only(top: 24, bottom: 20),
       child: Center(
         child: Image.asset(
-          'assets/kiko/WashEd_kiko_sprite_thumbs-up.png',
+          'assets/kiko/washed-kiko_sprite_learn-modules-resources.png',
           height: 300,
           fit: BoxFit.contain,
         ),
