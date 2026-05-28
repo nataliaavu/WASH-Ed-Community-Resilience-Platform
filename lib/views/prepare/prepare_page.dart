@@ -116,7 +116,7 @@ class _PreparePageState extends State<PreparePage> {
             width: 150,
             height: 160,
             child: Image.asset(
-              'assets/kiko/WashEd_kiko_sprite_cheer.png',
+              'assets/kiko/washed-kiko_sprite_get-started_02_stay-safe-realtime-updates.png',
               fit: BoxFit.contain,
             ),
           ),
