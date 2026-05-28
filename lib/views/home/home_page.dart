@@ -723,9 +723,9 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _sponsorLogo('Foundation'),
-              _sponsorLogo('Khuda Family\nFoundation'),
-              _sponsorLogo('Reckitt'),
+              _sponsorLogo('burger-point'),
+              _sponsorLogo('connel-griffin'),
+              _sponsorLogo('grundfos'),
             ],
           ),
           const SizedBox(height: 12),
@@ -738,7 +738,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 8),
-          _sponsorLogo('DepEd'),
+          _sponsorLogo('dep-ed'),
         ],
       ),
     );
@@ -751,11 +751,7 @@ class _HomePageState extends State<HomePage> {
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(
-        name,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 10, color: Colors.black87),
-      ),
+      child: Image.asset("assets/logos/$name.jpeg", width: 60),
     );
   }
 }
