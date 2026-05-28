@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wash_ed_app/config/app_config.dart';
 import 'package:wash_ed_app/controllers/api_controller.dart';
+import 'package:wash_ed_app/data/app_notifiers.dart';
+import 'package:wash_ed_app/data/database_helper.dart';
+import 'package:wash_ed_app/data/philippine_location_coords.dart';
 import 'package:wash_ed_app/models/flood_status.dart';
 import 'package:wash_ed_app/models/weather_forecast.dart';
 
@@ -13,9 +16,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ApiController _api = ApiController();
+  final DatabaseHelper _db = DatabaseHelper();
   WeatherApiResponse? _weather;
   List<FloodStatus> _floodStatuses = [];
   bool _loading = true;
+  String _userName = '';
 
   static const _severityOrder = [
     'NO_FLOODING',
@@ -27,20 +32,44 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    homeLocationVersion.addListener(_loadData);
+    profileNameVersion.addListener(_reloadName);
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    homeLocationVersion.removeListener(_loadData);
+    profileNameVersion.removeListener(_reloadName);
+    super.dispose();
   }
 
   Future<void> _loadData() async {
     try {
+      final profile = await _db.getUserProfile();
+      final municity = (profile?.municity.isNotEmpty == true)
+          ? profile!.municity
+          : AppConfig.defaultMunicity;
+      final province = (profile?.province.isNotEmpty == true)
+          ? profile!.province
+          : AppConfig.defaultProvince;
+
+      final coords = philippineLocationCoords[municity];
       final weatherFuture = _api.getForecast(
-        AppConfig.defaultMunicity,
-        AppConfig.defaultProvince,
+        municity,
+        province,
+        lat: coords?.$1,
+        lon: coords?.$2,
       );
-      final floodFuture = _api.getFloodStatuses();
+      final floodFuture = coords != null
+          ? _api.getFloodStatuses(lat: coords.$1, lng: coords.$2)
+          : _api.getFloodStatuses();
       final weather = await weatherFuture;
       final floods = await floodFuture;
+
       if (mounted) {
         setState(() {
+          _userName = profile?.name ?? '';
           _weather = weather;
           _floodStatuses = floods;
           _loading = false;
@@ -49,6 +78,11 @@ class _HomePageState extends State<HomePage> {
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  Future<void> _reloadName() async {
+    final profile = await _db.getUserProfile();
+    if (mounted) setState(() => _userName = profile?.name ?? '');
   }
 
   // ── Computed getters ────────────────────────────────────────────────────────
@@ -203,9 +237,9 @@ class _HomePageState extends State<HomePage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Hello Miguel!',
-              style: TextStyle(
+            Text(
+              _userName.isNotEmpty ? 'Hello $_userName!' : 'Hello!',
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
@@ -251,13 +285,13 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _buttonBox('Learning\nModules', screenWidth * 0.27,
-                            100, Icons.cast_for_education),
+                            100, Icons.cast_for_education, tabIndex: 1),
                         const SizedBox(width: 10),
                         _buttonBox('Flood\nPrepare', screenWidth * 0.27, 100,
-                            Icons.checklist_sharp),
+                            Icons.checklist_sharp, tabIndex: 2),
                         const SizedBox(width: 10),
                         _buttonBox('Play\nGames', screenWidth * 0.27, 100,
-                            Icons.gamepad_outlined),
+                            Icons.gamepad_outlined, tabIndex: 3),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -596,35 +630,41 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buttonBox(
-      String text, double width, double height, IconData icon) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        border: Border.all(color: Colors.yellow, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.yellow.withValues(alpha: 0.7),
-            blurRadius: 6,
-            offset: const Offset(-1, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(icon, size: 40, color: Colors.black),
-          const SizedBox(height: 5),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style:
-                const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-          ),
-        ],
+      String text, double width, double height, IconData icon,
+      {required int tabIndex}) {
+    return GestureDetector(
+      onTap: () {
+        tabSwitchRequest.value = -1;
+        tabSwitchRequest.value = tabIndex;
+      },
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          border: Border.all(color: Colors.yellow, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.yellow.withValues(alpha: 0.7),
+              blurRadius: 6,
+              offset: const Offset(-1, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: Colors.black),
+            const SizedBox(height: 5),
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
     );
   }

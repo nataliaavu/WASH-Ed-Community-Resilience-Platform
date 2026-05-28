@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wash_ed_app/data/app_notifiers.dart';
 import 'package:wash_ed_app/views/games/games_page.dart';
 import 'package:wash_ed_app/views/home/home_page.dart';
 import 'package:wash_ed_app/views/learn/learn_page.dart';
 import 'package:wash_ed_app/views/onboarding/init_page.dart';
 import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
 import 'package:wash_ed_app/views/prepare/prepare_page.dart';
+import 'package:wash_ed_app/views/profile.dart';
 import 'package:wash_ed_app/views/setup/setup_page.dart';
 
 void main() async {
@@ -58,8 +60,27 @@ class _AppMainState extends State<AppMain> {
     LearnPage(),
     PreparePage(),
     GamesPage(),
-    Center(child: Text('Profile page')),
+    ProfilePage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    tabSwitchRequest.addListener(_onTabSwitch);
+  }
+
+  @override
+  void dispose() {
+    tabSwitchRequest.removeListener(_onTabSwitch);
+    super.dispose();
+  }
+
+  void _onTabSwitch() {
+    final idx = tabSwitchRequest.value;
+    if (idx >= 0 && mounted) {
+      setState(() => _currentIndex = idx);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

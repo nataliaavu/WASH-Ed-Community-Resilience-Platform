@@ -1,87 +1,105 @@
 import 'package:flutter/material.dart';
 
-class SetupRolePage extends StatefulWidget {
-  const SetupRolePage({super.key});
+class SetupRolePage extends StatelessWidget {
+  final String selectedRole;
+  final ValueChanged<String> onRoleSelected;
 
-  @override
-  State<SetupRolePage> createState() => SetupRolePageState();
-}
+  const SetupRolePage({
+    super.key,
+    required this.selectedRole,
+    required this.onRoleSelected,
+  });
 
-class SetupRolePageState extends State<SetupRolePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFE3F2FD), Color(0xFFFFFDE7)],
-          ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFFCE4EC), Color(0xFFF3E5F5)],
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                const Text(
-                  "Welcome to\nKiko's Hub!",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF_1A45A0),
-                  ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 52),
+              const Text(
+                'Welcome to\nKiko\'s Hub!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A45A0),
+                  height: 1.2,
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  "Choose your role to start your\nlearning journey with Kiko.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.black87),
-                ),
-                const SizedBox(height: 40),
-                _buildRoleCard("I am a Student", Icons.school),
-                const SizedBox(height: 20),
-                _buildRoleCard("I am a Parent", Icons.supervisor_account),
-                const SizedBox(height: 20),
-                _buildRoleCard("I am an Educator", Icons.groups),
-              ],
-            ),
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'Choose your role to start your\nlearning journey with Kiko.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.black54),
+              ),
+              const SizedBox(height: 44),
+              _roleCard('I am an Educator', 'educator', Icons.groups),
+              const SizedBox(height: 18),
+              _roleCard('I am a Student', 'student', Icons.school),
+              const SizedBox(height: 18),
+              _roleCard('I am a Parent', 'parent', Icons.supervisor_account),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildRoleCard(String title, IconData icon) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+  Widget _roleCard(String title, String role, IconData icon) {
+    final selected = selectedRole == role;
+    return GestureDetector(
+      onTap: () => onRoleSelected(role),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 22),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: selected ? const Color(0xFFE91E8C) : Colors.transparent,
+            width: 2.5,
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundColor: Color(0xFF_E91E63),
-            child: Icon(icon, color: Colors.white, size: 30),
-          ),
-          const SizedBox(width: 16),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-        ],
+          boxShadow: [
+            BoxShadow(
+              color: selected
+                  ? const Color(0xFFE91E8C).withValues(alpha: 0.25)
+                  : Colors.black12,
+              blurRadius: 12,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: const Color(0xFFE91E63),
+              child: Icon(icon, color: Colors.white, size: 30),
+            ),
+            const SizedBox(width: 20),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: selected
+                    ? const Color(0xFFE91E8C)
+                    : const Color(0xFF1A1A2E),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
