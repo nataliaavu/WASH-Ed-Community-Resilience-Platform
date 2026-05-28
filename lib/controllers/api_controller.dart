@@ -43,12 +43,14 @@ class ApiController {
   // ── Weather Forecast (Meteosource) ───────────────────────────────────────
 
   Future<WeatherApiResponse> getForecast(
-      String municity, String province) async {
+      String municity, String province, {double? lat, double? lon}) async {
     final online = await isOnline();
     return _weatherRepo.getForecast(
       municity: municity,
       province: province,
       isOnline: online,
+      lat: lat,
+      lon: lon,
     );
   }
 

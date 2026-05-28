@@ -40,7 +40,7 @@ class MockFloodDataSource {
       longitude: 121.1029,
       severity: 'FLOOD_SEVERITY_WARNING',
       floodStatusCode: 'MODERATE',
-      waterLevel: 15.8,
+      waterLevel: 14.2,   // 94.7 % of alert — HIGH risk, not CRITICAL
       alertLevel: 15.0,
       issueTime: '2026-05-08T10:00:00+08:00',
       river: 'Marikina River',
@@ -53,7 +53,7 @@ class MockFloodDataSource {
       longitude: 121.0900,
       severity: 'FLOOD_SEVERITY_WATCH',
       floodStatusCode: 'ABOVE_NORMAL',
-      waterLevel: 12.1,
+      waterLevel: 8.2,    // 68.3 % of alert — MODERATE risk
       alertLevel: 12.0,
       issueTime: '2026-05-08T10:00:00+08:00',
       river: 'Marikina River',
@@ -66,7 +66,7 @@ class MockFloodDataSource {
       longitude: 121.1068,
       severity: 'FLOOD_SEVERITY_WARNING',
       floodStatusCode: 'MODERATE',
-      waterLevel: 4.2,
+      waterLevel: 3.1,    // 88.6 % of alert — HIGH risk, not CRITICAL
       alertLevel: 3.5,
       issueTime: '2026-05-08T10:00:00+08:00',
       river: 'Pasig-Marikina River',
@@ -93,7 +93,7 @@ class MockFloodDataSource {
       longitude: 121.0166,
       severity: 'FLOOD_SEVERITY_WATCH',
       floodStatusCode: 'ABOVE_NORMAL',
-      waterLevel: 6.8,
+      waterLevel: 5.0,    // 71.4 % of alert — MODERATE risk
       alertLevel: 7.0,
       issueTime: '2026-05-08T10:00:00+08:00',
       river: 'Angat River',
@@ -148,7 +148,7 @@ class MockFloodDataSource {
       longitude: 121.7269,
       severity: 'FLOOD_SEVERITY_WATCH',
       floodStatusCode: 'ABOVE_NORMAL',
-      waterLevel: 8.5,
+      waterLevel: 6.3,    // 70.0 % of alert — MODERATE risk
       alertLevel: 9.0,
       issueTime: '2026-05-08T10:00:00+08:00',
       river: 'Cagayan River',
@@ -162,7 +162,7 @@ class MockFloodDataSource {
       longitude: 123.1814,
       severity: 'FLOOD_SEVERITY_WATCH',
       floodStatusCode: 'ABOVE_NORMAL',
-      waterLevel: 5.5,
+      waterLevel: 4.3,    // 71.7 % of alert — MODERATE risk
       alertLevel: 6.0,
       issueTime: '2026-05-08T10:00:00+08:00',
       river: 'Bicol River',
@@ -218,7 +218,7 @@ class MockFloodDataSource {
       longitude: 124.6319,
       severity: 'FLOOD_SEVERITY_WATCH',
       floodStatusCode: 'ABOVE_NORMAL',
-      waterLevel: 7.2,
+      waterLevel: 5.6,    // 70.0 % of alert — MODERATE risk
       alertLevel: 8.0,
       issueTime: '2026-05-08T10:00:00+08:00',
       river: 'Cagayan de Oro River',
@@ -246,7 +246,7 @@ class MockFloodDataSource {
       longitude: 124.2464,
       severity: 'FLOOD_SEVERITY_WARNING',
       floodStatusCode: 'MODERATE',
-      waterLevel: 6.5,
+      waterLevel: 5.0,    // 90.9 % of alert — HIGH risk, not CRITICAL
       alertLevel: 5.5,
       issueTime: '2026-05-08T10:00:00+08:00',
       river: 'Mindanao River',

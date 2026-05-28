@@ -6,7 +6,7 @@ class AppConfig {
 
   // ── Database ───────────────────────────────────────────────────────────────
   static const String dbName = 'washedapp.db';
-  static const int dbVersion = 3;
+  static const int dbVersion = 4;
 
   static const String defaultMunicity = 'Bulacan';
   static const String defaultProvince = 'Bulacan';

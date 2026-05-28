@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wash_ed_app/controllers/api_controller.dart';
+import 'package:wash_ed_app/data/app_notifiers.dart';
 import 'package:wash_ed_app/data/database_helper.dart';
 import 'package:wash_ed_app/models/module_model.dart';
 
@@ -43,6 +44,7 @@ class _LearnPageState extends State<LearnPage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() => setState(() {}));
+    profileRoleVersion.addListener(_loadModules);
     _loadModules();
   }
 
@@ -60,6 +62,7 @@ class _LearnPageState extends State<LearnPage>
 
   @override
   void dispose() {
+    profileRoleVersion.removeListener(_loadModules);
     _tabController.dispose();
     super.dispose();
   }

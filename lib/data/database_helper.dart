@@ -4,6 +4,7 @@ import 'package:wash_ed_app/config/app_config.dart';
 import 'package:wash_ed_app/models/flood_status.dart';
 import 'package:wash_ed_app/models/module_model.dart';
 import 'package:wash_ed_app/models/squad_member.dart';
+import 'package:wash_ed_app/models/user_location.dart';
 import 'package:wash_ed_app/models/user_profile.dart';
 import 'package:wash_ed_app/models/weather_forecast.dart';
 
@@ -115,6 +116,15 @@ class DatabaseHelper {
       )
     ''');
 
+    await db.execute('''
+      CREATE TABLE user_locations (
+        id       INTEGER PRIMARY KEY AUTOINCREMENT,
+        label    TEXT NOT NULL,
+        municity TEXT NOT NULL,
+        province TEXT NOT NULL
+      )
+    ''');
+
     await _seedModules(db);
   }
 
@@ -153,6 +163,16 @@ class DatabaseHelper {
       // Replace old seed data with the new 12 role-split modules.
       await db.delete('learning_modules');
       await _seedModules(db);
+    }
+    if (oldVersion < 4) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS user_locations (
+          id       INTEGER PRIMARY KEY AUTOINCREMENT,
+          label    TEXT NOT NULL,
+          municity TEXT NOT NULL,
+          province TEXT NOT NULL
+        )
+      ''');
     }
   }
 
@@ -271,17 +291,24 @@ class DatabaseHelper {
     return rows.map(LearningModule.fromMap).toList();
   }
 
-  // userRole: 'student' | 'parent' → shows student PDFs
-  //           'educator'           → shows teacher PDFs
   Future<List<LearningModule>> getModulesByRole(String userRole) async {
     final db = await database;
-    final targetRole = userRole == 'educator' ? 'teacher' : 'student';
-    final rows = await db.query(
-      'learning_modules',
-      where: 'target_role = ?',
-      whereArgs: [targetRole],
-    );
-    return rows.map(LearningModule.fromMap).toList();
+    if (userRole == 'student') {
+      final rows = await db.query(
+        'learning_modules',
+        where: 'target_role = ?',
+        whereArgs: ['student'],
+      );
+      return rows.map(LearningModule.fromMap).toList();
+    } else {
+      // educator and parent see both student and teacher modules
+      final rows = await db.query(
+        'learning_modules',
+        where: 'target_role IN (?, ?)',
+        whereArgs: ['student', 'teacher'],
+      );
+      return rows.map(LearningModule.fromMap).toList();
+    }
   }
 
   Future<int> insertModule(LearningModule module) async {
@@ -425,5 +452,33 @@ class DatabaseHelper {
     final db = await database;
     final rows = await db.query('module_progress');
     return {for (final row in rows) row['module_id'] as int: Map.of(row)};
+  }
+
+  // ── User locations ────────────────────────────────────────────────────────
+
+  Future<List<UserLocation>> getUserLocations() async {
+    final db = await database;
+    final rows = await db.query('user_locations');
+    return rows.map(UserLocation.fromMap).toList();
+  }
+
+  Future<int> insertUserLocation(UserLocation loc) async {
+    final db = await database;
+    return db.insert('user_locations', loc.toMap());
+  }
+
+  Future<void> updateUserLocation(UserLocation loc) async {
+    final db = await database;
+    await db.update(
+      'user_locations',
+      loc.toMap(),
+      where: 'id = ?',
+      whereArgs: [loc.id],
+    );
+  }
+
+  Future<void> deleteUserLocation(int id) async {
+    final db = await database;
+    await db.delete('user_locations', where: 'id = ?', whereArgs: [id]);
   }
 }
