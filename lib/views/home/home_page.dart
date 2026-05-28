@@ -91,16 +91,19 @@ class _HomePageState extends State<HomePage> {
     if (_floodStatuses.isEmpty) return 'NO_FLOODING';
     return _floodStatuses
         .map((s) => s.severity)
-        .reduce((a, b) =>
-            _severityOrder.indexOf(a) >= _severityOrder.indexOf(b) ? a : b);
+        .reduce(
+          (a, b) =>
+              _severityOrder.indexOf(a) >= _severityOrder.indexOf(b) ? a : b,
+        );
   }
 
   FloodStatus? get _worstGauge {
     if (_floodStatuses.isEmpty) return null;
-    return _floodStatuses.reduce((a, b) =>
-        (a.waterLevel / a.alertLevel) >= (b.waterLevel / b.alertLevel)
-            ? a
-            : b);
+    return _floodStatuses.reduce(
+      (a, b) => (a.waterLevel / a.alertLevel) >= (b.waterLevel / b.alertLevel)
+          ? a
+          : b,
+    );
   }
 
   double get _riskRatio {
@@ -247,7 +250,8 @@ class _HomePageState extends State<HomePage> {
             ),
             Image(
               image: const AssetImage(
-                  'assets/wash-ed/WASHEd_logo_2022_og_no-shadow.png'),
+                'assets/wash-ed/WASHEd_logo_2022_og_no-shadow.png',
+              ),
               height: 50,
             ),
           ],
@@ -284,14 +288,29 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _buttonBox('Learning\nModules', screenWidth * 0.27,
-                            100, Icons.cast_for_education, tabIndex: 1),
+                        _buttonBox(
+                          'Learning\nModules',
+                          screenWidth * 0.27,
+                          100,
+                          Icons.cast_for_education,
+                          tabIndex: 1,
+                        ),
                         const SizedBox(width: 10),
-                        _buttonBox('Flood\nPrepare', screenWidth * 0.27, 100,
-                            Icons.checklist_sharp, tabIndex: 2),
+                        _buttonBox(
+                          'Flood\nPrepare',
+                          screenWidth * 0.27,
+                          100,
+                          Icons.checklist_sharp,
+                          tabIndex: 2,
+                        ),
                         const SizedBox(width: 10),
-                        _buttonBox('Play\nGames', screenWidth * 0.27, 100,
-                            Icons.gamepad_outlined, tabIndex: 3),
+                        _buttonBox(
+                          'Play\nGames',
+                          screenWidth * 0.27,
+                          100,
+                          Icons.gamepad_outlined,
+                          tabIndex: 3,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -327,8 +346,11 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 5),
           Row(
             children: [
-              const Icon(Icons.location_on_outlined,
-                  color: Colors.blue, size: 30),
+              const Icon(
+                Icons.location_on_outlined,
+                color: Colors.blue,
+                size: 30,
+              ),
               const SizedBox(width: 5),
               Flexible(
                 child: Text(
@@ -416,19 +438,19 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Text(_severityLabel,
-                        style: const TextStyle(fontSize: 16)),
+                    Text(_severityLabel, style: const TextStyle(fontSize: 16)),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Text(
                   _kikoTitle,
                   style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                Text(_kikoMessage,
-                    style: const TextStyle(fontSize: 12)),
+                Text(_kikoMessage, style: const TextStyle(fontSize: 12)),
               ],
             ),
           ),
@@ -457,11 +479,12 @@ class _HomePageState extends State<HomePage> {
     List<Widget> bubbles;
     if (hourlyList.isNotEmpty) {
       bubbles = hourlyList.take(5).map((h) {
-        final rainfallDesc = h.precipitationTotal == 0 || h.precipitationType == 'none'
+        final rainfallDesc =
+            h.precipitationTotal == 0 || h.precipitationType == 'none'
             ? h.weather.toUpperCase()
             : h.precipitationTotal >= 15
-                ? 'HEAVY RAINS'
-                : 'LIGHT RAINS';
+            ? 'HEAVY RAINS'
+            : 'LIGHT RAINS';
         final cloudDesc = h.weather.toUpperCase().replaceAll('_', ' ');
         return _bubble(
           '${h.temperature.round()}°',
@@ -472,7 +495,9 @@ class _HomePageState extends State<HomePage> {
       }).toList();
     } else {
       bubbles = List.generate(
-          5, (_) => _bubble(fallbackTemp, fallbackIcon, fallbackColor));
+        5,
+        (_) => _bubble(fallbackTemp, fallbackIcon, fallbackColor),
+      );
     }
 
     return Container(
@@ -490,9 +515,10 @@ class _HomePageState extends State<HomePage> {
           const Text(
             "Weather by Hour",
             style: TextStyle(
-                color: Colors.blue,
-                fontSize: 20,
-                fontWeight: FontWeight.bold),
+              color: Colors.blue,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -517,8 +543,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (time != null)
-            Text(time,
-                style: const TextStyle(fontSize: 9, color: Colors.grey)),
+            Text(time, style: const TextStyle(fontSize: 9, color: Colors.grey)),
           if (time != null) const SizedBox(height: 4),
           Icon(icon, color: iconColor, size: 22),
           const SizedBox(height: 4),
@@ -549,9 +574,10 @@ class _HomePageState extends State<HomePage> {
               const Text(
                 "Flood Risk",
                 style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.blue,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
                 _riskLabel,
@@ -596,10 +622,11 @@ class _HomePageState extends State<HomePage> {
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Safe",
-                  style: TextStyle(color: Colors.black, fontSize: 15)),
-              Text("Warning",
-                  style: TextStyle(fontSize: 15, color: Colors.black)),
+              Text("Safe", style: TextStyle(color: Colors.black, fontSize: 15)),
+              Text(
+                "Warning",
+                style: TextStyle(fontSize: 15, color: Colors.black),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -630,8 +657,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buttonBox(
-      String text, double width, double height, IconData icon,
-      {required int tabIndex}) {
+    String text,
+    double width,
+    double height,
+    IconData icon, {
+    required int tabIndex,
+  }) {
     return GestureDetector(
       onTap: () {
         tabSwitchRequest.value = -1;
