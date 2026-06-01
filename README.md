@@ -217,14 +217,14 @@ wash-ed-resilience-platform/
 ```
 
 ## 12. Contributors
-| Name | Role |
-|------|------|
-| Natalia Vu | Team Lead / Full Stack Developer |
-| Alyssa Guerrero | Business Analyst / Front End Developer|
-| Bidhan Battachan | Back End Developer / Tester |
-| Jin Feng | Back End Developer / Tester |
-| Matt Aducayen | Back End Developer |
-| William Lay | Front End Developer |
+| Name | Student ID | Role |
+|------|------|------|
+| Natalia Vu | | Team Lead / Full Stack Developer |
+| Alyssa Guerrero | 14287510 | Business Analyst / Front End Developer|
+| Bidhan Battachan | | Back End Developer / Tester |
+| Jin Feng | | Back End Developer / Tester |
+| Matt Aducayen | | Back End Developer |
+| William Lay | | Front End Developer |
 
 ## 13. Client
 Developed in collaboration with: **WASH Education Pty Ltd.**
