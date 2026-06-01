@@ -22,7 +22,7 @@ The platform will integrate hazard data from [API] to provide location-based flo
 - [6. Tech Stack](#6-tech-stack)
 - [7. Configuration / Environment Variables](#7-configuration--environment-variables)
 - [8. System Prerequisites](#8-system-prerequisites)
-- [9. Installation Instructions](#9-installation-instructions
+- [9. Installation Instructions](#9-installation-instructions)
   - [9.1 Clone the Repository](#91-clone-the-repository)
   - [9.2 Install Flutter Dependencies](#92-install-flutter-dependencies)
   - [9.3 Set up an Emulator](#93-set-up-an-emulator)
