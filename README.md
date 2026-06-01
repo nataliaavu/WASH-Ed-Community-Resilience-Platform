@@ -22,15 +22,18 @@ The platform will integrate hazard data from [API] to provide location-based flo
 - [6. Tech Stack](#6-tech-stack)
 - [7. Configuration / Environment Variables](#7-configuration--environment-variables)
 - [8. System Prerequisites](#8-system-prerequisites)
-- [9. Installation Instructions](#9-installation-instructions) THIS NEEDS UPDATING
+- [9. Installation Instructions](#9-installation-instructions
   - [9.1 Clone the Repository](#91-clone-the-repository)
   - [9.2 Install Flutter Dependencies](#92-install-flutter-dependencies)
-  - [9.3 Configure Environment Variables](#93-configure-environment-variables)
-  - [9.4 Run the App](#94-run-the-app)
+  - [9.3 Set up an Emulator](#93-set-up-an-emulator)
+  - [9.4 Configure Environment Variables](#94-configure-environment-variables)
+  - [9.5 Verify Flutter Setup](#95-verify-flutter-setup)
+  - [9.6 Run the App](#96-run-the-app)
 - [10. API Integrations](#10-api-integrations)
 - [11. Project Structure](#11-project-structure)
 - [12. Contributors](#12-contributors)
 - [13. Client](#13-client)
+- [14. License](#14-license)
 
 ## 1. Project Goals
 The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
@@ -81,6 +84,9 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 | Project Management | JIRA | Sprint planning and task tracking |
 
 ## 7. Configuration / Environment Variables
+1. Create a `.env ` file in WASH-Ed-Community-Resilience-Platform\server folder that is an exact copy of the `.env` example
+2. Add the Meteosource API key
+3. Leave the Google blank
 
 ## 8. System Prerequisites
 1. [Flutter SDK](https://docs.flutter.dev/install) - includes Dart SDK
@@ -105,16 +111,28 @@ flutter pub get
 ### 9.3 Set Up an Emulator
 To run the app you need an Android emulator:
 1. Open Android Studio -> Virtual Device Manager
-2. Click Create device and follow setup steps
+2. Click Create device and follow setup steps (Recommended: Pixel 6)
 3. Start emulator
 
-### 9.4 Verify Flutter is Set Up Correctly
-Run the following command and fix any issues flagged before continuing
+### 9.4 Configure Environment Variables
+1. Duplicate the `.env.example` file in the project root and rename it to `.env`
+2. Fill in your API Keys
+3. In the `.env` file, replace `your_meteosource_key_here` with the following API key `lvp6xiwacbnh7wnpc9o28av0vurteh5orv8mvu72`
+
+### 9.5 Verify Flutter Setup
+Run the following command and resolve any issues flagged before continuing
 ```
 flutter doctor
 ```
 
 ### 9.5 Run the App
+1. Open two terminals
+2. In the first terminal run:
+```
+cd server
+node index.js
+```
+3. In the second terminal run:
 ```
 flutter run
 ```
@@ -123,7 +141,8 @@ flutter run
 The app integreates with ____ APIs to deliver location-based flood warnings
 | Resource | URL |
 | -------- | ------ |
-| MeteoSource ? | ___ |
+| MeteoSource API Docs | meteosource.com/documentation |
+| MeteoSource Dashboard | meteosource.com/client |
 
 ## 11. Project Structure
 This is a Flutter project targeting Android and iOS
