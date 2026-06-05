@@ -245,6 +245,7 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations([.landscapeLeft, .landscapeRight]);
+    SystemChrome.setEnabledSystemUIMode(.immersive);
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -262,6 +263,7 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
   void dispose() {
     super.dispose();
     SystemChrome.setPreferredOrientations([.portraitUp, .portraitDown]);
+    SystemChrome.setEnabledSystemUIMode(.edgeToEdge);
   }
 
   @override
