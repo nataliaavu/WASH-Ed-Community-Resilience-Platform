@@ -36,14 +36,16 @@ const _games = [
     title: "Kiko's Flood Escape",
     description: 'Save Kiko and race to help him reach to safety!',
     thumbnailAsset: "assets/wash-ed/Kiko's Flood Escape.png",
-    url: 'https://wash-ed.itch.io/wash-ed-heroes-kiko-english',
+    url:
+        'https://html-classic.itch.zone/html/14755858/Wash-Ed-Interactive-Learning-Game-wash-heroes-english/Kiko\'s Flood Escape/index.html',
   ),
   _GameItem(
     title: "Kiko's Day",
     description:
         'Join Kiko throughout his day as he teaches proper hand hygiene!',
     thumbnailAsset: "assets/wash-ed/Kiko's Day Mini Games.png",
-    url: 'https://wash-ed.itch.io/kikos-day',
+    url:
+        'https://html-classic.itch.zone/html/15634034/KikosDayFinal/index.html',
   ),
 ];
 
