@@ -34,10 +34,13 @@ class _ModuleGroup {
 List<_ModuleGroup> _groupModules(List<LearningModule> modules) {
   final studentMods = modules.where((m) => m.targetRole == 'student').toList();
   final teacherMods = modules.where((m) => m.targetRole == 'teacher').toList();
-  return List.generate(studentMods.length, (i) => _ModuleGroup(
-    student: studentMods[i],
-    teacher: i < teacherMods.length ? teacherMods[i] : null,
-  ));
+  return List.generate(
+    studentMods.length,
+    (i) => _ModuleGroup(
+      student: studentMods[i],
+      teacher: i < teacherMods.length ? teacherMods[i] : null,
+    ),
+  );
 }
 
 // ── LearnPage ─────────────────────────────────────────────────────────────────
@@ -102,8 +105,8 @@ class _LearnPageState extends State<LearnPage>
                   children: [
                     _loading
                         ? const Center(
-                            child:
-                                CircularProgressIndicator(color: kPink))
+                            child: CircularProgressIndicator(color: kPink),
+                          )
                         : _ModuleListView(groups: _groups),
                     const _ResourcesTab(),
                   ],
@@ -127,8 +130,10 @@ class _ModuleListView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (groups.isEmpty) {
       return const Center(
-        child: Text('No modules found.',
-            style: TextStyle(color: kNavyText, fontSize: 16)),
+        child: Text(
+          'No modules found.',
+          style: TextStyle(color: kNavyText, fontSize: 16),
+        ),
       );
     }
     return CustomScrollView(
@@ -163,7 +168,8 @@ class _ModuleCard extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => PdfViewerPage(module: module, moduleNumber: moduleNumber),
+        builder: (_) =>
+            PdfViewerPage(module: module, moduleNumber: moduleNumber),
       ),
     );
   }
@@ -285,22 +291,26 @@ class _ResourcesTab extends StatelessWidget {
   static const List<Map<String, String>> _resources = [
     {
       'title': 'WASH-Ed',
-      'description': 'Explore our Learning Portal for videos and resources on clean water, handwashing, and staying healthy at school.',
+      'description':
+          'Explore our Learning Portal for videos and resources on clean water, handwashing, and staying healthy at school.',
       'url': 'https://www.wash-ed.org',
     },
     {
       'title': 'PAGASA Weather Forecasts',
-      'description': 'Access comprehensive weather forecasts, storm tracking, and typhoon updates directly from the national weather authority',
+      'description':
+          'Access comprehensive weather forecasts, storm tracking, and typhoon updates directly from the national weather authority',
       'url': 'https://bagong.pagasa.dost.gov.ph/',
     },
     {
       'title': 'DepEd WinS (WASH in Schools)',
-      'description': 'Find official WASH resources, guides, and tools to support schools',
+      'description':
+          'Find official WASH resources, guides, and tools to support schools',
       'url': 'https://wins.deped.gov.ph/',
     },
     {
       'title': 'NDRRMC Disaster Alerts',
-      'description': 'Stay informed about emergencies and how to keep your family safe',
+      'description':
+          'Stay informed about emergencies and how to keep your family safe',
       'url': 'https://ndrrmc.gov.ph/',
     },
   ];
@@ -622,23 +632,23 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
               ),
             )
           : _localPath == null
-              ? const Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircularProgressIndicator(color: kPink),
-                      SizedBox(height: 16),
-                      Text('Loading module...', style: TextStyle(color: kNavyText)),
-                    ],
-                  ),
-                )
-              : PDFView(
-                  filePath: _localPath!,
-                  enableSwipe: true,
-                  swipeHorizontal: false,
-                  autoSpacing: true,
-                  pageFling: true,
-                ),
+          ? const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(color: kPink),
+                  SizedBox(height: 16),
+                  Text('Loading module...', style: TextStyle(color: kNavyText)),
+                ],
+              ),
+            )
+          : PDFView(
+              filePath: _localPath!,
+              enableSwipe: true,
+              swipeHorizontal: false,
+              autoSpacing: true,
+              pageFling: true,
+            ),
     );
   }
 }

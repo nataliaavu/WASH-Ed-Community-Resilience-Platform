@@ -165,10 +165,7 @@ class _GameCard extends StatelessWidget {
             child: SizedBox(
               height: 160,
               width: double.infinity,
-              child: Image.asset(
-                game.thumbnailAsset,
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset(game.thumbnailAsset, fit: BoxFit.cover),
             ),
           ),
 
@@ -198,10 +195,8 @@ class _GameCard extends StatelessWidget {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => GameWebViewPage(
-                          title: game.title,
-                          url: game.url,
-                        ),
+                        builder: (_) =>
+                            GameWebViewPage(title: game.title, url: game.url),
                       ),
                     ),
                     icon: const Icon(Icons.play_arrow_rounded, size: 20),
