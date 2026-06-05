@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -243,6 +244,8 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([.landscapeLeft, .landscapeRight]);
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -253,6 +256,12 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    SystemChrome.setPreferredOrientations([.portraitUp, .portraitDown]);
   }
 
   @override
