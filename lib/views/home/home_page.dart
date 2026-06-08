@@ -243,14 +243,14 @@
         if (riskLevel == "low") { 
           boxColor = Color.fromARGB(255, 195, 235, 154);
           statusText = "All Clear";
-          messageText = "Everything is lookin safe right now!";
+          messageText = "Everything is looking safe right now!";
           kikoMessage = "Kiko checked and water levels are just right. Time to learn and play";
           image = AssetImage('assets/kiko/WashEd_kiko_sprite_thumbs-up.png');
         }
         else if (riskLevel == "medium") { 
           boxColor = Color.fromARGB(255, 249, 201, 110);
           statusText = "Be Alert";
-          messageText = "Water levels are rising sligtly";
+          messageText = "Water levels are rising slightly";
           kikoMessage = "Kiko noticed rising water levels. Stay cautious!";
           image = AssetImage('assets/kiko/WashEd_kiko_sprite_sad.png');
         }
@@ -263,6 +263,7 @@
         }
         
         return Container(
+          key: const Key('kiko-box'),
           padding: const EdgeInsets.all(12),
           decoration : BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -393,6 +394,7 @@
                 : Colors.red;
 
             return Container(
+              key: const Key('risk-box'),
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -415,6 +417,7 @@
                       ), 
                       Text(
                         riskLevel.toUpperCase(),
+                        key: const Key('risk-label'),
                         style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: riskLevel == "low"
                             ? Colors.green
@@ -443,6 +446,7 @@
                       Positioned(
                         left: 0,
                         child: Container(
+                          key: const Key('risk-bar-fill'),
                           width: barWidth, 
                           height: 28, 
                           decoration: BoxDecoration(
