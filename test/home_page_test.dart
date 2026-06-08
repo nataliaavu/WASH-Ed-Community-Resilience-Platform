@@ -133,7 +133,7 @@ void main() {
         ),
       ),
     );
-    final box = tester.widget<Container>(find.byType(Container).at(2));
+    final box = tester.widget<Container>(find.byKey(const Key('kiko-box')));
     final decoration = box.decoration as BoxDecoration;
     expect(decoration.color, Color.fromARGB(255, 195, 235, 154));
   });
