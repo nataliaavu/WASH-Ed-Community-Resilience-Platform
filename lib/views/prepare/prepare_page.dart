@@ -84,7 +84,7 @@ class _PreparePageState extends State<PreparePage> {
         margin: const EdgeInsets.fromLTRB(
             AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
         padding: const EdgeInsets.fromLTRB(20, AppSpacing.md, 20, AppSpacing.md),
-        decoration: AppDecorations.blueHeader(),
+        decoration: AppDecorations.blueHeader(radius: 18),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
