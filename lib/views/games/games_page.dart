@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-
-const Color kNavyText = Color(0xFF1A47C8);
-const Color kYellow = Color(0xFFFFCC00);
-const Color kPink = Color(0xFFE91E8C);
-const Color kCardBg = Color(0xFFFFFFFF);
-
-const LinearGradient kPageGradient = LinearGradient(
-  begin: Alignment.topLeft,
-  end: Alignment.bottomRight,
-  colors: [Color(0xFFE8D5F0), Color(0xFFFFE4D6)],
-);
 
 // ── Game data ─────────────────────────────────────────────────────────────────
 
@@ -56,17 +44,22 @@ class GamesPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(gradient: kPageGradient),
+        decoration: const BoxDecoration(gradient: AppGradients.pageBg),
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(child: _HeaderBanner()),
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                ),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, i) => Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
                       child: _GameCard(game: _games[i]),
                     ),
                     childCount: _games.length,
@@ -87,38 +80,26 @@ class _HeaderBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [Color(0xFF1A47C8), Color(0xFF1A47C8)],
-        ),
-        borderRadius: BorderRadius.circular(18),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.lg - 4,
+        AppSpacing.md,
+        0,
       ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      decoration: AppDecorations.blueHeader(radius: 18),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Ready to\nPlay?',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    height: 1.1,
-                  ),
-                ),
-                const SizedBox(height: 8),
+                Text('Ready to\nPlay?', style: AppTextStyles.h1White),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   'Join Kiko and help keep\neveryone safe!',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.85),
-                    height: 1.4,
+                  style: AppTextStyles.bodyWhite.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.85),
                   ),
                 ),
               ],
@@ -144,24 +125,14 @@ class _GameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: kCardBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kYellow, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: kYellow.withValues(alpha: 1),
-            blurRadius: 6,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
+      decoration: AppDecorations.yellowBorderCard(radius: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Thumbnail ──────────────────────────────
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+            borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(AppRadius.md)),
             child: SizedBox(
               height: 160,
               width: double.infinity,
@@ -174,22 +145,21 @@ class _GameCard extends StatelessWidget {
 
           // ── Info + button ──────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              14,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  game.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: kNavyText,
-                  ),
-                ),
-                const SizedBox(height: 4),
+                Text(game.title, style: AppTextStyles.h3),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   game.description,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textMid),
                 ),
                 const SizedBox(height: 14),
                 SizedBox(
@@ -207,16 +177,13 @@ class _GameCard extends StatelessWidget {
                     icon: const Icon(Icons.play_arrow_rounded, size: 20),
                     label: const Text('Play Now'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: kNavyText,
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppColors.brandPink,
+                      foregroundColor: AppColors.white,
                       padding: const EdgeInsets.symmetric(vertical: 13),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.sm + 2),
                       ),
-                      textStyle: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      textStyle: AppTextStyles.button,
                     ),
                   ),
                 ),
@@ -271,10 +238,10 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
         appBar: AppBar(
           title: Text(
             widget.title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
           ),
-          backgroundColor: kPink,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.brandPink,
+          foregroundColor: AppColors.white,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context),
@@ -284,7 +251,9 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
           children: [
             WebViewWidget(controller: _controller),
             if (_loading)
-              const Center(child: CircularProgressIndicator(color: kPink)),
+              const Center(
+                child: CircularProgressIndicator(color: AppColors.brandPink),
+              ),
           ],
         ),
       ),

@@ -479,7 +479,7 @@ class _MascotHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Let's Learn", style: AppTextStyles.h2White),
+                Text("Let's Learn", style: AppTextStyles.h1White),
                 const SizedBox(height: AppSpacing.xs + 2),
                 Text(
                   'Discover how to stay safe, dry, and prepared for floods with our fun lessons!',
