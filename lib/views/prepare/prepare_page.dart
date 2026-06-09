@@ -118,7 +118,7 @@ class _PreparePageState extends State<PreparePage> {
   // ── SECTION LABEL ───────────────────────────────────────────────────────────
 
   Widget _buildSectionLabel(String title) {
-    return Text(title, style: AppTextStyles.sectionLabel);
+    return Text(title, style: AppTextStyles.h3Blue); // "Need help?.." and "Quick Safety Steps" Text
   }
 
   // ── CALL FOR HELP CARDS ─────────────────────────────────────────────────────
