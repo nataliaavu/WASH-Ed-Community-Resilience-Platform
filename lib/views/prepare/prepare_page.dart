@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wash_ed_app/config/app_theme.dart';
+import 'package:wash_ed_app/views/profile/personal_details_page.dart';
 
 class PreparePage extends StatefulWidget {
   const PreparePage({super.key});
@@ -9,7 +10,6 @@ class PreparePage extends StatefulWidget {
 }
 
 class _PreparePageState extends State<PreparePage> {
-  // Checklist items - content to be confirmed by WASH-Ed
   final List<Map<String, dynamic>> _checklist = [
     {'label': 'Water and snacks for 3 days', 'checked': false},
     {'label': 'Important documents sealed in a plastic bag', 'checked': false},
@@ -17,7 +17,6 @@ class _PreparePageState extends State<PreparePage> {
     {'label': 'Power bank for your phone (if you have one)', 'checked': false},
   ];
 
-  // Safety steps - content to be confirmed by WASH-Ed
   final List<String> _safetySteps = [
     'Tell a trusted adult near you straight away',
     'Grab your emergency bag if you can, and move to higher ground',
@@ -52,12 +51,13 @@ class _PreparePageState extends State<PreparePage> {
                           _buildEmergencyServicesCard(),
                           const SizedBox(height: AppSpacing.sm),
                           _buildEmergencyContactsCard(),
+                          const SizedBox(height: AppSpacing.sm),
+                          _buildViewContactsButton(context),
                           const SizedBox(height: AppSpacing.lg),
                           _buildSectionLabel('Quick Safety Steps'),
                           const SizedBox(height: AppSpacing.sm),
                           ..._safetySteps.asMap().entries.map(
-                                (e) =>
-                                    _buildSafetyStepCard(e.key + 1, e.value),
+                                (e) => _buildSafetyStepCard(e.key + 1, e.value),
                               ),
                           const SizedBox(height: AppSpacing.lg),
                           _buildChecklistSection(),
@@ -118,7 +118,7 @@ class _PreparePageState extends State<PreparePage> {
   // ── SECTION LABEL ───────────────────────────────────────────────────────────
 
   Widget _buildSectionLabel(String title) {
-    return Text(title, style: AppTextStyles.h3Blue); // "Need help?.." and "Quick Safety Steps" Text
+    return Text(title, style: AppTextStyles.h3Blue);
   }
 
   // ── CALL FOR HELP CARDS ─────────────────────────────────────────────────────
@@ -145,18 +145,18 @@ class _PreparePageState extends State<PreparePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Emergency Services',
-                    style: AppTextStyles.body.copyWith(
-                        fontWeight: FontWeight.bold)),
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.bold)),
                 Text('Police, Fire, Ambulance',
-                    style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textMid)),
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.textMid)),
               ],
             ),
           ),
           Text(
             '911',
-            style: AppTextStyles.h1White.copyWith(
-                color: AppColors.errorRed, fontSize: 30),
+            style: AppTextStyles.h1White
+                .copyWith(color: AppColors.errorRed, fontSize: 30),
           ),
         ],
       ),
@@ -185,23 +185,69 @@ class _PreparePageState extends State<PreparePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Philippine Red Cross',
-                    style: AppTextStyles.body.copyWith(
-                        fontWeight: FontWeight.bold)),
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.bold)),
                 Text('Disaster Relief',
-                    style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textMid)),
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.textMid)),
               ],
             ),
           ),
           Text(
             '143',
-            style: AppTextStyles.h1White.copyWith(
-                color: AppColors.errorRed, fontSize: 30),
+            style: AppTextStyles.h1White
+                .copyWith(color: AppColors.errorRed, fontSize: 30),
           ),
         ],
       ),
     );
   }
+
+  // ── VIEW EMERGENCY CONTACTS BUTTON ──────────────────────────────────────────
+
+  Widget _buildViewContactsButton(BuildContext context) {
+  return GestureDetector(
+    onTap: () => Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PersonalDetailsPage()),
+    ),
+    child: Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: 14),
+      decoration: AppDecorations.emergencyCard,
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: const BoxDecoration(
+              color: AppColors.errorRed,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.contacts_outlined,
+                color: AppColors.white, size: 18),
+          ),
+          const SizedBox(width: AppSpacing.sm + 4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('View Emergency Contacts',
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.bold)),
+                Text('Your saved safety squad',
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.textMid)),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right,
+              color: AppColors.errorRed, size: 24),
+        ],
+      ),
+    ),
+  );
+}
 
   // ── QUICK SAFETY STEPS ──────────────────────────────────────────────────────
 
@@ -249,7 +295,7 @@ class _PreparePageState extends State<PreparePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Checklist', style: AppTextStyles.sectionLabel),
+          Text('Checklist', style: AppTextStyles.h3Blue),
           const SizedBox(height: AppSpacing.sm),
           Text(
             'Pack a bag you can carry quickly if you need to leave home fast',
