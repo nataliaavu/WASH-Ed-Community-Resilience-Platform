@@ -94,10 +94,10 @@ class _HeaderBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Ready to\nPlay?', style: AppTextStyles.h1White),
+                Text('Ready to Play?', style: AppTextStyles.h1White),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  'Join Kiko and help keep\neveryone safe!',
+                  'Join Kiko and help keep everyone safe!',
                   style: AppTextStyles.bodyWhite.copyWith(
                     color: AppColors.white.withValues(alpha: 0.85),
                   ),

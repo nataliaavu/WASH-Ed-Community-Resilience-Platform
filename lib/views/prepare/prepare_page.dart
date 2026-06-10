@@ -95,7 +95,7 @@ class _PreparePageState extends State<PreparePage> {
                   Text('Flood\nGuidance', style: AppTextStyles.h1White),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    "Wherever you are, \n here's what to do!",
+                    "Wherever you are, here's what to do!",
                     style: AppTextStyles.bodyWhite,
                   ),
                 ],

@@ -403,8 +403,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       width: screenWidth,
       constraints: const BoxConstraints(minHeight: 160),
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.sm, AppSpacing.md),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.lg),
         color: _severityBgColor,
@@ -435,15 +434,15 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(width: AppSpacing.sm),
                     Text(_severityLabel,
                         style: AppTextStyles.h3.copyWith(
-                            fontWeight: FontWeight.normal)),
+                            fontWeight: FontWeight.normal, fontSize: 18)),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(_kikoTitle,
-                    style: AppTextStyles.bodySmall.copyWith(
+                    style: AppTextStyles.body.copyWith(
                         fontWeight: FontWeight.bold)),
                 const SizedBox(height: AppSpacing.sm),
-                Text(_kikoMessage, style: AppTextStyles.caption),
+                Text(_kikoMessage, style: AppTextStyles.bodySmall),
               ],
             ),
           ),

@@ -54,7 +54,14 @@ class _LearnPageState extends State<LearnPage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() => setState(() {}));
-    profileRoleVersion.addListener(_loadModules);
+    profileRoleVersion.addListener(_onRoleChanged);
+    _loadModules();
+  }
+
+  // Called when profileRoleVersion changes — resets loading state first
+  // so the module list rebuilds correctly after a role switch.
+  void _onRoleChanged() {
+    setState(() => _loading = true);
     _loadModules();
   }
 
@@ -72,7 +79,7 @@ class _LearnPageState extends State<LearnPage>
 
   @override
   void dispose() {
-    profileRoleVersion.removeListener(_loadModules);
+    profileRoleVersion.removeListener(_onRoleChanged);
     _tabController.dispose();
     super.dispose();
   }
@@ -470,8 +477,7 @@ class _MascotHeader extends StatelessWidget {
         AppSpacing.md,
         AppSpacing.sm,
       ),
-      padding: const EdgeInsets.symmetric(
-          horizontal: 20, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: AppDecorations.blueHeader(radius: AppRadius.lg),
       child: Row(
         children: [
