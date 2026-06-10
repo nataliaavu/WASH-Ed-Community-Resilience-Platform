@@ -5,6 +5,7 @@ import 'package:wash_ed_app/data/database_helper.dart';
 import 'package:wash_ed_app/models/squad_member.dart';
 import 'package:wash_ed_app/models/user_profile.dart';
 import 'package:wash_ed_app/repositories/firebase_user_repository.dart';
+import 'package:wash_ed_app/config/name_validator.dart';
 
 class PersonalDetailsPage extends StatefulWidget {
   const PersonalDetailsPage({super.key});
@@ -51,7 +52,16 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
   }
 
   Future<void> _saveName() async {
-    if (_profile == null || _nameCtrl.text.trim().isEmpty) return;
+    if (_profile == null) return;
+
+    // Validate name using shared NameValidator
+    final nameError = NameValidator.validate(_nameCtrl.text);
+    if (nameError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(nameError)),
+      );
+      return;
+    }
     setState(() => _saving = true);
     final updated = UserProfile(
       id: _profile!.id,
