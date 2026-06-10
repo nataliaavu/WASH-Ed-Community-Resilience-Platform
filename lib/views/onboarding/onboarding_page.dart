@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -27,7 +28,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     List<Widget> onboardingPages = [
       _buildOnboardingPage(
-        "Welcome to Kiko's Hub!",
+        "Welcome to \nKiko's Hub!",
         "A safe place to learn, play, and stay prepared for the rising tides",
         Image.asset("assets/kiko/washed-kiko_sprite_get-started_00_wave-welcome.png"),
         "",
@@ -57,6 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ];
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: PageView(
         controller: _pageViewController,
         onPageChanged: _onPageChanged,
@@ -76,7 +78,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       Navigator.pushNamedAndRemoveUntil(context, "/setup", (_) => false);
       return;
     }
-
     _pageViewController.animateToPage(
       index,
       duration: const Duration(milliseconds: 400),
@@ -92,61 +93,99 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     String nextButtonText,
   ) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFE3F2FD), Color(0xFFFFFDE7)],
-        ),
-      ),
+      decoration: const BoxDecoration(gradient: AppGradients.onboarding),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsetsGeometry.symmetric(
-            vertical: 10,
-            horizontal: 40,
-          ),
-          child: Column(
-            children: <Widget>[
-              Spacer(),
-              image,
-              Padding(
-                padding: const EdgeInsetsGeometry.symmetric(
-                  horizontal: 30,
-                  vertical: 10,
-                ),
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFF1A47C8),
-                    fontSize: 28,
-                    fontWeight: FontWeight(1000),
-                    height: 0,
-                  ),
-                ),
+        child: Column(
+          children: [
+            // ── Spacer pushes content to vertical centre ───────────────────
+            const Spacer(flex: 2),
+
+            // ── Kiko image ─────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              child: image,
+            ),
+
+            const SizedBox(height: AppSpacing.lg),
+
+            // ── Title ──────────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.h1Blue,
               ),
-              Text(
+            ),
+
+            const SizedBox(height: AppSpacing.sm),
+
+            // ── Body text ──────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              child: Text(
                 body,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFF1A1A2E),
-                  fontSize: 18,
-                  height: 0,
-                ),
+                style: AppTextStyles.body,
               ),
-              NavigationButtons(
-                currentPageIndex: _currentPageIndex,
-                onUpdateCurrentPageIndex: _onUpdateCurrentPageIndex,
-                backButtonText: backButtonText,
-                nextButtonText: nextButtonText,
-              ),
-            ],
-          ),
+            ),
+
+            // ── Spacer balances space below text ───────────────────────────
+            const Spacer(flex: 2),
+
+            // ── Progress dots ──────────────────────────────────────────────
+            _ProgressDots(
+              total: 4,
+              current: _currentPageIndex,
+            ),
+
+            // ── Navigation buttons ─────────────────────────────────────────
+            NavigationButtons(
+              currentPageIndex: _currentPageIndex,
+              onUpdateCurrentPageIndex: _onUpdateCurrentPageIndex,
+              backButtonText: backButtonText,
+              nextButtonText: nextButtonText,
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+// ── Progress dots ─────────────────────────────────────────────────────────────
+
+class _ProgressDots extends StatelessWidget {
+  final int total;
+  final int current;
+
+  const _ProgressDots({required this.total, required this.current});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(total, (index) {
+          final isActive = index == current;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            width: isActive ? 24 : 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: isActive ? AppColors.brandPink : AppColors.border,
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+// ── Navigation buttons ────────────────────────────────────────────────────────
 
 class NavigationButtons extends StatelessWidget {
   const NavigationButtons({
@@ -164,53 +203,61 @@ class NavigationButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: refactor colors into theme
-    // final colorScheme = Theme.of(context).colorScheme;
-
     return Padding(
-      padding: EdgeInsets.all(40),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.xl,
+        AppSpacing.sm,
+        AppSpacing.xl,
+        AppSpacing.lg,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           if (backButtonText != "") ...[
             TextButton(
-              style: const ButtonStyle(
-                minimumSize: WidgetStatePropertyAll(Size(80, 40)),
-                shape: WidgetStatePropertyAll(
+              style: ButtonStyle(
+                minimumSize: const WidgetStatePropertyAll(Size(80, 44)),
+                shape: const WidgetStatePropertyAll(
                   RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(AppRadius.sm)),
                   ),
                 ),
-                backgroundColor: WidgetStatePropertyAll(Color(0xFFDDDDDF)),
-                foregroundColor: WidgetStatePropertyAll(Color(0xFF1A1A2E)),
+                backgroundColor:
+                    WidgetStatePropertyAll(Colors.grey.shade200),
+                foregroundColor:
+                    const WidgetStatePropertyAll(AppColors.textDark),
               ),
               onPressed: () {
                 if (currentPageIndex > 0) {
                   onUpdateCurrentPageIndex(currentPageIndex - 1);
                 }
               },
-              child: Text(backButtonText),
+              child: Text(backButtonText, style: AppTextStyles.button),
             ),
           ],
 
-          if (backButtonText != "" && nextButtonText != "") ...[Spacer()],
+          if (backButtonText != "" && nextButtonText != "") ...[
+            const Spacer()
+          ],
 
           if (nextButtonText != "") ...[
             TextButton(
               style: const ButtonStyle(
-                minimumSize: WidgetStatePropertyAll(Size(80, 40)),
+                minimumSize: WidgetStatePropertyAll(Size(80, 44)),
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(AppRadius.sm)),
                   ),
                 ),
-                backgroundColor: WidgetStatePropertyAll(Color(0xFFE8177A)),
-                foregroundColor: WidgetStatePropertyAll(Color(0xFFF7F8FC)),
+                backgroundColor: WidgetStatePropertyAll(AppColors.brandPink),
+                foregroundColor: WidgetStatePropertyAll(AppColors.offWhite),
               ),
               onPressed: () {
                 onUpdateCurrentPageIndex(currentPageIndex + 1);
               },
-              child: Text(nextButtonText),
+              child: Text(nextButtonText, style: AppTextStyles.button),
             ),
           ],
         ],

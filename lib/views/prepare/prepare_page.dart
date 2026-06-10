@@ -235,7 +235,7 @@ class _PreparePageState extends State<PreparePage> {
                 Text('View Emergency Contacts',
                     style: AppTextStyles.body
                         .copyWith(fontWeight: FontWeight.bold)),
-                Text('Your saved safety squad',
+                Text('Your saved Safety Squad',
                     style: AppTextStyles.caption
                         .copyWith(color: AppColors.textMid)),
               ],
