@@ -551,7 +551,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
       appBar: AppBar(
         title: Text(
           'Module ${widget.moduleNumber}: ${widget.module.title}',
-          style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
+          style: AppTextStyles.h2White.copyWith(fontSize: 15),
         ),
         backgroundColor: AppColors.brandPink,
         foregroundColor: AppColors.white,

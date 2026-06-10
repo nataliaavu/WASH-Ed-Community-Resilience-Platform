@@ -77,7 +77,15 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        // Still load the name even if weather/flood API fails
+        final profile = await _db.getUserProfile();
+        setState(() {
+          _userName = profile?.name ?? '';
+          _loading = false;
+        });
+      }
+
     }
   }
 
@@ -240,7 +248,8 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
+      appBar: AppBar( // Blue rectangle at top of page
+        toolbarHeight: MediaQuery.of(context).size.height * 0.08,
         // AppBar background and foreground come from AppBarTheme in app_theme.dart
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
