@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
 import 'package:wash_ed_app/data/app_notifiers.dart';
 import 'package:wash_ed_app/data/database_helper.dart';
 import 'package:wash_ed_app/models/squad_member.dart';
@@ -32,6 +33,10 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
     _nameCtrl.dispose();
     super.dispose();
   }
+
+  // ── Data logic — untouched ────────────────────────────────────────────────
+  // _load, _saveName, _showContactDialog, _deleteContact are identical to
+  // the original. Only visual styling has changed.
 
   Future<void> _load() async {
     final profile = await _db.getUserProfile();
@@ -72,7 +77,8 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
 
   void _showContactDialog({SquadMember? existing, int? index}) {
     final heroCtrl = TextEditingController(text: existing?.heroName ?? '');
-    final phoneCtrl = TextEditingController(text: existing?.phoneNumber ?? '');
+    final phoneCtrl =
+        TextEditingController(text: existing?.phoneNumber ?? '');
 
     showDialog(
       context: context,
@@ -86,10 +92,11 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
               decoration: const InputDecoration(labelText: 'Name'),
               textCapitalization: TextCapitalization.words,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: phoneCtrl,
-              decoration: const InputDecoration(labelText: 'Phone number'),
+              decoration:
+                  const InputDecoration(labelText: 'Phone number'),
               keyboardType: TextInputType.phone,
             ),
           ],
@@ -101,8 +108,8 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE91E8C),
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.brandPink,
+              foregroundColor: AppColors.white,
             ),
             onPressed: () async {
               if (heroCtrl.text.trim().isEmpty) return;
@@ -138,184 +145,217 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFFCE4EC), Color(0xFFF3E5F5)],
-          ),
-        ),
+        decoration: const BoxDecoration(gradient: AppGradients.profileBg),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // ── Back button ─────────────────────────────────────────────
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.arrow_back_ios,
-                      size: 16, color: Color(0xFF1A45A0)),
-                  label: const Text('Back',
-                      style: TextStyle(
-                          color: Color(0xFF1A45A0),
-                          fontWeight: FontWeight.w600)),
+                      size: 16, color: AppColors.brandBlue),
+                  label: Text(
+                    'Back',
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.brandBlue,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+
+              // ── Title ───────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.xs,
+                ),
                 child: Text(
                   'Personal Details',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A45A0),
-                  ),
+                  style: AppTextStyles.h1Blue.copyWith(fontSize: 30),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.lg - 4),
+
+              // ── Scrollable content ───────────────────────────────────────
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg - 4),
                   child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Name',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Color(0xFF1A45A0)),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _nameCtrl,
-                    textCapitalization: TextCapitalization.words,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── Name field ───────────────────────────────────────
+                      Text(
+                        'Name',
+                        style: AppTextStyles.body.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.brandBlue,
+                        ),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _saving ? null : _saveName,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE91E8C),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: _saving
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Text('Save'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Emergency Contacts',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Color(0xFF1A45A0)),
-                ),
-                TextButton.icon(
-                  onPressed: () => _showContactDialog(),
-                  icon: const Icon(Icons.add, size: 16,
-                      color: Color(0xFF1A45A0)),
-                  label: const Text('Add New',
-                      style: TextStyle(
-                          color: Color(0xFF1A45A0), fontSize: 13)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (_squad.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Center(
-                  child: Text('No emergency contacts yet.',
-                      style: TextStyle(color: Colors.grey)),
-                ),
-              ),
-            ..._squad.asMap().entries.map((entry) {
-              final i = entry.key;
-              final m = entry.value;
-              return Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: const Color(0xFFE91E8C),
-                      radius: 22,
-                      child: Text(
-                        m.heroName.isNotEmpty
-                            ? m.heroName[0].toUpperCase()
-                            : '?',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: AppSpacing.sm),
+                      Row(
                         children: [
-                          Text(m.heroName,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 2),
-                          Text(m.phoneNumber,
-                              style: const TextStyle(
-                                  color: Colors.grey, fontSize: 13)),
+                          Expanded(
+                            child: TextField(
+                              controller: _nameCtrl,
+                              textCapitalization: TextCapitalization.words,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: AppColors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(AppRadius.md),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding:
+                                    const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.md,
+                                  vertical: 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          ElevatedButton(
+                            onPressed: _saving ? null : _saveName,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.brandPink,
+                              foregroundColor: AppColors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg - 4,
+                                vertical: 14,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.md),
+                              ),
+                            ),
+                            child: _saving
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppColors.white),
+                                  )
+                                : const Text('Save'),
+                          ),
                         ],
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.edit_outlined,
-                          color: Color(0xFF1A45A0), size: 20),
-                      onPressed: () =>
-                          _showContactDialog(existing: m, index: i),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline,
-                          color: Colors.red, size: 20),
-                      onPressed: () => _deleteContact(i),
-                    ),
-                  ],
-                ),
-              );
-            }),
-                  ],
+                      const SizedBox(height: 32),
+
+                      // ── Emergency contacts ───────────────────────────────
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Emergency Contacts',
+                            style: AppTextStyles.body.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.brandBlue,
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () => _showContactDialog(),
+                            icon: const Icon(Icons.add,
+                                size: 16, color: AppColors.brandBlue),
+                            label: Text(
+                              'Add New',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.brandBlue),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+
+                      if (_squad.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                            child: Text(
+                              'No emergency contacts yet.',
+                              style: AppTextStyles.body.copyWith(
+                                  color: AppColors.textMid),
+                            ),
+                          ),
+                        ),
+
+                      // ── Squad member cards ───────────────────────────────
+                      ..._squad.asMap().entries.map((entry) {
+                        final i = entry.key;
+                        final m = entry.value;
+                        return Container(
+                          margin: const EdgeInsets.only(
+                              bottom: AppSpacing.sm),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.sm,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.md),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: AppColors.brandPink,
+                                radius: 22,
+                                child: Text(
+                                  m.heroName.isNotEmpty
+                                      ? m.heroName[0].toUpperCase()
+                                      : '?',
+                                  style: AppTextStyles.h3.copyWith(
+                                      color: AppColors.white),
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      m.heroName,
+                                      style: AppTextStyles.body.copyWith(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      m.phoneNumber,
+                                      style: AppTextStyles.caption,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined,
+                                    color: AppColors.brandBlue, size: 20),
+                                onPressed: () => _showContactDialog(
+                                    existing: m, index: i),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline,
+                                    color: AppColors.errorRed, size: 20),
+                                onPressed: () => _deleteContact(i),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ),
-            ),
             ],
           ),
         ),
