@@ -362,7 +362,6 @@ class _ExitButtonState extends State<ExitButton>
                       color: Colors.white,
                       fontSize: 14,
                       decoration: .none,
-                      // TODO: add font
                     ),
                   ),
                 ),

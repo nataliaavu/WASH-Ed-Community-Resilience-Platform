@@ -84,9 +84,7 @@ class _HomePageState extends State<HomePage> {
     if (mounted) setState(() => _userName = profile?.name ?? '');
   }
 
-  // ── Computed getters ─────────────────────────────────────────────────────────
-  // NOTE: these getters return dynamic colours driven by API flood/weather data.
-  // They are intentionally NOT replaced with AppColors tokens.
+  // ── Computed getters (weather-based proxy flood risk) ───────────────────────
 
   String get _proxyRisk => _weather?.data.floodRisk ?? 'Low';
 
