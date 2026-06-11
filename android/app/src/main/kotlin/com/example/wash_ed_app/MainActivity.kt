@@ -1,4 +1,4 @@
-package com.example.wash_ed_app
+package com.washedteam.kikoshub
 
 import io.flutter.embedding.android.FlutterActivity
 
