@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PreparePage extends StatefulWidget {
   const PreparePage({super.key});
@@ -8,6 +9,33 @@ class PreparePage extends StatefulWidget {
 }
 
 class _PreparePageState extends State<PreparePage> {
+
+  Future<void> _callNumber(String number) async {
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Confirm Call"),
+        content: Text("Are you sure you want to call $number?"),
+        actions: [
+          TextButton(
+            onPressed: () async{
+              Navigator.pop(context);
+              final Uri uri = Uri(scheme: 'tel', path: number);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Could not launch phone dialer')),
+                );
+              }
+            }, 
+            child: const Text("Call"),
+          ),
+        ]
+      )
+    ); 
+  }
   // Checklist items - content to be confirmed by WASH-Ed
   final List<Map<String, dynamic>> _checklist = [
     {'label': 'Water and snacks for 3 days', 'checked': false,},
@@ -54,9 +82,19 @@ class _PreparePageState extends State<PreparePage> {
                         children: [
                           _buildSectionLabel('Need help? Call now'),
                           const SizedBox(height: 10),
-                          _buildEmergencyServicesCard(),
-                          const SizedBox(height: 10),
-                          _buildEmergencyContactsCard(),
+                          
+                        InkWell(
+                          onTap: () => _callNumber('911'),
+                          child: _buildEmergencyServicesCard(),
+                        ),
+
+                        const SizedBox(height: 10),
+                        
+                        InkWell(
+                          onTap: () => _callNumber('143'),
+                          child: _buildEmergencyContactsCard(),
+                        ),
+
                           const SizedBox(height: 24),
                           _buildSectionLabel('Quick Safety Steps'),
                           const SizedBox(height: 10),
