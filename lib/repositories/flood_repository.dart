@@ -23,6 +23,7 @@ class FloodRepository {
     double lng = AppConfig.defaultLng,
     double radiusKm = AppConfig.defaultRadiusKm,
   }) async {
+    if (!AppConfig.googleFloodApiEnabled) return [];
     if (!isOnline) return _fromCacheOrMock(lat, lng, radiusKm);
 
     try {
@@ -41,6 +42,7 @@ class FloodRepository {
     double lng = AppConfig.defaultLng,
     double radiusKm = AppConfig.defaultRadiusKm,
   }) async {
+    if (!AppConfig.googleFloodApiEnabled) return [];
     if (!isOnline) return _mock.getFlashFloods(lat, lng, radiusKm);
 
     try {

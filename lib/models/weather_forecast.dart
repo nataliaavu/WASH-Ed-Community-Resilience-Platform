@@ -11,6 +11,7 @@ class WeatherForecast {
   final int humidity;
   final double windSpeed;
   final String windDirection;
+  final int precipitationProbability;
 
   const WeatherForecast({
     required this.date,
@@ -25,7 +26,26 @@ class WeatherForecast {
     required this.humidity,
     required this.windSpeed,
     required this.windDirection,
+    this.precipitationProbability = 0,
   });
+
+  String get floodRisk {
+    final desc = rainfallDesc.toUpperCase();
+    final isStorm = desc.contains('THUNDER') ||
+        desc.contains('STORM') ||
+        desc.contains('TYPHOON') ||
+        desc.contains('TORRENTIAL');
+    if (rainfallTotal >= 30 || windSpeed >= 60 || isStorm ||
+        (rainfallTotal >= 15 && precipitationProbability >= 70)) {
+      return 'High';
+    }
+    if (rainfallTotal >= 7.5 ||
+        (rainfallTotal >= 2.5 && precipitationProbability >= 50) ||
+        precipitationProbability >= 70) {
+      return 'Medium';
+    }
+    return 'Low';
+  }
 
   factory WeatherForecast.fromJson(Map<String, dynamic> json) {
     return WeatherForecast(
@@ -41,6 +61,7 @@ class WeatherForecast {
       humidity:      (json['humidity'] as num).toInt(),
       windSpeed:     (json['wind_speed'] as num).toDouble(),
       windDirection: json['wind_direction'] as String,
+      precipitationProbability: (json['precipitation_probability'] as num?)?.toInt() ?? 0,
     );
   }
 
