@@ -38,7 +38,7 @@ The platform will integrate hazard data from [API] to provide location-based flo
 ## 1. Project Goals
 The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 - Deliver accessible and engaging WASH education for children aged 6–12 and their families
-- Provide real-time flood alerts and hazard information through integration with official government data sources (Gov API TBA) or an alternative adequate API
+- Provide real-time flood alerts and hazard information through integration with Philippine weather API's
 - Support family emergency preparedness via practical tools such as checklists and evacuation guidance
 - Create an intuitive, child-friendly user experience leveraging the Kiko Carabao character
 - Ensure usability in low-connectivity environments, including offline access to essential content
@@ -53,12 +53,12 @@ The proposed Minimum Viable Product (MVP) aims to achieve the following outcomes
 - Local government units
 
 ## 3. Features of App
-- Location based flood alerts
+- Location based flood alerts, and hourly weather
 - WASH Education Modules featuring Kiko Carabao
 - User account types
-- Offline functionality for core content
+- Offline functionality for learning modules
 - Flood preparedness checklists and evacuation guidance
-- Direct links to official hazard monitoring websites
+- Direct links to official hazard monitoring, and important websites
 - Interactive mini games for WASH learning
 
 ## 4. Non Functional Requirements
@@ -117,7 +117,7 @@ To run the app you need an Android emulator:
 ### 9.4 Configure Environment Variables
 1. Duplicate the `.env.example` file in the project root and rename it to `.env`
 2. Fill in your API Keys
-3. In the `.env` file, replace `your_meteosource_key_here` with the following API key `lvp6xiwacbnh7wnpc9o28av0vurteh5orv8mvu72`
+3. In the `.env` file, replace `your_meteosource_key_here` with the API key found in WashEd MeteoSource dashboard
 
 ### 9.5 Verify Flutter Setup
 Run the following command and resolve any issues flagged before continuing
@@ -125,7 +125,7 @@ Run the following command and resolve any issues flagged before continuing
 flutter doctor
 ```
 
-### 9.5 Run the App
+### 9.6 Run the App
 1. Open two terminals
 2. In the first terminal run:
 ```
@@ -138,7 +138,7 @@ flutter run
 ```
 
 ## 10. API Integrations
-The app integreates with ____ APIs to deliver location-based flood warnings
+The app integreates with MeteoSource APIs to deliver location-based flood warnings
 | Resource | URL |
 | -------- | ------ |
 | MeteoSource API Docs | meteosource.com/documentation |
@@ -147,38 +147,87 @@ The app integreates with ____ APIs to deliver location-based flood warnings
 ## 11. Project Structure
 This is a Flutter project targeting Android and iOS
 ```
-wash-ed-resilience-platform/
-├── android/                        # Android platform files
+wash-ed-community-resilience-platform/
+├── android/
 │   ├── app/
-│   │   └── src/
-│   │       └── build.gradle.kts
+│   │   ├── src/
+│   │   │   ├── debug/
+│   │   │   │   └── AndroidManifest.xml
+│   │   │   ├── main/
+│   │   │   │   ├── kotlin/com/example/wash_ed_app/
+│   │   │   │   │   └── MainActivity.kt
+│   │   │   │   ├── res/
+│   │   │   │   │   ├── drawable/
+│   │   │   │   │   ├── drawable-v21/
+│   │   │   │   │   ├── mipmap-hdpi/
+│   │   │   │   │   ├── mipmap-mdpi/
+│   │   │   │   │   ├── mipmap-xhdpi/
+│   │   │   │   │   ├── mipmap-xxhdpi/
+│   │   │   │   │   ├── mipmap-xxxhdpi/
+│   │   │   │   │   ├── values/
+│   │   │   │   │   └── values-night/
+│   │   │   │   └── AndroidManifest.xml
+│   │   │   └── profile/
+│   │   │       └── AndroidManifest.xml
+│   │   ├── build.gradle.kts
+│   │   └── google-services.json
 │   ├── gradle/wrapper/
 │   │   └── gradle-wrapper.properties
 │   ├── build.gradle.kts
 │   ├── gradle.properties
 │   └── settings.gradle.kts
 │
-├── assets/                         # Static assets bundled with the app
-│   ├── kiko/                       # Kiko Carabao character sprites
+├── assets/
+│   ├── kiko/                           # Kiko Carabao character sprites
 │   │   ├── WashEd_kiko_sprite_base.png
 │   │   ├── WashEd_kiko_sprite_cheer.png
 │   │   ├── WashEd_kiko_sprite_sad.png
 │   │   ├── WashEd_kiko_sprite_side-jump.png
 │   │   ├── WashEd_kiko_sprite_stress.png
 │   │   ├── WashEd_kiko_sprite_thumbs-up.png
-│   │   └── washed-carabao_sprite_defeat.png
-│   └── wash-ed/                    # WASH-Ed branding and logo assets
-│       ├── WASHEd_logo_2022_icon_drop-shadow.png
-│       ├── WASHEd_logo_2022_icon_no-shadow.png
-│       ├── WASHEd_logo_2022_og_drop-shadow.png
-│       ├── WASHEd_logo_2022_og_no-shadow.png
-│       ├── WASHEd_logo_2022_one-text_drop-shadow.png
-│       ├── WASHEd_logo_2022_one-text_no-shadow.png
-│       ├── WASHEd_logo_2022_two-text_drop-shadow.png
-│       ├── WASHEd_logo_2022_two-text_no-shadow.png
-│       └── masy-x-washed_badge-samples_v1.png
+│   │   ├── washed-carabao_sprite_defeat.png
+│   │   ├── washed-kiko_sprite_games-ready-to-play.png
+│   │   ├── washed-kiko_sprite_get-started_00_wave-welcome.png
+│   │   ├── washed-kiko_sprite_get-started_01_learn-discover.png
+│   │   ├── washed-kiko_sprite_get-started_02_stay-safe-realtime-updates.png
+│   │   ├── washed-kiko_sprite_get-started_03_get-alerts.png
+│   │   ├── washed-kiko_sprite_learn-modules-resources.png
+│   │   └── washed-kiko_sprite_whats-your-name.png
+│   ├── logos/                          # Sponsor and partner logos
+│   │   ├── burger-point.jpeg
+│   │   ├── connel-griffin.jpeg
+│   │   ├── dep-ed.jpeg
+│   │   └── grundfos.jpeg
+│   ├── pdfs/                           # WASH education module PDFs
+│   │   ├── student/                    # Student-facing modules
+│   │   │   ├── MOD-1 - Water Resources and Accessibility - Educator (v2.0).pdf
+│   │   │   ├── MOD-2 - Water Safety & Health - Educator (v2.0).pdf
+│   │   │   ├── MOD-3 - Water Sustainability - Educator (v2.0).pdf
+│   │   │   ├── MOD-4 - Sanitation - Educator (v2.0).pdf
+│   │   │   ├── MOD-5 - Hand Hygiene - Educator (v2.0).pdf
+│   │   │   └── MOD-6 - Disinfection & Other Hygienic Practices - Educator (v2.0).pdf
+│   │   └── teacher/                    # Teacher/facilitator modules
+│   │       ├── MOD-1 - Water Resources and Accessibility - Facilitator (v2.0).pdf
+│   │       ├── MOD-2 - Water Safety & Health - Facilitator (v2.0).pdf
+│   │       ├── MOD-3 - Water Sustainability - Facilitator (v2.0).pdf
+│   │       ├── MOD-4 - Sanitation - Facilitator (v2.0).pdf
+│   │       ├── MOD-5 - Hand Hygiene - Facilitator (v2.0).pdf
+│   │       └── MOD-6 - Disinfection & Other Hygienic Practices - Facilitator (v2.0).pdf
+│   ├── wash-ed/                        # WASH-Ed branding and logo assets
+│   │   ├── Kiko's Day Mini Games.png
+│   │   ├── Kiko's Flood Escape.png
+│   │   ├── WASHEd_logo_2022_icon_drop-shadow.png
+│   │   ├── WASHEd_logo_2022_icon_no-shadow.png
+│   │   ├── WASHEd_logo_2022_og_drop-shadow.png
+│   │   ├── WASHEd_logo_2022_og_no-shadow.png
+│   │   ├── WASHEd_logo_2022_one-text_drop-shadow.png
+│   │   ├── WASHEd_logo_2022_one-text_no-shadow.png
+│   │   ├── WASHEd_logo_2022_two-text_drop-shadow.png
+│   │   ├── WASHEd_logo_2022_two-text_no-shadow.png
+│   │   └── masy-x-washed_badge-samples_v1.png
+│   └── UI_Workflow.png
 │
-├── ios/                            # iOS platform files
+├── ios/
 │   ├── Flutter/
 │   │   ├── AppFrameworkInfo.plist
 │   │   ├── Debug.xcconfig
@@ -197,41 +246,79 @@ wash-ed-resilience-platform/
 │       ├── Runner-Bridging-Header.h
 │       └── SceneDelegate.swift
 │
-├── lib/                            # Main Flutter/Dart source code
-│   ├── models/
-│   │   └── weather_api.dart        # Weather/flood API data models
-│   ├── views/
+├── lib/                                # Main Flutter/Dart source code
+│   ├── config/
+│   │   └── app_config.dart             # App-wide configuration
+│   ├── controllers/
+│   │   └── api_controller.dart         # API request handling
+│   ├── data/                           # Data sources and local storage
+│   │   ├── app_notifiers.dart
+│   │   ├── database_helper.dart        # SQLite database helper
+│   │   ├── http_flood_data_source.dart
+│   │   ├── http_weather_data_source.dart
+│   │   ├── mock_flood_data_source.dart
+│   │   ├── philippine_location_coords.dart
+│   │   └── philippine_locations.dart
+│   ├── models/                         # Data models
+│   │   ├── flood_status.dart
+│   │   ├── module_model.dart
+│   │   ├── squad_member.dart
+│   │   ├── user_location.dart
+│   │   ├── user_profile.dart
+│   │   ├── weather_api.dart
+│   │   └── weather_forecast.dart
+│   ├── repositories/                   # Data access layer
+│   │   ├── firebase_modules_repository.dart
+│   │   ├── firebase_user_repository.dart
+│   │   ├── flood_repository.dart
+│   │   ├── modules_repository.dart
+│   │   └── weather_repository.dart
+│   ├── views/                          # UI screens
+│   │   ├── games/
+│   │   │   └── games_page.dart         # Mini-games page
 │   │   ├── home/
-│   │   │   └── home_page.dart      # Main dashboard with weather widget and flood risk
+│   │   │   └── home_page.dart          # Dashboard, weather widget, flood risk
 │   │   ├── learn/
-│   │   │   └── learn_page.dart     # WASH education modules and resources
+│   │   │   └── learn_page.dart         # WASH education modules and resources
 │   │   ├── onboarding/
-│   │   │   ├── init_page.dart      # App entry / splash
-│   │   │   └── onboarding_page.dart # Welcome carousel screens
+│   │   │   ├── init_page.dart          # App entry / splash
+│   │   │   └── onboarding_page.dart    # Welcome carousel screens
 │   │   ├── prepare/
-│   │   │   └── prepare_page.dart   # Flood guidance, checklists, emergency contacts
-│   │   └── setup/
-│   │       ├── setup_page.dart     # Setup flow coordinator
-│   │       ├── setup_role_page.dart    # Student / Educator role selection
-│   │       ├── setup_name_page.dart   # User name entry
-│   │       ├── setup_location_page.dart # Province/municipality selection
-│   │       └── setup_squad_page.dart  # Safety squad / emergency contacts setup
-│   ├── widgets/
-│   │   ├── modules_list.dart       # Reusable learning modules list widget
-│   │   └── weather_widget.dart     # Weather and flood risk display widget
-│   ├── home.dart                   # Home shell / bottom nav coordinator
-│   ├── profile.dart                # Profile screen (details, account type, locations, language)
-│   └── main.dart                   # App entry point
+│   │   │   └── prepare_page.dart       # Flood guidance, checklists, emergency contacts
+│   │   ├── profile/
+│   │   │   ├── account_type_page.dart  # Student / Educator / Parent toggle
+│   │   │   ├── manage_locations_page.dart
+│   │   │   └── personal_details_page.dart
+│   │   ├── setup/
+│   │   │   ├── setup_location_page.dart
+│   │   │   ├── setup_name_page.dart
+│   │   │   ├── setup_page.dart
+│   │   │   ├── setup_role_page.dart
+│   │   │   └── setup_squad_page.dart
+│   │   ├── home.dart                   # Bottom nav shell
+│   │   └── profile.dart                # Profile screen
+│   ├── widgets/                        # Reusable UI components
+│   │   ├── flood_widget.dart
+│   │   ├── modules_list.dart
+│   │   └── weather_widget.dart
+│   └── main.dart                       # App entry point
+│
+├── server/                             # Backend proxy server (Node.js)
+│   ├── index.js
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── .env.example
+│   └── .gitignore
 │
 ├── test/
-│   └── widget_test.dart            # Widget tests
+│   └── widget_test.dart
 │
 ├── .gitignore
 ├── .metadata
 ├── analysis_options.yaml
 ├── devtools_options.yaml
 ├── pubspec.lock
-├── pubspec.yaml                    # Flutter dependencies and asset declarations
+├── pubspec.yaml                        # Flutter dependencies and asset declarations
 └── README.md
 ```
 
