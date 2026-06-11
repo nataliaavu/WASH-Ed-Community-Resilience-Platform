@@ -194,7 +194,8 @@ class _HomePageState extends State<HomePage> {
             ),
             Image(
               image: const AssetImage(
-                  'assets/wash-ed/WASHEd_logo_2022_og_no-shadow.png'),
+                'assets/wash-ed/WASHEd_logo_2022_og_no-shadow.png',
+              ),
               height: 50,
             ),
           ],
@@ -231,14 +232,29 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _buttonBox('Learning\nModules', screenWidth * 0.27,
-                            100, Icons.cast_for_education, tabIndex: 1),
+                        _buttonBox(
+                          'Learning\nModules',
+                          screenWidth * 0.27,
+                          100,
+                          Icons.cast_for_education,
+                          tabIndex: 1,
+                        ),
                         const SizedBox(width: 10),
-                        _buttonBox('Flood\nPrepare', screenWidth * 0.27, 100,
-                            Icons.checklist_sharp, tabIndex: 2),
+                        _buttonBox(
+                          'Flood\nPrepare',
+                          screenWidth * 0.27,
+                          100,
+                          Icons.checklist_sharp,
+                          tabIndex: 2,
+                        ),
                         const SizedBox(width: 10),
-                        _buttonBox('Play\nGames', screenWidth * 0.27, 100,
-                            Icons.gamepad_outlined, tabIndex: 3),
+                        _buttonBox(
+                          'Play\nGames',
+                          screenWidth * 0.27,
+                          100,
+                          Icons.gamepad_outlined,
+                          tabIndex: 3,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -464,19 +480,19 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Text(_severityLabel,
-                        style: const TextStyle(fontSize: 16)),
+                    Text(_severityLabel, style: const TextStyle(fontSize: 16)),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Text(
                   _kikoTitle,
                   style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                Text(_kikoMessage,
-                    style: const TextStyle(fontSize: 12)),
+                Text(_kikoMessage, style: const TextStyle(fontSize: 12)),
               ],
             ),
           ),
@@ -505,11 +521,12 @@ class _HomePageState extends State<HomePage> {
     List<Widget> bubbles;
     if (hourlyList.isNotEmpty) {
       bubbles = hourlyList.take(5).map((h) {
-        final rainfallDesc = h.precipitationTotal == 0 || h.precipitationType == 'none'
+        final rainfallDesc =
+            h.precipitationTotal == 0 || h.precipitationType == 'none'
             ? h.weather.toUpperCase()
             : h.precipitationTotal >= 15
-                ? 'HEAVY RAINS'
-                : 'LIGHT RAINS';
+            ? 'HEAVY RAINS'
+            : 'LIGHT RAINS';
         final cloudDesc = h.weather.toUpperCase().replaceAll('_', ' ');
         return _bubble(
           '${h.temperature.round()}°',
@@ -520,7 +537,9 @@ class _HomePageState extends State<HomePage> {
       }).toList();
     } else {
       bubbles = List.generate(
-          5, (_) => _bubble(fallbackTemp, fallbackIcon, fallbackColor));
+        5,
+        (_) => _bubble(fallbackTemp, fallbackIcon, fallbackColor),
+      );
     }
 
     return Container(
@@ -538,9 +557,10 @@ class _HomePageState extends State<HomePage> {
           const Text(
             "Weather by Hour",
             style: TextStyle(
-                color: Colors.blue,
-                fontSize: 20,
-                fontWeight: FontWeight.bold),
+              color: Colors.blue,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -565,8 +585,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (time != null)
-            Text(time,
-                style: const TextStyle(fontSize: 9, color: Colors.grey)),
+            Text(time, style: const TextStyle(fontSize: 9, color: Colors.grey)),
           if (time != null) const SizedBox(height: 4),
           Icon(icon, color: iconColor, size: 22),
           const SizedBox(height: 4),
@@ -596,9 +615,10 @@ class _HomePageState extends State<HomePage> {
               const Text(
                 "Flood Risk",
                 style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.blue,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
                 _riskLabel,
@@ -645,10 +665,11 @@ class _HomePageState extends State<HomePage> {
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Safe",
-                  style: TextStyle(color: Colors.black, fontSize: 15)),
-              Text("Warning",
-                  style: TextStyle(fontSize: 15, color: Colors.black)),
+              Text("Safe", style: TextStyle(color: Colors.black, fontSize: 15)),
+              Text(
+                "Warning",
+                style: TextStyle(fontSize: 15, color: Colors.black),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -679,8 +700,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buttonBox(
-      String text, double width, double height, IconData icon,
-      {required int tabIndex}) {
+    String text,
+    double width,
+    double height,
+    IconData icon, {
+    required int tabIndex,
+  }) {
     return GestureDetector(
       onTap: () {
         tabSwitchRequest.value = -1;
@@ -741,9 +766,9 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _sponsorLogo('Foundation'),
-              _sponsorLogo('Khuda Family\nFoundation'),
-              _sponsorLogo('Reckitt'),
+              _sponsorLogo('burger-point'),
+              _sponsorLogo('connel-griffin'),
+              _sponsorLogo('grundfos'),
             ],
           ),
           const SizedBox(height: 12),
@@ -756,7 +781,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 8),
-          _sponsorLogo('DepEd'),
+          _sponsorLogo('dep-ed'),
         ],
       ),
     );
@@ -769,11 +794,7 @@ class _HomePageState extends State<HomePage> {
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(
-        name,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 10, color: Colors.black87),
-      ),
+      child: Image.asset("assets/logos/$name.jpeg", width: 60),
     );
   }
 }

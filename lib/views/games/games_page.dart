@@ -3,7 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const Color kNavyText = Color(0xFF1A237E);
+const Color kNavyText = Color(0xFF1A47C8);
 const Color kYellow = Color(0xFFFFCC00);
 const Color kPink = Color(0xFFE91E8C);
 const Color kCardBg = Color(0xFFFFFFFF);
@@ -93,7 +93,7 @@ class _HeaderBanner extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [Color(0xFF1A237E), Color(0xFF283593)],
+          colors: [Color(0xFF1A47C8), Color(0xFF1A47C8)],
         ),
         borderRadius: BorderRadius.circular(18),
       ),
@@ -125,7 +125,7 @@ class _HeaderBanner extends StatelessWidget {
             ),
           ),
           Image.asset(
-            'assets/kiko/WashEd_kiko_sprite_cheer.png',
+            'assets/kiko/washed-kiko_sprite_games-ready-to-play.png',
             height: 150,
             fit: BoxFit.contain,
           ),
