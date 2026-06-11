@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wash_ed_app/config/app_theme.dart';
+import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // ── Game data ─────────────────────────────────────────────────────────────────
@@ -136,10 +137,7 @@ class _GameCard extends StatelessWidget {
             child: SizedBox(
               height: 160,
               width: double.infinity,
-              child: Image.asset(
-                game.thumbnailAsset,
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset(game.thumbnailAsset, fit: BoxFit.cover),
             ),
           ),
 
@@ -168,10 +166,8 @@ class _GameCard extends StatelessWidget {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => GameWebViewPage(
-                          title: game.title,
-                          url: game.url,
-                        ),
+                        builder: (_) =>
+                            GameWebViewPage(title: game.title, url: game.url),
                       ),
                     ),
                     icon: const Icon(Icons.play_arrow_rounded, size: 20),
@@ -215,6 +211,8 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([.landscapeLeft, .landscapeRight]);
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -225,6 +223,12 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    SystemChrome.setPreferredOrientations([.portraitUp, .portraitDown]);
   }
 
   @override

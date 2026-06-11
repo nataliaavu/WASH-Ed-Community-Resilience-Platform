@@ -529,7 +529,14 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([.landscapeLeft, .landscapeRight]);
     _loadPdf();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    SystemChrome.setPreferredOrientations([.portraitUp, .portraitDown]);
   }
 
   Future<void> _loadPdf() async {
