@@ -13,7 +13,6 @@ class PreparePage extends StatefulWidget {
 class _PreparePageState extends State<PreparePage> {
 
   Future<void> _callNumber(String number) async {
-
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -21,7 +20,7 @@ class _PreparePageState extends State<PreparePage> {
         content: Text("Are you sure you want to call $number?"),
         actions: [
           TextButton(
-            onPressed: () async{
+            onPressed: () async {
               Navigator.pop(context);
               final Uri uri = Uri(scheme: 'tel', path: number);
               if (await canLaunchUrl(uri)) {
@@ -31,14 +30,14 @@ class _PreparePageState extends State<PreparePage> {
                   const SnackBar(content: Text('Could not launch phone dialer')),
                 );
               }
-            }, 
+            },
             child: const Text("Call"),
           ),
-        ]
-      )
-    ); 
+        ],
+      ),
+    );
   }
-  // Checklist items - content to be confirmed by WASH-Ed
+
   final List<Map<String, dynamic>> _checklist = [
     {'label': 'Water and snacks for 3 days', 'checked': false},
     {'label': 'Important documents sealed in a plastic bag', 'checked': false},
@@ -77,9 +76,15 @@ class _PreparePageState extends State<PreparePage> {
                         children: [
                           _buildSectionLabel('Need help? Call now'),
                           const SizedBox(height: AppSpacing.sm),
-                          _buildEmergencyServicesCard(),
+                          InkWell(
+                            onTap: () => _callNumber('911'),
+                            child: _buildEmergencyServicesCard(),
+                          ),
                           const SizedBox(height: AppSpacing.sm),
-                          _buildEmergencyContactsCard(),
+                          InkWell(
+                            onTap: () => _callNumber('143'),
+                            child: _buildEmergencyContactsCard(),
+                          ),
                           const SizedBox(height: AppSpacing.sm),
                           _buildViewContactsButton(context),
                           const SizedBox(height: AppSpacing.lg),
@@ -235,48 +240,48 @@ class _PreparePageState extends State<PreparePage> {
   // ── VIEW EMERGENCY CONTACTS BUTTON ──────────────────────────────────────────
 
   Widget _buildViewContactsButton(BuildContext context) {
-  return GestureDetector(
-    onTap: () => Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const PersonalDetailsPage()),
-    ),
-    child: Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md, vertical: 14),
-      decoration: AppDecorations.emergencyCard,
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: const BoxDecoration(
-              color: AppColors.errorRed,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.contacts_outlined,
-                color: AppColors.white, size: 18),
-          ),
-          const SizedBox(width: AppSpacing.sm + 4),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('View Emergency Contacts',
-                    style: AppTextStyles.body
-                        .copyWith(fontWeight: FontWeight.bold)),
-                Text('Your saved Safety Squad',
-                    style: AppTextStyles.caption
-                        .copyWith(color: AppColors.textMid)),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right,
-              color: AppColors.errorRed, size: 24),
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PersonalDetailsPage()),
       ),
-    ),
-  );
-}
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md, vertical: 14),
+        decoration: AppDecorations.emergencyCard,
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: const BoxDecoration(
+                color: AppColors.errorRed,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.contacts_outlined,
+                  color: AppColors.white, size: 18),
+            ),
+            const SizedBox(width: AppSpacing.sm + 4),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('View Emergency Contacts',
+                      style: AppTextStyles.body
+                          .copyWith(fontWeight: FontWeight.bold)),
+                  Text('Your saved Safety Squad',
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.textMid)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right,
+                color: AppColors.errorRed, size: 24),
+          ],
+        ),
+      ),
+    );
+  }
 
   // ── QUICK SAFETY STEPS ──────────────────────────────────────────────────────
 
