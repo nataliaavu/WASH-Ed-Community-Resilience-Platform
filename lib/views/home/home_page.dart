@@ -1,510 +1,757 @@
-    import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_config.dart';
+import 'package:wash_ed_app/controllers/api_controller.dart';
+import 'package:wash_ed_app/data/app_notifiers.dart';
+import 'package:wash_ed_app/data/database_helper.dart';
+import 'package:wash_ed_app/data/philippine_location_coords.dart';
+import 'package:wash_ed_app/models/flood_status.dart';
+import 'package:wash_ed_app/models/weather_forecast.dart';
 
-    class HomePage extends StatefulWidget {
-      final Function(int) onTabSelected;
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
-      const HomePage({
-        super.key,
-        required this.onTabSelected,
-      });
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
 
-      State<HomePage> createState() => _HomePageState();
+class _HomePageState extends State<HomePage> {
+  final ApiController _api = ApiController();
+  final DatabaseHelper _db = DatabaseHelper();
+  WeatherApiResponse? _weather;
+  List<FloodStatus> _floodStatuses = [];
+  bool _loading = true;
+  String _userName = '';
+
+  static const _severityOrder = [
+    'NO_FLOODING',
+    'FLOOD_SEVERITY_WATCH',
+    'FLOOD_SEVERITY_WARNING',
+    'FLOOD_SEVERITY_EMERGENCY',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    homeLocationVersion.addListener(_loadData);
+    profileNameVersion.addListener(_reloadName);
+    _loadData();
+  }
+
+  @override
+  void dispose() {
+    homeLocationVersion.removeListener(_loadData);
+    profileNameVersion.removeListener(_reloadName);
+    super.dispose();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final profile = await _db.getUserProfile();
+      final municity = (profile?.municity.isNotEmpty == true)
+          ? profile!.municity
+          : AppConfig.defaultMunicity;
+      final province = (profile?.province.isNotEmpty == true)
+          ? profile!.province
+          : AppConfig.defaultProvince;
+
+      final coords = philippineLocationCoords[municity];
+      final weatherFuture = _api.getForecast(
+        municity,
+        province,
+        lat: coords?.$1,
+        lon: coords?.$2,
+      );
+      final floodFuture = coords != null
+          ? _api.getFloodStatuses(lat: coords.$1, lng: coords.$2)
+          : _api.getFloodStatuses();
+      final weather = await weatherFuture;
+      final floods = await floodFuture;
+
+      if (mounted) {
+        setState(() {
+          _userName = profile?.name ?? '';
+          _weather = weather;
+          _floodStatuses = floods;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
     }
+  }
 
-    class _HomePageState extends State<HomePage> {
-      String riskLevel = "low";
+  Future<void> _reloadName() async {
+    final profile = await _db.getUserProfile();
+    if (mounted) setState(() => _userName = profile?.name ?? '');
+  }
 
-      String selectedCity = "Bulacan";
+  // ── Computed getters ────────────────────────────────────────────────────────
 
-      final List<String> cities = [
-        "Bulacan",
-        "Quezon City",
-        "Davao City", 
-        "Manila",
-        "Caloocan City", 
-        "Taguig City",
-      ];
+  String get _worstSeverity {
+    if (_floodStatuses.isEmpty) return 'NO_FLOODING';
+    return _floodStatuses
+        .map((s) => s.severity)
+        .reduce(
+          (a, b) =>
+              _severityOrder.indexOf(a) >= _severityOrder.indexOf(b) ? a : b,
+        );
+  }
 
-      @override
-      Widget build(BuildContext context) {
-        final screen = MediaQuery.of(context).size;
-        final screenWidth = screen.width;
-        return Scaffold(
-          appBar: AppBar(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    'Hello Miguel!',
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Flexible(
-                  child: Image.asset(
-                    'assets/wash-ed/WASHEd_logo_2022_og_no-shadow.png',
-                    height: screen.height * 0.06,
-                    fit: BoxFit.contain,
-                  )
-                )
-              ]
-            ),
-            bottom: PreferredSize( //Thin yellow line below the AppBar
-              preferredSize: const Size.fromHeight(2),
-              child: Container(
-                color: Colors.yellow,
-                height: 3,
+  FloodStatus? get _worstGauge {
+    if (_floodStatuses.isEmpty) return null;
+    return _floodStatuses.reduce(
+      (a, b) => (a.waterLevel / a.alertLevel) >= (b.waterLevel / b.alertLevel)
+          ? a
+          : b,
+    );
+  }
+
+  double get _riskRatio {
+    final g = _worstGauge;
+    if (g == null || g.alertLevel == 0) return 0;
+    return g.waterLevel / g.alertLevel;
+  }
+
+  Color get _severityBgColor {
+    switch (_worstSeverity) {
+      case 'FLOOD_SEVERITY_WATCH':
+        return const Color(0xFFFFF9C4);
+      case 'FLOOD_SEVERITY_WARNING':
+        return const Color(0xFFFFE0B2);
+      case 'FLOOD_SEVERITY_EMERGENCY':
+        return const Color(0xFFFFCDD2);
+      default:
+        return const Color(0xFFC3EB9A);
+    }
+  }
+
+  Color get _dotColor {
+    switch (_worstSeverity) {
+      case 'FLOOD_SEVERITY_WATCH':
+        return const Color(0xFFFFC107);
+      case 'FLOOD_SEVERITY_WARNING':
+        return const Color(0xFFFF9800);
+      case 'FLOOD_SEVERITY_EMERGENCY':
+        return const Color(0xFFF44336);
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String get _severityLabel {
+    switch (_worstSeverity) {
+      case 'FLOOD_SEVERITY_WATCH':
+        return 'Flood Watch';
+      case 'FLOOD_SEVERITY_WARNING':
+        return 'Flood Warning';
+      case 'FLOOD_SEVERITY_EMERGENCY':
+        return 'Emergency Alert';
+      default:
+        return 'All Clear';
+    }
+  }
+
+  String get _kikoTitle {
+    switch (_worstSeverity) {
+      case 'FLOOD_SEVERITY_WATCH':
+        return 'Water levels are being monitored.';
+      case 'FLOOD_SEVERITY_WARNING':
+        return 'Water levels are rising near you!';
+      case 'FLOOD_SEVERITY_EMERGENCY':
+        return 'Dangerous flood levels detected!';
+      default:
+        return 'Everything is looking safe right now!';
+    }
+  }
+
+  String get _kikoMessage {
+    switch (_worstSeverity) {
+      case 'FLOOD_SEVERITY_WATCH':
+        return 'Kiko says keep an eye out! Check your go-bag just in case.';
+      case 'FLOOD_SEVERITY_WARNING':
+        return 'Kiko says stay alert and prepare your safety bag. Call your squad!';
+      case 'FLOOD_SEVERITY_EMERGENCY':
+        return 'Kiko says follow evacuation instructions and call your squad contacts immediately!';
+      default:
+        return 'Kiko checked and water levels are just right. Time to learn and play!';
+    }
+  }
+
+  String get _riskLabel {
+    final r = _riskRatio;
+    if (r <= 0.5) return 'LOW';
+    if (r <= 0.8) return 'MODERATE';
+    if (r < 1.0) return 'HIGH';
+    return 'CRITICAL';
+  }
+
+  String get _kikoSprite {
+    switch (_worstSeverity) {
+      case 'FLOOD_SEVERITY_WATCH':
+        return 'assets/kiko/WashEd_kiko_sprite_side-jump.png';
+      case 'FLOOD_SEVERITY_WARNING':
+        return 'assets/kiko/WashEd_kiko_sprite_stress.png';
+      case 'FLOOD_SEVERITY_EMERGENCY':
+        return 'assets/kiko/WashEd_kiko_sprite_sad.png';
+      default:
+        return 'assets/kiko/WashEd_kiko_sprite_thumbs-up.png';
+    }
+  }
+
+  Color get _riskColor {
+    final r = _riskRatio;
+    if (r <= 0.5) return Colors.green;
+    if (r <= 0.8) return Colors.amber;
+    if (r < 1.0) return Colors.orange;
+    return Colors.red;
+  }
+
+  IconData _weatherIcon(String cloudCover, String rainfallDesc) {
+    final r = rainfallDesc.toUpperCase();
+    if (r.contains('VERY HEAVY') || r.contains('HEAVY')) {
+      return Icons.water_drop;
+    }
+    if (r.contains('RAIN')) return Icons.grain;
+    final c = cloudCover.toUpperCase();
+    if (c.contains('OVERCAST') || c == 'CLOUDY') return Icons.cloud;
+    if (c.contains('PARTLY')) return Icons.cloud_queue;
+    return Icons.wb_sunny;
+  }
+
+  Color _weatherIconColor(String cloudCover, String rainfallDesc) {
+    final r = rainfallDesc.toUpperCase();
+    if (r.contains('HEAVY')) return Colors.blue.shade700;
+    if (r.contains('RAIN')) return Colors.blue.shade400;
+    final c = cloudCover.toUpperCase();
+    if (c.contains('OVERCAST') || c == 'CLOUDY') return Colors.grey;
+    if (c.contains('PARTLY')) return Colors.blueGrey;
+    return Colors.orange;
+  }
+
+  // ── Build ───────────────────────────────────────────────────────────────────
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final weather = _weather?.data;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              _userName.isNotEmpty ? 'Hello $_userName!' : 'Hello!',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
               ),
             ),
-          ),
-
-          body: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color.fromARGB(137, 234, 216, 255), 
-                  Color.fromARGB(170, 245, 247, 191),
-                ],
+            Image(
+              image: const AssetImage(
+                'assets/wash-ed/WASHEd_logo_2022_og_no-shadow.png',
               ),
+              height: 50,
             ),
-
-            child : SingleChildScrollView(
+          ],
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(2),
+          child: Container(color: Colors.yellow, height: 2),
+        ),
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.yellow, width: 2),
-                            ),
-
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-
-                              children: [
-                                const Text(
-                                  "Location", 
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on_outlined,
-                                      color: Colors.blue,
-                                    ),
-
-                                    Expanded(
-                                      child:DropdownButton<String>(
-                                        value: selectedCity,
-                                        isDense: true,
-                                        underline: SizedBox(),
-                                        icon: Icon(Icons.arrow_drop_down_rounded, color: Colors.black),
-                                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-
-                                        items: cities.map((city) {
-                                          return DropdownMenuItem(
-                                            value: city,
-                                            child: Text(city),
-                                          );
-                                        }).toList(),
-
-                                        onChanged: (value) {
-                                          setState(() {
-                                            selectedCity = value!;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ], 
-                            ),
-                            
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.yellow, width: 2),
-                            ),
-
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.sunny,
-                                  color: Colors.orange,
-                                  size: 30,
-                                ),
-                                const SizedBox(width: 10), 
-                                Text(
-                                  "30°",
-                                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                                    fontWeight: FontWeight.bold
-                                  ), 
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ]
+                        _locationChip(screenWidth, weather),
+                        _temperatureChip(screenWidth, weather),
+                      ],
                     ),
-
-                  
                     const SizedBox(height: 20),
-                    kikoBox(riskLevel),
+                    _kikoBox(screenWidth),
                     const SizedBox(height: 20),
-                    weatherBox('Weather by Hour', screenWidth, null),
+                    _weatherBox(screenWidth, _weather),
                     const SizedBox(height: 20),
-                    riskBox('Flood Risk', screenWidth, null),
+                    _riskBox(screenWidth),
                     const SizedBox(height: 20),
-
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              widget.onTabSelected(2);
-                            },
-                            child: buttonBox('Learning Module', screenWidth * 0.27, 100, Icons.cast_for_education),
-                          ),
+                        _buttonBox(
+                          'Learning\nModules',
+                          screenWidth * 0.27,
+                          100,
+                          Icons.cast_for_education,
+                          tabIndex: 1,
                         ),
-
                         const SizedBox(width: 10),
-
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              widget.onTabSelected(3);
-                            },
-                            child: buttonBox('Flood Prep', screenWidth * 0.27, 100, Icons.checklist_sharp),
-                          ),
+                        _buttonBox(
+                          'Flood\nPrepare',
+                          screenWidth * 0.27,
+                          100,
+                          Icons.checklist_sharp,
+                          tabIndex: 2,
                         ),
-
                         const SizedBox(width: 10),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              //TODO: Replace with games page
-                            },
-                            child: buttonBox('Play Games', screenWidth * 0.27, 100, Icons.gamepad_outlined),
-                          ),
+                        _buttonBox(
+                          'Play\nGames',
+                          screenWidth * 0.27,
+                          100,
+                          Icons.gamepad_outlined,
+                          tabIndex: 3,
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 20),
-                    const Center(child: Text("Our Sponsors")),
-                    
+                    _sponsorsBox(),
                   ],
                 ),
               ),
             ),
-          ),
-        );
-      }
+    );
+  }
 
-      Widget kikoBox(String riskLevel) {
-        Color boxColor;
-        String statusText;
-        String messageText; 
-        String kikoMessage;
-        AssetImage image;
+  // ── Widgets ─────────────────────────────────────────────────────────────────
 
-        if (riskLevel == "low") { 
-          boxColor = Color.fromARGB(255, 195, 235, 154);
-          statusText = "All Clear";
-          messageText = "Everything is lookin safe right now!";
-          kikoMessage = "Kiko checked and water levels are just right. Time to learn and play";
-          image = AssetImage('assets/kiko/WashEd_kiko_sprite_thumbs-up.png');
-        }
-        else if (riskLevel == "medium") { 
-          boxColor = Color.fromARGB(255, 249, 201, 110);
-          statusText = "Be Alert";
-          messageText = "Water levels are rising sligtly";
-          kikoMessage = "Kiko noticed rising water levels. Stay cautious!";
-          image = AssetImage('assets/kiko/WashEd_kiko_sprite_sad.png');
-        }
-        else { 
-          boxColor = Color.fromARGB(255, 250, 119, 110);
-          statusText = "Warning!";
-          messageText = "Flood risk is high. Stay safe and follow instructions!";
-          kikoMessage = "Kiko says to stay safe and follow instructions.";
-          image = AssetImage('assets/kiko/WashEd_kiko_sprite_stress.png');
-        }
-        
-        return Container(
-          padding: const EdgeInsets.all(12),
-          decoration : BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: boxColor,
-            border: Border.all(color: Colors.grey, width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 6, 
-                offset: Offset(0,3), 
-              )
-            ],
+  Widget _locationChip(double screenWidth, WeatherForecast? weather) {
+    return Container(
+      width: screenWidth * 0.4,
+      height: 70,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.yellow, width: 2),
+      ),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "Location",
+            style: TextStyle(color: Colors.black, fontSize: 12),
           ),
-          
-          child : Row(
+          const SizedBox(height: 5),
+          Row(
             children: [
-              Expanded( 
-                flex: 1,
-                child: Column (
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 18,
-                          height: 18, 
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          statusText,
-                          style: Theme.of(context).textTheme.bodyMedium
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 12),
-
-                    Text(
-                      messageText,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
-                    ),
-
-                    SizedBox(height: 12),
-                    Text(
-                      kikoMessage,
-                      style : Theme.of(context).textTheme.bodySmall
-                    ),
-                  ]
+              const Icon(
+                Icons.location_on_outlined,
+                color: Colors.blue,
+                size: 30,
+              ),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  weather?.municity ?? AppConfig.defaultMunicity,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              
-              Flexible(
-                child: Image(image: image, fit: BoxFit.contain), 
-              ),
-            ], 
-          ),
-        );
-      }
-
-      Widget weatherBox(String text, double width, double? height){
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12), 
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20), 
-            color: Colors.white,
-            border: Border.all(color: Colors.yellow, width: 2),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Weather by Hour",
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                )
-              ),
-
-              const SizedBox(height: 12),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  for (var temp in ["30°", "29°", "29°", "25°", "30°"])
-                    Expanded(child: bubble(temp)),
-                ],
-              ),
             ],
           ),
-        );
-      }
+        ],
+      ),
+    );
+  }
 
-      Widget bubble(String temp){
-        return AspectRatio(
-          aspectRatio: 0.7,
-          child:Container(
-            margin: const EdgeInsets.symmetric(horizontal: 6),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
-              border: Border.all(color: Colors.grey),
+  Widget _temperatureChip(double screenWidth, WeatherForecast? weather) {
+    return Container(
+      width: screenWidth * 0.35,
+      height: 70,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.yellow, width: 2),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            weather != null
+                ? _weatherIcon(weather.cloudCover, weather.rainfallDesc)
+                : Icons.wb_sunny,
+            color: weather != null
+                ? _weatherIconColor(weather.cloudCover, weather.rainfallDesc)
+                : Colors.orange,
+            size: 40,
+          ),
+          const SizedBox(width: 15),
+          Text(
+            weather != null ? '${weather.tmean.round()}°' : '--°',
+            style: const TextStyle(
+              fontSize: 30,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
             ),
-            alignment: Alignment.center,
-            child: Text(temp, style: Theme.of(context).textTheme.bodyMedium),
           ),
-        );
-      }
+        ],
+      ),
+    );
+  }
 
-      Widget riskBox(String text, double width, double? height){
-        
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            double barWidth = riskLevel == "low"
-              ? constraints.maxWidth * 0.3
-              : riskLevel == "medium"
-                ? constraints.maxWidth * 0.6
-                :constraints.maxWidth * 0.9;
-            Color barColor = riskLevel == "low"
-              ? Colors.green
-              : riskLevel == "medium"
-                ? Colors.orange
-                : Colors.red;
-
-            return Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20), 
-                color: Colors.white,
-                border: Border.all(color: Colors.yellow, width: 2),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Risk",
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        )
-                      ), 
-                      Text(
-                        riskLevel.toUpperCase(),
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: riskLevel == "low"
-                            ? Colors.green
-                            : riskLevel == "medium"
-                              ?Colors.orange
-                              :Colors.red,
-                          fontWeight: FontWeight.bold,
-                        )
+  Widget _kikoBox(double screenWidth) {
+    return Container(
+      width: screenWidth,
+      constraints: const BoxConstraints(minHeight: 160),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: _severityBgColor,
+        border: Border.all(color: Colors.grey, width: 2),
+        boxShadow: const [
+          BoxShadow(color: Colors.grey, blurRadius: 6, offset: Offset(0, 3)),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: _dotColor.withValues(alpha: 0.8),
+                        shape: BoxShape.circle,
                       ),
-                    ],
+                    ),
+                    const SizedBox(width: 10),
+                    Text(_severityLabel, style: const TextStyle(fontSize: 16)),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _kikoTitle,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
-
-                  const SizedBox(height: 15),
-
-                  Stack(
-                    children: [
-                      Container(
-                        height: 28,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 240, 239, 239),
-                          borderRadius: BorderRadius.circular(40),
-                          border: Border.all(color: Colors.grey),
-                        ),
-                      ),
-
-                      Positioned(
-                        left: 0,
-                        child: Container(
-                          width: barWidth, 
-                          height: 28, 
-                          decoration: BoxDecoration(
-                            color: barColor, 
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                        )
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10), 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Safe",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                        ),
-                      ), 
-                      const Text(
-                        "Warning",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      }
-      
-      Widget buttonBox(String text, double? width, double? height, IconData icon) {
-        return Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20), 
-            color: Colors.white,
-            border: Border.all(color: Colors.yellow, width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.yellow.withOpacity(0.7), 
-                blurRadius: 6,
-                offset: Offset(-1, 3),
-              )
-            ]
+                ),
+                const SizedBox(height: 12),
+                Text(_kikoMessage, style: const TextStyle(fontSize: 12)),
+              ],
+            ),
           ),
-          child : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(icon, size: 40, color: Colors.black),
-              const SizedBox(height: 5),
-              Text(text, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-            ],
-          )
+          Image(
+            image: AssetImage(_kikoSprite),
+            height: 130,
+            fit: BoxFit.contain,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _weatherBox(double width, WeatherApiResponse? weatherResp) {
+    final weather = weatherResp?.data;
+    final hourlyList = weatherResp?.hourly ?? [];
+
+    final fallbackIcon = weather != null
+        ? _weatherIcon(weather.cloudCover, weather.rainfallDesc)
+        : Icons.wb_sunny;
+    final fallbackColor = weather != null
+        ? _weatherIconColor(weather.cloudCover, weather.rainfallDesc)
+        : Colors.orange;
+    final fallbackTemp = weather != null ? '${weather.tmean.round()}°' : '--°';
+
+    List<Widget> bubbles;
+    if (hourlyList.isNotEmpty) {
+      bubbles = hourlyList.take(5).map((h) {
+        final rainfallDesc =
+            h.precipitationTotal == 0 || h.precipitationType == 'none'
+            ? h.weather.toUpperCase()
+            : h.precipitationTotal >= 15
+            ? 'HEAVY RAINS'
+            : 'LIGHT RAINS';
+        final cloudDesc = h.weather.toUpperCase().replaceAll('_', ' ');
+        return _bubble(
+          '${h.temperature.round()}°',
+          _weatherIcon(cloudDesc, rainfallDesc),
+          _weatherIconColor(cloudDesc, rainfallDesc),
+          time: h.time,
         );
-      }
+      }).toList();
+    } else {
+      bubbles = List.generate(
+        5,
+        (_) => _bubble(fallbackTemp, fallbackIcon, fallbackColor),
+      );
     }
+
+    return Container(
+      width: width,
+      height: 190,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        border: Border.all(color: Colors.yellow, width: 2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Weather by Hour",
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: bubbles,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bubble(String temp, IconData icon, Color iconColor, {String? time}) {
+    return Container(
+      width: 50,
+      height: 110,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40),
+        border: Border.all(color: Colors.grey),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (time != null)
+            Text(time, style: const TextStyle(fontSize: 9, color: Colors.grey)),
+          if (time != null) const SizedBox(height: 4),
+          Icon(icon, color: iconColor, size: 22),
+          const SizedBox(height: 4),
+          Text(temp, style: const TextStyle(fontSize: 13)),
+        ],
+      ),
+    );
+  }
+
+  Widget _riskBox(double width) {
+    final gauge = _worstGauge;
+    final barWidth = (width - 30).clamp(0.0, double.infinity);
+
+    return Container(
+      width: width,
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        border: Border.all(color: Colors.yellow, width: 2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Flood Risk",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                _riskLabel,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: _riskColor,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+          if (gauge != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              '${gauge.gaugeName} — ${gauge.waterLevel}m / ${gauge.alertLevel}m',
+              style: const TextStyle(fontSize: 11, color: Colors.black54),
+            ),
+          ],
+          const SizedBox(height: 10),
+          Stack(
+            children: [
+              Container(
+                height: 30,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 240, 239, 239),
+                  borderRadius: BorderRadius.circular(40),
+                  border: Border.all(color: Colors.grey),
+                ),
+              ),
+              Container(
+                height: 30,
+                width: barWidth * _riskRatio.clamp(0.0, 1.0),
+                decoration: BoxDecoration(
+                  color: _riskColor,
+                  borderRadius: BorderRadius.circular(40),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Safe", style: TextStyle(color: Colors.black, fontSize: 15)),
+              Text(
+                "Warning",
+                style: TextStyle(fontSize: 15, color: Colors.black),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.amber.shade50,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Colors.amber.shade300),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.info_outline, size: 13, color: Colors.orange),
+                SizedBox(width: 5),
+                Expanded(
+                  child: Text(
+                    'Flood data is simulated for demo purposes only. '
+                    'Real-time data requires a Google Flood API key.',
+                    style: TextStyle(fontSize: 10, color: Colors.black54),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buttonBox(
+    String text,
+    double width,
+    double height,
+    IconData icon, {
+    required int tabIndex,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        tabSwitchRequest.value = -1;
+        tabSwitchRequest.value = tabIndex;
+      },
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          border: Border.all(color: Colors.yellow, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.yellow.withValues(alpha: 0.7),
+              blurRadius: 6,
+              offset: const Offset(-1, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: Colors.black),
+            const SizedBox(height: 5),
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sponsorsBox() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        border: Border.all(color: Colors.amber.shade300, width: 2),
+      ),
+      child: Column(
+        children: [
+          Text(
+            "Kiko's Hub Powered By",
+            style: TextStyle(
+              color: Colors.pink.shade600,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _sponsorLogo('burger-point'),
+              _sponsorLogo('connel-griffin'),
+              _sponsorLogo('grundfos'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "Supported By",
+            style: TextStyle(
+              color: Colors.pink.shade600,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _sponsorLogo('dep-ed'),
+        ],
+      ),
+    );
+  }
+
+  Widget _sponsorLogo(String name) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Image.asset("assets/logos/$name.jpeg", width: 60),
+    );
+  }
+}

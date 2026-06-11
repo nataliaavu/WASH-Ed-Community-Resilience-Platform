@@ -1,151 +1,220 @@
-import 'package:introduction_screen/introduction_screen.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => OnboardingScreenState();
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class OnboardingScreenState extends State<OnboardingScreen> {
-  final GlobalKey<IntroductionScreenState> _introKey =
-      GlobalKey<IntroductionScreenState>();
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  late PageController _pageViewController;
+  int _currentPageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageViewController = PageController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pageViewController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return IntroductionScreen(
-      key: _introKey,
-      allowImplicitScrolling: true,
-      infiniteAutoScroll: false,
-      pages: [
-        buildWelcomePage(),
-        buildLearnPage(),
-        buildSafetyPage(),
-        buildAlertsAndContinuePage(),
-      ],
-      onDone: gotoUserSetup,
-      showSkipButton: false,
-      showBackButton: true,
-      showNextButton: true,
-      skipOrBackFlex: 0,
-      nextFlex: 0,
-      showBottomPart: true,
-      curve: Curves.fastLinearToSlowEaseIn,
-      controlsMargin: const EdgeInsets.all(16),
-      controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
-      dotsDecorator: DotsDecorator(
-        size: const Size(10.0, 10.0),
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        activeSize: const Size(22.0, 10.0),
-        activeColor: Theme.of(context).colorScheme.primary,
-        activeShape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(25.0)),
-        ),
+    List<Widget> onboardingPages = [
+      _buildOnboardingPage(
+        "Welcome to Kiko's Hub!",
+        "A safe place to learn, play, and stay prepared for the rising tides",
+        Image.asset("assets/kiko/washed-kiko_sprite_get-started_00_wave-welcome.png"),
+        "",
+        "Get started",
       ),
-      back: Text(
+      _buildOnboardingPage(
+        "Learn with Kiko!",
+        "Discover fun and simple ways to keep everyone safe and healthy",
+        Image.asset("assets/kiko/WashEd_kiko_sprite_base.png"),
         "Back",
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      ),
-      next: Text(
         "Next",
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.primary,
-        ),
       ),
-      done: Text(
-        "Go!",
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+      _buildOnboardingPage(
+        "Stay safe!",
+        "Prepare for the rainy season with helpful guides and flood alerts",
+        Image.asset("assets/kiko/washed-kiko_sprite_get-started_02_stay-safe-realtime-updates-icons.png"),
+        "Back",
+        "Next",
+      ),
+      _buildOnboardingPage(
+        "Let's begin!",
+        "Let's start by getting your profile ready for action!",
+        Image.asset("assets/kiko/WashEd_kiko_sprite_cheer.png"),
+        "",
+        "Let's Start!",
+      ),
+    ];
+
+    return Scaffold(
+      body: PageView(
+        controller: _pageViewController,
+        onPageChanged: _onPageChanged,
+        children: onboardingPages,
       ),
     );
   }
 
-  PageViewModel buildWelcomePage() {
-    return PageViewModel(
-      title: "Welcome to Kiko's Hub!",
-      body:
-          "A safe place to learn, play, and stay prepared for the rising tides",
-      image: Image(
-        image: AssetImage("assets/kiko/WashEd_kiko_sprite_cheer.png"),
-      ),
-      decoration: getPageDecoration(),
+  void _onPageChanged(int currentPageIndex) {
+    setState(() {
+      _currentPageIndex = currentPageIndex;
+    });
+  }
+
+  void _onUpdateCurrentPageIndex(int index) {
+    if (index == 4) {
+      Navigator.pushNamedAndRemoveUntil(context, "/setup", (_) => false);
+      return;
+    }
+
+    _pageViewController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
     );
   }
 
-  PageViewModel buildLearnPage() {
-    return PageViewModel(
-      title: "Learn with Kiko!",
-      body: "Discover fun and simple ways to keep everyone safe and healthy",
-      image: Image(
-        image: AssetImage("assets/kiko/WashEd_kiko_sprite_base.png"),
-      ),
-      decoration: getPageDecoration(),
-    );
-  }
-
-  PageViewModel buildSafetyPage() {
-    return PageViewModel(
-      title: "Stay safe!",
-      body: "Prepare for the rainy season with helpful guides and flood alerts",
-      image: Image(
-        image: AssetImage("assets/kiko/WashEd_kiko_sprite_side-jump.png"),
-      ),
-      decoration: getPageDecoration(),
-    );
-  }
-
-  PageViewModel buildAlertsAndContinuePage() {
-    return PageViewModel(
-      title: "Let's begin!",
-      body: "Let's start by getting your profile ready for action!",
-      image: Image(
-        image: AssetImage("assets/kiko/WashEd_kiko_sprite_cheer.png"),
-      ),
-      decoration: getPageDecoration(),
-    );
-  }
-
-  Widget buildIconPage(IconData icon) {
+  Widget _buildOnboardingPage(
+    String title,
+    String body,
+    Image image,
+    String backButtonText,
+    String nextButtonText,
+  ) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withAlpha(50),
-        shape: BoxShape.circle,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFE3F2FD), Color(0xFFFFFDE7)],
+        ),
       ),
-      padding: const EdgeInsets.all(40),
-      child: Icon(
-        icon,
-        size: 120,
-        color: Theme.of(context).colorScheme.primary,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsetsGeometry.symmetric(
+            vertical: 10,
+            horizontal: 40,
+          ),
+          child: Column(
+            children: <Widget>[
+              Spacer(),
+              image,
+              Padding(
+                padding: const EdgeInsetsGeometry.symmetric(
+                  horizontal: 30,
+                  vertical: 10,
+                ),
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF1A47C8),
+                    fontSize: 28,
+                    fontWeight: FontWeight(1000),
+                    height: 0,
+                  ),
+                ),
+              ),
+              Text(
+                body,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF1A1A2E),
+                  fontSize: 18,
+                  height: 0,
+                ),
+              ),
+              NavigationButtons(
+                currentPageIndex: _currentPageIndex,
+                onUpdateCurrentPageIndex: _onUpdateCurrentPageIndex,
+                backButtonText: backButtonText,
+                nextButtonText: nextButtonText,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
+}
 
-  PageDecoration getPageDecoration() {
-    return PageDecoration(
-      titleTextStyle: TextStyle(
-        fontSize: 28.0,
-        fontWeight: FontWeight.w700,
-        color: Theme.of(context).colorScheme.onSurface,
+class NavigationButtons extends StatelessWidget {
+  const NavigationButtons({
+    super.key,
+    required this.currentPageIndex,
+    required this.onUpdateCurrentPageIndex,
+    required this.backButtonText,
+    required this.nextButtonText,
+  });
+
+  final int currentPageIndex;
+  final void Function(int) onUpdateCurrentPageIndex;
+  final String backButtonText;
+  final String nextButtonText;
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: refactor colors into theme
+    // final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.all(40),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          if (backButtonText != "") ...[
+            TextButton(
+              style: const ButtonStyle(
+                minimumSize: WidgetStatePropertyAll(Size(80, 40)),
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  ),
+                ),
+                backgroundColor: WidgetStatePropertyAll(Color(0xFFDDDDDF)),
+                foregroundColor: WidgetStatePropertyAll(Color(0xFF1A1A2E)),
+              ),
+              onPressed: () {
+                if (currentPageIndex > 0) {
+                  onUpdateCurrentPageIndex(currentPageIndex - 1);
+                }
+              },
+              child: Text(backButtonText),
+            ),
+          ],
+
+          if (backButtonText != "" && nextButtonText != "") ...[Spacer()],
+
+          if (nextButtonText != "") ...[
+            TextButton(
+              style: const ButtonStyle(
+                minimumSize: WidgetStatePropertyAll(Size(80, 40)),
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  ),
+                ),
+                backgroundColor: WidgetStatePropertyAll(Color(0xFFE8177A)),
+                foregroundColor: WidgetStatePropertyAll(Color(0xFFF7F8FC)),
+              ),
+              onPressed: () {
+                onUpdateCurrentPageIndex(currentPageIndex + 1);
+              },
+              child: Text(nextButtonText),
+            ),
+          ],
+        ],
       ),
-      bodyTextStyle: TextStyle(
-        fontSize: 18.0,
-        color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
-      ),
-      bodyPadding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-      imagePadding: const EdgeInsets.symmetric(vertical: 20.0),
-      pageColor: Theme.of(context).scaffoldBackgroundColor,
-      pageMargin: const EdgeInsets.only(top: 80.0),
     );
-  }
-
-  void gotoUserSetup() async {
-    Navigator.pushReplacementNamed(context, "/setup");
   }
 }

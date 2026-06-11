@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
-import 'package:wash_ed_app/views/onboarding/init_page.dart';
-import 'package:wash_ed_app/views/learn/learn_page.dart';
-import 'package:wash_ed_app/views/prepare/prepare_page.dart';
-import 'package:wash_ed_app/views/setup/setup_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wash_ed_app/data/app_notifiers.dart';
+import 'package:wash_ed_app/views/games/games_page.dart';
 import 'package:wash_ed_app/views/home/home_page.dart';
+import 'package:wash_ed_app/views/learn/learn_page.dart';
+import 'package:wash_ed_app/views/onboarding/init_page.dart';
+import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
+import 'package:wash_ed_app/views/prepare/prepare_page.dart';
+import 'package:wash_ed_app/views/profile.dart';
+import 'package:wash_ed_app/views/setup/setup_page.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  try {
+    if (FirebaseAuth.instance.currentUser == null) {
+      await FirebaseAuth.instance.signInAnonymously();
+    }
+  } catch (_) {
+    // No internet on first launch — app still works offline via SQLite.
+  }
   runApp(const WashEdApp());
 }
 
@@ -18,20 +31,20 @@ class WashEdApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'WASH-Ed Platform',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
       initialRoute: '/init',
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => const AppMain(),
-        '/init': (BuildContext context) => const InitScreen(),
-        '/onboarding': (BuildContext context) => const OnboardingScreen(),
-        '/setup': (BuildContext context) => const SetupPage(),
+        '/': (context) => const AppMain(),
+        '/init': (context) => const InitScreen(),
+        '/onboarding': (context) => const OnboardingScreen(),
+        '/setup': (context) => const SetupPage(),
       },
     );
   }
 }
 
-/// Replace the placeholder widgets in `_pages` with your real pages from
-/// `lib\views` (e.g. `HomePage()`, `ModulesPage()`, ...).
 class AppMain extends StatefulWidget {
   const AppMain({super.key});
 
@@ -42,27 +55,32 @@ class AppMain extends StatefulWidget {
 class _AppMainState extends State<AppMain> {
   int _currentIndex = 0;
 
-  // TODO: Replace these placeholders with your actual pages from
-  // lib\views, e.g. `const HomePage()`.
-  late final List<Widget> _pages;
-  @override
-  void initState(){
-    super.initState();
-    _pages = <Widget> [
-      HomePage(
-        onTabSelected: (index) {
-          setState((){
-          _currentIndex = index;
-          });
-        },
-      ),
-    Center(child: Text('Modules page')), // replace with ModulesPage()
+  final List<Widget> _pages = const [
+    HomePage(),
     LearnPage(),
     PreparePage(),
-    Center(child: Text('Profile page')), 
-    ];
-  }// replace with ProfilePage()
-  
+    GamesPage(),
+    ProfilePage(),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    tabSwitchRequest.addListener(_onTabSwitch);
+  }
+
+  @override
+  void dispose() {
+    tabSwitchRequest.removeListener(_onTabSwitch);
+    super.dispose();
+  }
+
+  void _onTabSwitch() {
+    final idx = tabSwitchRequest.value;
+    if (idx >= 0 && mounted) {
+      setState(() => _currentIndex = idx);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,22 +89,29 @@ class _AppMainState extends State<AppMain> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color(0xFFE91E8C),
+        unselectedItemColor: Colors.grey,
         onTap: (index) => setState(() => _currentIndex = index),
-        items: const <BottomNavigationBarItem>[
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school_outlined),
-            activeIcon: Icon(Icons.school),
-            label: 'Modules',
+            icon: Icon(Icons.menu_book_outlined),
+            activeIcon: Icon(Icons.menu_book),
+            label: 'Learn',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.assignment_outlined),
             activeIcon: Icon(Icons.assignment),
             label: 'Prepare',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sports_esports_outlined),
+            activeIcon: Icon(Icons.sports_esports),
+            label: 'Games',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
