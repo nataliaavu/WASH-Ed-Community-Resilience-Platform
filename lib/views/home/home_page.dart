@@ -97,15 +97,15 @@ class _HomePageState extends State<HomePage> {
 
   Color get _severityBgColor {
     switch (_proxyRisk) {
-      case 'High':   return const Color(0xFFFFCDD2);
-      case 'Medium': return const Color(0xFFFFF9C4);
-      default:       return const Color(0xFFC3EB9A);
+      case 'High':   return AppColors.floodEmergency;
+      case 'Medium': return AppColors.floodWatch;
+      default:       return AppColors.floodClear;
     }
   }
 
   Color get _dotColor {
     switch (_proxyRisk) {
-      case 'High':   return const Color(0xFFF44336);
+      case 'High':   return AppColors.errorRed;
       case 'Medium': return const Color(0xFFFFC107);
       default:       return Colors.grey;
     }
@@ -288,35 +288,30 @@ class _HomePageState extends State<HomePage> {
         width: screenWidth * 0.4,
         height: 70,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.yellow, width: 2),
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(AppRadius.sm + 2),
+          border: Border.all(color: AppColors.brandYellow, width: 2),
         ),
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Location",
-              style: TextStyle(color: Colors.black, fontSize: 12),
-            ),
-            const SizedBox(height: 5),
+            Text('Location', style: AppTextStyles.caption),
+            const SizedBox(height: AppSpacing.xs),
             Row(
               children: [
                 const Icon(Icons.location_on_outlined,
-                    color: Colors.blue, size: 26),
-                const SizedBox(width: 4),
+                    color: AppColors.brandBlue, size: 30),
+                const SizedBox(width: AppSpacing.xs),
                 Flexible(
                   child: Text(
                     displayLocation,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.body.copyWith(
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
                 const Icon(Icons.arrow_drop_down,
@@ -628,12 +623,12 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           if (_weather?.data != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               'Rainfall: ${_weather!.data.rainfallTotal.toStringAsFixed(1)}mm · '
               'Wind: ${_weather!.data.windSpeed.toStringAsFixed(0)} km/h · '
               'Rain chance: ${_weather!.data.precipitationProbability}%',
-              style: const TextStyle(fontSize: 11, color: Colors.black54),
+              style: AppTextStyles.caption,
             ),
           ],
           const SizedBox(height: AppSpacing.sm),

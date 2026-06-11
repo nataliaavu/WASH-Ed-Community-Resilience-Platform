@@ -9,7 +9,7 @@ class SetupNamePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // No background — parent setup_page.dart provides the gradient
-    return SingleChildScrollView(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28),
       child: Column(
         children: [
@@ -35,7 +35,7 @@ class SetupNamePage extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: AppSpacing.lg - 4),
+          const SizedBox(height: AppSpacing.sm),
 
           // ── Kiko image ─────────────────────────────────────────────────
           Image.asset(
@@ -44,7 +44,7 @@ class SetupNamePage extends StatelessWidget {
             fit: BoxFit.contain,
           ),
 
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.sm),
 
           // ── Name text field ────────────────────────────────────────────
           TextField(
@@ -61,11 +61,11 @@ class SetupNamePage extends StatelessWidget {
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 22, vertical: 20),
+                horizontal: 22,
+                vertical: 20,
+              ),
             ),
           ),
-
-          const SizedBox(height: AppSpacing.xl),
         ],
       ),
     );

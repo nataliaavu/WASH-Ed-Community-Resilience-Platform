@@ -101,7 +101,8 @@ class _LearnPageState extends State<LearnPage>
                     _loading
                         ? const Center(
                             child: CircularProgressIndicator(
-                                color: AppColors.brandPink),
+                              color: AppColors.brandPink,
+                            ),
                           )
                         : _ModuleListView(groups: _groups),
                     const _ResourcesTab(),
@@ -202,7 +203,7 @@ class _ModuleCard extends StatelessWidget {
                     icon: const Icon(Icons.person, size: 16),
                     label: const Text('Student'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.textDark,
+                      backgroundColor: AppColors.brandBlue,
                       foregroundColor: AppColors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
@@ -570,32 +571,33 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                 child: Text(
                   'Could not load PDF:\n$_error',
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.body.copyWith(
-                      color: AppColors.errorRed),
+                  style: AppTextStyles.body.copyWith(color: AppColors.errorRed),
                 ),
               ),
             )
           : _localPath == null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const CircularProgressIndicator(
-                          color: AppColors.brandPink),
-                      const SizedBox(height: AppSpacing.md),
-                      Text('Loading module...',
-                          style: AppTextStyles.body.copyWith(
-                              color: AppColors.textDark)),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(color: AppColors.brandPink),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    'Loading module...',
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.textDark,
+                    ),
                   ),
-                )
-              : PDFView(
-                  filePath: _localPath!,
-                  enableSwipe: true,
-                  swipeHorizontal: false,
-                  autoSpacing: true,
-                  pageFling: true,
-                ),
+                ],
+              ),
+            )
+          : PDFView(
+              filePath: _localPath!,
+              enableSwipe: true,
+              swipeHorizontal: false,
+              autoSpacing: true,
+              pageFling: true,
+            ),
     );
   }
 }
