@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_config.dart';
 import 'package:wash_ed_app/controllers/api_controller.dart';
 import 'package:wash_ed_app/models/flood_status.dart';
 
@@ -83,6 +84,7 @@ class _FloodWidgetState extends State<FloodWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (!AppConfig.googleFloodApiEnabled) return const SizedBox.shrink();
     if (_loading) {
       return const Padding(
         padding: EdgeInsets.all(24),

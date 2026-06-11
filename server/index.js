@@ -22,6 +22,11 @@ function mapCloudCover(pct) {
   return 'OVERCAST';
 }
 
+function calcPrecipProb(hourlyData) {
+  if (!hourlyData || hourlyData.length === 0) return 0;
+  return Math.max(...hourlyData.slice(0, 5).map(h => h.precipitation?.probability ?? 0));
+}
+
 function mapRainfallDesc(precipTotal, precipType, summary) {
   if (precipTotal === 0 || precipType === 'none') {
     return summary?.toUpperCase() || 'NO RAIN';
@@ -41,6 +46,7 @@ function transformToFlutterFormat(meteosource, municity, province) {
 
   const rainfallTotal  = current.precipitation?.total ?? 0;
   const precipType     = current.precipitation?.type ?? 'none';
+  const precipProb     = calcPrecipProb(meteosource.hourly?.data);
   const cloudCoverPct  = typeof current.cloud_cover === 'number'
     ? current.cloud_cover
     : (current.cloud_cover?.total ?? 0);
@@ -89,6 +95,7 @@ function transformToFlutterFormat(meteosource, municity, province) {
       humidity,
       wind_speed:     current.wind?.speed ?? 0,
       wind_direction: current.wind?.dir ?? 'N',
+      precipitation_probability: precipProb,
     },
     hourly,
   };
