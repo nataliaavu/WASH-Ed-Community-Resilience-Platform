@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wash_ed_app/data/app_notifiers.dart';
@@ -21,6 +22,8 @@ void main() async {
   } catch (_) {
     // No internet on first launch — app still works offline via SQLite.
   }
+
+  SystemChrome.setPreferredOrientations([.portraitUp, .portraitDown]);
   runApp(const WashEdApp());
 }
 
