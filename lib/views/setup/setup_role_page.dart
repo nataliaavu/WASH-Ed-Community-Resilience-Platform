@@ -14,8 +14,8 @@ class SetupRolePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // No background — parent setup_page.dart provides the gradient
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(28, 52, 28, 24),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(28, 52, 28, 0),
       child: Column(
         children: [
           Text(
@@ -48,7 +48,7 @@ class SetupRolePage extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 22),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 22),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(18),
@@ -69,9 +69,9 @@ class SetupRolePage extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              radius: 30,
+              radius: 20,
               backgroundColor: AppColors.brandPink,
-              child: Icon(icon, color: AppColors.white, size: 30),
+              child: Icon(icon, color: AppColors.white, size: 20),
             ),
             const SizedBox(width: 20),
             Text(

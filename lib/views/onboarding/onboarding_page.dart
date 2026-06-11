@@ -78,7 +78,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _buildPage(
                       "Welcome to Kiko's Hub!",
                       "A safe place to learn, play, and stay prepared for the rising tides",
-                      Image.asset("assets/kiko/washed-kiko_sprite_get-started_00_wave-welcome.png"),
+                      Image.asset(
+                        "assets/kiko/washed-kiko_sprite_get-started_00_wave-welcome.png",
+                      ),
                     ),
                     _buildPage(
                       "Learn with Kiko!",
@@ -88,7 +90,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _buildPage(
                       "Stay safe!",
                       "Prepare for the rainy season with helpful guides and flood alerts",
-                      Image.asset("assets/kiko/washed-kiko_sprite_get-started_02_stay-safe-realtime-updates-icons.png"),
+                      Image.asset(
+                        "assets/kiko/washed-kiko_sprite_get-started_02_stay-safe-realtime-updates-icons.png",
+                      ),
                     ),
                     _buildPage(
                       "Let's begin!",
@@ -116,18 +120,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     if (backLabel.isNotEmpty) ...[
                       TextButton(
                         style: ButtonStyle(
-                          minimumSize:
-                              const WidgetStatePropertyAll(Size(80, 44)),
+                          minimumSize: const WidgetStatePropertyAll(
+                            Size(80, 44),
+                          ),
                           shape: const WidgetStatePropertyAll(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.all(
-                                  Radius.circular(AppRadius.sm)),
+                                Radius.circular(AppRadius.sm),
+                              ),
                             ),
                           ),
-                          backgroundColor:
-                              WidgetStatePropertyAll(Colors.grey.shade200),
+                          backgroundColor: WidgetStatePropertyAll(
+                            Colors.grey.shade200,
+                          ),
                           foregroundColor: const WidgetStatePropertyAll(
-                              AppColors.textDark),
+                            AppColors.textDark,
+                          ),
                         ),
                         onPressed: _onBack,
                         child: Text(backLabel, style: AppTextStyles.button),
@@ -140,13 +148,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         shape: WidgetStatePropertyAll(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(
-                                Radius.circular(AppRadius.sm)),
+                              Radius.circular(AppRadius.sm),
+                            ),
                           ),
                         ),
-                        backgroundColor:
-                            WidgetStatePropertyAll(AppColors.brandPink),
-                        foregroundColor:
-                            WidgetStatePropertyAll(AppColors.offWhite),
+                        backgroundColor: WidgetStatePropertyAll(
+                          AppColors.brandPink,
+                        ),
+                        foregroundColor: WidgetStatePropertyAll(
+                          AppColors.offWhite,
+                        ),
                       ),
                       onPressed: _onNext,
                       child: Text(nextLabel, style: AppTextStyles.button),
@@ -166,7 +177,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildPage(String title, String body, Image image) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final imageHeight = constraints.maxHeight < 500 ? 120.0 : 280.0;
+        final imageHeight = constraints.maxHeight < 500 ? 240.0 : 280.0;
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
