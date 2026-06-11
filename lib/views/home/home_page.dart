@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wash_ed_app/config/app_config.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
 import 'package:wash_ed_app/controllers/api_controller.dart';
 import 'package:wash_ed_app/data/app_notifiers.dart';
 import 'package:wash_ed_app/data/database_helper.dart';
@@ -65,7 +66,15 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        // Still load the name even if weather/flood API fails
+        final profile = await _db.getUserProfile();
+        setState(() {
+          _userName = profile?.name ?? '';
+          _loading = false;
+        });
+      }
+
     }
   }
 
@@ -74,7 +83,9 @@ class _HomePageState extends State<HomePage> {
     if (mounted) setState(() => _userName = profile?.name ?? '');
   }
 
-  // ── Computed getters (weather-based proxy flood risk) ───────────────────────
+  // ── Computed getters ─────────────────────────────────────────────────────────
+  // NOTE: these getters return dynamic colours driven by API flood/weather data.
+  // They are intentionally NOT replaced with AppColors tokens.
 
   String get _proxyRisk => _weather?.data.floodRisk ?? 'Low';
 
@@ -88,15 +99,15 @@ class _HomePageState extends State<HomePage> {
 
   Color get _severityBgColor {
     switch (_proxyRisk) {
-      case 'High':   return const Color(0xFFFFCDD2);
-      case 'Medium': return const Color(0xFFFFF9C4);
-      default:       return const Color(0xFFC3EB9A);
+      case 'High':   return AppColors.floodEmergency;
+      case 'Medium': return AppColors.floodWatch;
+      default:       return AppColors.floodClear;
     }
   }
 
   Color get _dotColor {
     switch (_proxyRisk) {
-      case 'High':   return const Color(0xFFF44336);
+      case 'High':   return AppColors.errorRed;
       case 'Medium': return const Color(0xFFFFC107);
       default:       return Colors.grey;
     }
@@ -172,7 +183,7 @@ class _HomePageState extends State<HomePage> {
     return Colors.orange;
   }
 
-  // ── Build ───────────────────────────────────────────────────────────────────
+  // ── Build ────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -180,17 +191,16 @@ class _HomePageState extends State<HomePage> {
     final weather = _weather?.data;
 
     return Scaffold(
-      appBar: AppBar(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar( // Blue rectangle at top of page
+        toolbarHeight: MediaQuery.of(context).size.height * 0.08,
+        // AppBar background and foreground come from AppBarTheme in app_theme.dart
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               _userName.isNotEmpty ? 'Hello $_userName!' : 'Hello!',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
+              style: AppTextStyles.h2White,
             ),
             Image(
               image: const AssetImage(
@@ -202,71 +212,75 @@ class _HomePageState extends State<HomePage> {
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(2),
-          child: Container(color: Colors.yellow, height: 2),
+          child: Container(color: AppColors.brandYellow, height: 2),
         ),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _locationChip(screenWidth, weather),
-                        _temperatureChip(screenWidth, weather),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    _kikoBox(screenWidth),
-                    const SizedBox(height: 20),
-                    _weatherBox(screenWidth, _weather),
-                    const SizedBox(height: 20),
-                    _riskBox(screenWidth),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _buttonBox(
-                          'Learning\nModules',
-                          screenWidth * 0.27,
-                          100,
-                          Icons.cast_for_education,
-                          tabIndex: 1,
-                        ),
-                        const SizedBox(width: 10),
-                        _buttonBox(
-                          'Flood\nPrepare',
-                          screenWidth * 0.27,
-                          100,
-                          Icons.checklist_sharp,
-                          tabIndex: 2,
-                        ),
-                        const SizedBox(width: 10),
-                        _buttonBox(
-                          'Play\nGames',
-                          screenWidth * 0.27,
-                          100,
-                          Icons.gamepad_outlined,
-                          tabIndex: 3,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    _sponsorsBox(),
-                  ],
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppGradients.pageBg),
+        child: _loading
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.brandPink))
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg - 4),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _locationChip(screenWidth, weather),
+                          _temperatureChip(screenWidth, weather),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.lg - 4),
+                      _kikoBox(screenWidth),
+                      const SizedBox(height: AppSpacing.lg - 4),
+                      _weatherBox(screenWidth, _weather),
+                      const SizedBox(height: AppSpacing.lg - 4),
+                      _riskBox(screenWidth),
+                      const SizedBox(height: AppSpacing.lg - 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _buttonBox(
+                            'Learning\nModules',
+                            screenWidth * 0.27,
+                            100,
+                            Icons.cast_for_education,
+                            tabIndex: 1,
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          _buttonBox(
+                            'Flood\nPrepare',
+                            screenWidth * 0.27,
+                            100,
+                            Icons.checklist_sharp,
+                            tabIndex: 2,
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          _buttonBox(
+                            'Play\nGames',
+                            screenWidth * 0.27,
+                            100,
+                            Icons.gamepad_outlined,
+                            tabIndex: 3,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.lg - 4),
+                      _sponsorsBox(),
+                    ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 
-  // ── Widgets ─────────────────────────────────────────────────────────────────
+  // ── Widgets ──────────────────────────────────────────────────────────────────
 
   Widget _locationChip(double screenWidth, WeatherForecast? weather) {
     final displayLocation = weather?.municity ?? AppConfig.defaultMunicity;
@@ -276,35 +290,30 @@ class _HomePageState extends State<HomePage> {
         width: screenWidth * 0.4,
         height: 70,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.yellow, width: 2),
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(AppRadius.sm + 2),
+          border: Border.all(color: AppColors.brandYellow, width: 2),
         ),
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Location",
-              style: TextStyle(color: Colors.black, fontSize: 12),
-            ),
-            const SizedBox(height: 5),
+            Text('Location', style: AppTextStyles.caption),
+            const SizedBox(height: AppSpacing.xs),
             Row(
               children: [
                 const Icon(Icons.location_on_outlined,
-                    color: Colors.blue, size: 26),
-                const SizedBox(width: 4),
+                    color: AppColors.brandBlue, size: 30),
+                const SizedBox(width: AppSpacing.xs),
                 Flexible(
                   child: Text(
                     displayLocation,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.body.copyWith(
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
                 const Icon(Icons.arrow_drop_down,
@@ -417,9 +426,9 @@ class _HomePageState extends State<HomePage> {
       width: screenWidth * 0.35,
       height: 70,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.yellow, width: 2),
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppRadius.sm + 2),
+        border: Border.all(color: AppColors.brandYellow, width: 2),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -437,11 +446,7 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(width: 15),
           Text(
             weather != null ? '${weather.tmean.round()}°' : '--°',
-            style: const TextStyle(
-              fontSize: 30,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTextStyles.h2.copyWith(fontSize: 30),
           ),
         ],
       ),
@@ -452,13 +457,14 @@ class _HomePageState extends State<HomePage> {
     return Container(
       width: screenWidth,
       constraints: const BoxConstraints(minHeight: 160),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.sm, AppSpacing.md),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         color: _severityBgColor,
         border: Border.all(color: Colors.grey, width: 2),
         boxShadow: const [
-          BoxShadow(color: Colors.grey, blurRadius: 6, offset: Offset(0, 3)),
+          BoxShadow(
+              color: Colors.grey, blurRadius: 6, offset: Offset(0, 3)),
         ],
       ),
       child: Row(
@@ -479,20 +485,18 @@ class _HomePageState extends State<HomePage> {
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Text(_severityLabel, style: const TextStyle(fontSize: 16)),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(_severityLabel,
+                        style: AppTextStyles.h3.copyWith(
+                            fontWeight: FontWeight.normal, fontSize: 18)),
                   ],
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  _kikoTitle,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(_kikoMessage, style: const TextStyle(fontSize: 12)),
+                const SizedBox(height: AppSpacing.sm),
+                Text(_kikoTitle,
+                    style: AppTextStyles.body.copyWith(
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: AppSpacing.sm),
+                Text(_kikoMessage, style: AppTextStyles.bodySmall),
               ],
             ),
           ),
@@ -516,17 +520,18 @@ class _HomePageState extends State<HomePage> {
     final fallbackColor = weather != null
         ? _weatherIconColor(weather.cloudCover, weather.rainfallDesc)
         : Colors.orange;
-    final fallbackTemp = weather != null ? '${weather.tmean.round()}°' : '--°';
+    final fallbackTemp =
+        weather != null ? '${weather.tmean.round()}°' : '--°';
 
     List<Widget> bubbles;
     if (hourlyList.isNotEmpty) {
       bubbles = hourlyList.take(5).map((h) {
         final rainfallDesc =
             h.precipitationTotal == 0 || h.precipitationType == 'none'
-            ? h.weather.toUpperCase()
-            : h.precipitationTotal >= 15
-            ? 'HEAVY RAINS'
-            : 'LIGHT RAINS';
+                ? h.weather.toUpperCase()
+                : h.precipitationTotal >= 15
+                    ? 'HEAVY RAINS'
+                    : 'LIGHT RAINS';
         final cloudDesc = h.weather.toUpperCase().replaceAll('_', ' ');
         return _bubble(
           '${h.temperature.round()}°',
@@ -545,24 +550,18 @@ class _HomePageState extends State<HomePage> {
     return Container(
       width: width,
       height: 190,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        border: Border.all(color: Colors.yellow, width: 2),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        color: AppColors.white,
+        border: Border.all(color: AppColors.brandYellow, width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Weather by Hour",
-            style: TextStyle(
-              color: Colors.blue,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 12),
+          Text('Weather by Hour',
+              style: AppTextStyles.h3Blue.copyWith(fontSize: 20)),
+          const SizedBox(height: AppSpacing.sm),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: bubbles,
@@ -577,7 +576,7 @@ class _HomePageState extends State<HomePage> {
       width: 50,
       height: 110,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(40),
         border: Border.all(color: Colors.grey),
       ),
@@ -585,11 +584,12 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (time != null)
-            Text(time, style: const TextStyle(fontSize: 9, color: Colors.grey)),
-          if (time != null) const SizedBox(height: 4),
+            Text(time,
+                style: AppTextStyles.caption.copyWith(fontSize: 9)),
+          if (time != null) const SizedBox(height: AppSpacing.xs),
           Icon(icon, color: iconColor, size: 22),
-          const SizedBox(height: 4),
-          Text(temp, style: const TextStyle(fontSize: 13)),
+          const SizedBox(height: AppSpacing.xs),
+          Text(temp, style: AppTextStyles.bodySmall),
         ],
       ),
     );
@@ -602,9 +602,9 @@ class _HomePageState extends State<HomePage> {
       width: width,
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        border: Border.all(color: Colors.yellow, width: 2),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        color: AppColors.white,
+        border: Border.all(color: AppColors.brandYellow, width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -612,35 +612,28 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Flood Risk",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text('Flood Risk',
+                  style: AppTextStyles.h3Blue.copyWith(fontSize: 20)),
               Text(
                 _riskLabel,
-                style: TextStyle(
+                style: AppTextStyles.h3.copyWith(
                   fontSize: 20,
                   color: _riskColor,
-                  fontWeight: FontWeight.bold,
                   fontStyle: FontStyle.italic,
                 ),
               ),
             ],
           ),
           if (_weather?.data != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               'Rainfall: ${_weather!.data.rainfallTotal.toStringAsFixed(1)}mm · '
               'Wind: ${_weather!.data.windSpeed.toStringAsFixed(0)} km/h · '
               'Rain chance: ${_weather!.data.precipitationProbability}%',
-              style: const TextStyle(fontSize: 11, color: Colors.black54),
+              style: AppTextStyles.caption,
             ),
           ],
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           Stack(
             children: [
               Container(
@@ -661,34 +654,33 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          const Row(
+          const SizedBox(height: AppSpacing.sm),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Safe", style: TextStyle(color: Colors.black, fontSize: 15)),
-              Text(
-                "Warning",
-                style: TextStyle(fontSize: 15, color: Colors.black),
-              ),
+              Text('Safe', style: AppTextStyles.body),
+              Text('Warning', style: AppTextStyles.body),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
             decoration: BoxDecoration(
               color: Colors.amber.shade50,
               borderRadius: BorderRadius.circular(6),
               border: Border.all(color: Colors.amber.shade300),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.info_outline, size: 13, color: Colors.orange),
-                SizedBox(width: 5),
+                const Icon(Icons.info_outline,
+                    size: 13, color: Colors.orange),
+                const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(
                     'This is a weather-based estimate only. For official flood warnings, '
                     'check PAGASA (bagong.pagasa.dost.gov.ph) and NDRRMC (ndrrmc.gov.ph).',
-                    style: TextStyle(fontSize: 10, color: Colors.black54),
+                    style: AppTextStyles.caption,
                   ),
                 ),
               ],
@@ -714,28 +706,20 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         width: width,
         height: height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
-          border: Border.all(color: Colors.yellow, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.yellow.withValues(alpha: 0.7),
-              blurRadius: 6,
-              offset: const Offset(-1, 3),
-            ),
-          ],
-        ),
+        decoration: AppDecorations.yellowBorderCard(radius: AppRadius.lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon, size: 40, color: Colors.black),
-            const SizedBox(height: 5),
+            Icon(icon, size: 40, color: AppColors.textDark),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               text,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              style: AppTextStyles.caption.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 10,
+              ),
             ),
           ],
         ),
@@ -746,23 +730,23 @@ class _HomePageState extends State<HomePage> {
   Widget _sponsorsBox() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.md, horizontal: AppSpacing.sm),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.md),
+        color: AppColors.white,
         border: Border.all(color: Colors.amber.shade300, width: 2),
       ),
       child: Column(
         children: [
           Text(
             "Kiko's Hub Powered By",
-            style: TextStyle(
-              color: Colors.pink.shade600,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.brandPink,
               fontWeight: FontWeight.bold,
-              fontSize: 13,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -771,16 +755,15 @@ class _HomePageState extends State<HomePage> {
               _sponsorLogo('grundfos'),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           Text(
-            "Supported By",
-            style: TextStyle(
-              color: Colors.pink.shade600,
+            'Supported By',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.brandPink,
               fontWeight: FontWeight.bold,
-              fontSize: 13,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           _sponsorLogo('dep-ed'),
         ],
       ),
@@ -789,12 +772,13 @@ class _HomePageState extends State<HomePage> {
 
   Widget _sponsorLogo(String name) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Image.asset("assets/logos/$name.jpeg", width: 60),
+      child: Image.asset('assets/logos/$name.jpeg', width: 60),
     );
   }
 }

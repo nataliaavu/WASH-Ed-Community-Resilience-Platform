@@ -11,6 +11,7 @@ import 'package:wash_ed_app/views/onboarding/onboarding_page.dart';
 import 'package:wash_ed_app/views/prepare/prepare_page.dart';
 import 'package:wash_ed_app/views/profile.dart';
 import 'package:wash_ed_app/views/setup/setup_page.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,9 +35,7 @@ class WashEdApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'WASH-Ed Platform',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: buildAppTheme(),
       initialRoute: '/init',
       routes: <String, WidgetBuilder>{
         '/': (context) => const AppMain(),
@@ -91,9 +90,6 @@ class _AppMainState extends State<AppMain> {
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFFE91E8C),
-        unselectedItemColor: Colors.grey,
         onTap: (index) => setState(() => _currentIndex = index),
         items: const [
           BottomNavigationBarItem(

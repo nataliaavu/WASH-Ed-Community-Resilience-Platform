@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
 import 'package:wash_ed_app/data/app_notifiers.dart';
 import 'package:wash_ed_app/data/database_helper.dart';
 import 'package:wash_ed_app/data/philippine_locations.dart';
@@ -40,6 +41,10 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
     }
   }
 
+  // ── Set as home — untouched ───────────────────────────────────────────────
+  // Updates the user profile municity and increments homeLocationVersion,
+  // which triggers _loadData in home_page.dart to reload weather/flood data.
+
   Future<void> _setAsHome(UserLocation loc) async {
     final profile = await _db.getUserProfile();
     if (profile == null) return;
@@ -75,7 +80,7 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
                 decoration: const InputDecoration(
                     labelText: 'Label (e.g. Home, School)'),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
               GestureDetector(
                 onTap: () async {
                   final city = await _showCitySearch(ctx, selectedCity);
@@ -88,24 +93,22 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
                   ),
                   child: Text(
                     selectedCity ?? 'Search city or district...',
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: AppTextStyles.body.copyWith(
                       color: selectedCity != null
-                          ? Colors.black87
-                          : Colors.grey,
+                          ? AppColors.textDark
+                          : AppColors.textMid,
                     ),
                   ),
                 ),
               ),
               if (selectedCity != null)
                 Padding(
-                  padding: const EdgeInsets.only(top: 4),
+                  padding: const EdgeInsets.only(top: AppSpacing.xs),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
                       philippineLocations[selectedCity]!,
-                      style: const TextStyle(
-                          fontSize: 12, color: Colors.black54),
+                      style: AppTextStyles.caption,
                     ),
                   ),
                 ),
@@ -118,11 +121,10 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE91E8C),
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.brandPink,
+                foregroundColor: AppColors.white,
               ),
-              onPressed: selectedCity == null ||
-                      labelCtrl.text.trim().isEmpty
+              onPressed: selectedCity == null || labelCtrl.text.trim().isEmpty
                   ? null
                   : () async {
                       Navigator.pop(ctx);
@@ -160,8 +162,8 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
                   .where((c) => c.toLowerCase().contains(query))
                   .toList();
           return AlertDialog(
-            titlePadding:
-                const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            titlePadding: const EdgeInsets.fromLTRB(
+                AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
             title: TextField(
               controller: searchCtrl,
               autofocus: true,
@@ -169,8 +171,7 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
                 hintText: 'Search city or district...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10),
+                contentPadding: EdgeInsets.symmetric(vertical: 10),
               ),
               onChanged: (_) => setState(() {}),
             ),
@@ -179,7 +180,8 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
               width: double.maxFinite,
               height: 320,
               child: filtered.isEmpty
-                  ? const Center(child: Text('No results'))
+                  ? Center(
+                      child: Text('No results', style: AppTextStyles.body))
                   : ListView.builder(
                       itemCount: filtered.length,
                       itemBuilder: (_, i) {
@@ -188,16 +190,19 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
                         final selected = city == current;
                         return ListTile(
                           dense: true,
-                          title: Text(city,
-                              style: TextStyle(
-                                  fontWeight: selected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal)),
+                          title: Text(
+                            city,
+                            style: AppTextStyles.body.copyWith(
+                              fontWeight: selected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
                           subtitle: Text(province,
-                              style: const TextStyle(fontSize: 11)),
+                              style: AppTextStyles.caption),
                           trailing: selected
                               ? const Icon(Icons.check,
-                                  color: Color(0xFFE91E8C), size: 18)
+                                  color: AppColors.brandPink, size: 18)
                               : null,
                           onTap: () => Navigator.pop(ctx, city),
                         );
@@ -218,12 +223,16 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
         content: Text('Remove "${loc.label}" from your locations?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Remove',
-                  style: TextStyle(color: Colors.red))),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              'Remove',
+              style: AppTextStyles.body.copyWith(color: AppColors.errorRed),
+            ),
+          ),
         ],
       ),
     );
@@ -236,75 +245,83 @@ class _ManageLocationsPageState extends State<ManageLocationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFFCE4EC), Color(0xFFF3E5F5)],
-          ),
-        ),
+        decoration: const BoxDecoration(gradient: AppGradients.profileBg),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // ── Back button ───────────────────────────────────────────────
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.arrow_back_ios,
-                      size: 16, color: Color(0xFF1A45A0)),
-                  label: const Text('Back',
-                      style: TextStyle(
-                          color: Color(0xFF1A45A0),
-                          fontWeight: FontWeight.w600)),
+                      size: 16, color: AppColors.brandBlue),
+                  label: Text(
+                    'Back',
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.brandBlue,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+
+              // ── Title ─────────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.xs,
+                ),
                 child: Text(
                   'Manage Locations',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A45A0),
-                  ),
+                  style: AppTextStyles.h1Blue.copyWith(fontSize: 30),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
+
+              // ── Add New button ─────────────────────────────────────────────
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
-                  padding: const EdgeInsets.only(right: 12),
+                  padding: const EdgeInsets.only(right: AppSpacing.sm),
                   child: TextButton.icon(
                     onPressed: () => _showLocationDialog(),
                     icon: const Icon(Icons.add,
-                        color: Color(0xFF1A45A0), size: 18),
-                    label: const Text('Add New',
-                        style: TextStyle(
-                            color: Color(0xFF1A45A0), fontSize: 13)),
+                        color: AppColors.brandBlue, size: 18),
+                    label: Text(
+                      'Add New',
+                      style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.brandBlue),
+                    ),
                   ),
                 ),
               ),
+
+              // ── Location list ──────────────────────────────────────────────
               Expanded(
                 child: _locations.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
                           'No locations added yet.\nTap "Add New" to add one.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey, fontSize: 15),
+                          style: AppTextStyles.body.copyWith(
+                              color: AppColors.textMid),
                         ),
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(AppSpacing.md),
                         itemCount: _locations.length,
                         itemBuilder: (ctx, i) => _LocationCard(
                           location: _locations[i],
-                          isHome: _locations[i].municity == _homeMunicity,
+                          isHome:
+                              _locations[i].municity == _homeMunicity,
                           onSetAsHome: () => _setAsHome(_locations[i]),
-                          onEdit: () =>
-                              _showLocationDialog(existing: _locations[i]),
+                          onEdit: () => _showLocationDialog(
+                              existing: _locations[i]),
                           onDelete: () => _delete(_locations[i]),
                         ),
                       ),
@@ -338,52 +355,59 @@ class _LocationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2)),
+            color: AppColors.textDark.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
         children: [
+          // ── Label pill ─────────────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A45A0).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
+              color: AppColors.brandBlue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
             child: Text(
               location.label,
-              style: const TextStyle(
-                  color: Color(0xFF1A45A0),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12),
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.brandBlue,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.sm),
+
+          // ── City and province ──────────────────────────────────────────
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   location.municity,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 15),
+                  style: AppTextStyles.body.copyWith(
+                      fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   location.province,
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  style: AppTextStyles.caption,
                 ),
               ],
             ),
           ),
+
+          // ── Action icons ───────────────────────────────────────────────
           IconButton(
             tooltip: isHome
                 ? 'Current home location'
@@ -391,24 +415,24 @@ class _LocationCard extends StatelessWidget {
             icon: Icon(
               isHome ? Icons.home : Icons.home_outlined,
               size: 20,
-              color: isHome ? const Color(0xFFE91E8C) : Colors.grey,
+              color: isHome ? AppColors.brandPink : AppColors.textMid,
             ),
             onPressed: isHome ? null : onSetAsHome,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           IconButton(
             icon: const Icon(Icons.edit_outlined,
-                size: 20, color: Color(0xFF1A45A0)),
+                size: 20, color: AppColors.brandBlue),
             onPressed: onEdit,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           IconButton(
             icon: const Icon(Icons.delete_outline,
-                size: 20, color: Colors.red),
+                size: 20, color: AppColors.errorRed),
             onPressed: onDelete,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),

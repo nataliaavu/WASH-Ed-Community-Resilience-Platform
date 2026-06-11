@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
 import 'package:wash_ed_app/models/squad_member.dart';
 
 class SetupSquadPage extends StatefulWidget {
@@ -53,6 +54,8 @@ class _SetupSquadPageState extends State<SetupSquadPage> {
     _notify();
   }
 
+  // ── Squad save logic — untouched ─────────────────────────────────────────
+
   void _notify() {
     final members = _forms
         .map((f) => SquadMember(
@@ -65,95 +68,77 @@ class _SetupSquadPageState extends State<SetupSquadPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFFCE4EC), Color(0xFFF3E5F5)],
-        ),
-      ),
-      child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 120),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 44),
-                const Text(
-                  'Safety Squad',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A45A0),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  "Add your trusted 'heroes' to join your safety squad!\n"
-                  "These are who you call in case of an emergency.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.black54, height: 1.5),
-                ),
-                const SizedBox(height: 28),
-                ..._forms.asMap().entries.map((entry) =>
-                    _buildMemberForm(entry.key, entry.value)),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: _addForm,
-                  child: Container(
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1A45A0).withValues(alpha: 0.04),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                          color: const Color(0xFF1A45A0),
-                          style: BorderStyle.solid),
-                    ),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add, color: Color(0xFF1A45A0), size: 22),
-                        SizedBox(height: 4),
-                        Text(
-                          'Add New Hero',
-                          style: TextStyle(
-                            color: Color(0xFF1A45A0),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
+    // No background — parent setup_page.dart provides the gradient
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(28, 44, 28, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Safety Squad',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.h1Blue.copyWith(fontSize: 32),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "Add your trusted 'heroes' to join your safety squad!\n"
+            "These are who you call in case of an emergency.",
+            textAlign: TextAlign.center,
+            style: AppTextStyles.body.copyWith(
+                color: AppColors.textMid, height: 1.5),
+          ),
+          const SizedBox(height: 28),
+          ..._forms.asMap().entries.map(
+              (entry) => _buildMemberForm(entry.key, entry.value)),
+          const SizedBox(height: AppSpacing.md),
+          GestureDetector(
+            onTap: _addForm,
+            child: Container(
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.brandBlue.withValues(alpha: 0.04),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(color: AppColors.brandBlue),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.add, color: AppColors.brandBlue, size: 22),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Add New Hero',
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.brandBlue,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'You can add or change these later in settings',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, color: Colors.black45),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            'You can add or change these later in settings',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.caption,
+          ),
+          const SizedBox(height: AppSpacing.xl),
+        ],
       ),
     );
   }
 
   Widget _buildMemberForm(int index, _MemberForm form) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.blue.shade100),
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.lightBlue.withValues(alpha: 0.3)),
         boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+          BoxShadow(
+              color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -162,18 +147,18 @@ class _SetupSquadPageState extends State<SetupSquadPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Hero Name',
-                style: TextStyle(
-                  color: Color(0xFF1A45A0),
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.brandBlue,
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
                 ),
               ),
               if (_forms.length > 1)
                 GestureDetector(
                   onTap: () => _removeForm(index),
-                  child: const Icon(Icons.close, size: 20, color: Colors.grey),
+                  child: const Icon(Icons.close,
+                      size: 20, color: AppColors.textMid),
                 ),
             ],
           ),
@@ -182,17 +167,17 @@ class _SetupSquadPageState extends State<SetupSquadPage> {
             textCapitalization: TextCapitalization.words,
             decoration: InputDecoration(
               hintText: 'Type in here',
-              hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+              hintStyle: AppTextStyles.body.copyWith(
+                  color: AppColors.textMid),
             ),
             onChanged: (_) => _notify(),
           ),
-          const SizedBox(height: 14),
-          const Text(
+          const SizedBox(height: AppSpacing.md),
+          Text(
             'Phone Number',
-            style: TextStyle(
-              color: Color(0xFF1A45A0),
+            style: AppTextStyles.body.copyWith(
+              color: AppColors.brandBlue,
               fontWeight: FontWeight.bold,
-              fontSize: 14,
             ),
           ),
           TextField(
@@ -200,7 +185,8 @@ class _SetupSquadPageState extends State<SetupSquadPage> {
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
               hintText: '09XX XXX XXX',
-              hintStyle: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+              hintStyle: AppTextStyles.body.copyWith(
+                  color: AppColors.textMid),
             ),
             onChanged: (_) => _notify(),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
 import 'package:wash_ed_app/data/philippine_locations.dart';
 
 class SetupLocationPage extends StatefulWidget {
@@ -23,6 +24,8 @@ class _SetupLocationPageState extends State<SetupLocationPage> {
     super.initState();
     _selected = widget.selectedMunicity;
   }
+
+  // ── Location search logic — untouched ─────────────────────────────────────
 
   Future<void> _openSearch() async {
     final searchCtrl = TextEditingController();
@@ -63,16 +66,19 @@ class _SetupLocationPageState extends State<SetupLocationPage> {
                         final selected = c == _selected;
                         return ListTile(
                           dense: true,
-                          title: Text(c,
-                              style: TextStyle(
-                                  fontWeight: selected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal)),
+                          title: Text(
+                            c,
+                            style: TextStyle(
+                              fontWeight: selected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
                           subtitle: Text(p,
-                              style: const TextStyle(fontSize: 11)),
+                              style: AppTextStyles.caption),
                           trailing: selected
                               ? const Icon(Icons.check,
-                                  color: Color(0xFF1A45A0), size: 18)
+                                  color: AppColors.brandBlue, size: 18)
                               : null,
                           onTap: () => Navigator.pop(ctx, c),
                         );
@@ -93,83 +99,68 @@ class _SetupLocationPageState extends State<SetupLocationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFFCE4EC), Color(0xFFF3E5F5)],
-        ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 72),
-              const Text(
-                'Select Your Location',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A45A0),
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'We use your location to send real-time\nlocal flood alerts and updates',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15, color: Colors.black54),
-              ),
-              const SizedBox(height: 36),
-              GestureDetector(
-                onTap: _openSearch,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 18),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black12, blurRadius: 8),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _selected ?? 'Choose city or district name',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: _selected != null
-                                ? Colors.black87
-                                : Colors.grey,
-                          ),
-                        ),
-                      ),
-                      const Icon(Icons.keyboard_arrow_down,
-                          color: Colors.grey, size: 24),
-                    ],
-                  ),
-                ),
-              ),
-              if (_selected != null) ...[
-                const SizedBox(height: 14),
-                Text(
-                  philippineLocations[_selected] ?? '',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      color: Color(0xFF1A45A0),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14),
-                ),
-              ],
-            ],
+    // No background — parent setup_page.dart provides the gradient
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: 72),
+          Text(
+            'Select Your Location',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.h1Blue.copyWith(fontSize: 32, height: 1.2),
           ),
-        ),
+          const SizedBox(height: 14),
+          Text(
+            'We use your location to send real-time\nlocal flood alerts and updates',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.body.copyWith(color: AppColors.textMid),
+          ),
+          const SizedBox(height: 36),
+          GestureDetector(
+            onTap: _openSearch,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 18),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 8),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _selected ?? 'Choose city or district name',
+                      style: AppTextStyles.body.copyWith(
+                        color: _selected != null
+                            ? AppColors.textDark
+                            : AppColors.textMid,
+                      ),
+                    ),
+                  ),
+                  const Icon(Icons.keyboard_arrow_down,
+                      color: AppColors.textMid, size: 24),
+                ],
+              ),
+            ),
+          ),
+          if (_selected != null) ...[
+            const SizedBox(height: 14),
+            Text(
+              philippineLocations[_selected] ?? '',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body.copyWith(
+                color: AppColors.brandBlue,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.xl),
+        ],
       ),
     );
   }

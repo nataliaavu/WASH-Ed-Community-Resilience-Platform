@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
 import 'package:wash_ed_app/data/database_helper.dart';
 import 'package:wash_ed_app/models/user_profile.dart';
 import 'package:wash_ed_app/views/profile/account_type_page.dart';
@@ -32,27 +33,21 @@ class _ProfilePageState extends State<ProfilePage> {
     final name = _profile?.name ?? 'there';
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFFCE4EC), Color(0xFFF3E5F5)],
-          ),
-        ),
+        decoration: const BoxDecoration(gradient: AppGradients.profileBg),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: 32,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Hello $name!',
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A45A0),
-                  ),
+                  style: AppTextStyles.h1Blue,
                 ),
                 const Spacer(flex: 2),
                 _menuButton(
@@ -67,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     _loadProfile();
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 _menuButton(
                   'Account Type',
                   Icons.badge_outlined,
@@ -80,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     _loadProfile();
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 _menuButton(
                   'Locations',
                   Icons.location_on_outlined,
@@ -104,34 +99,25 @@ class _ProfilePageState extends State<ProfilePage> {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.yellow, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.yellow.withValues(alpha: 0.4),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: 26,
         ),
+        decoration: AppDecorations.yellowBorderCard(radius: AppRadius.md),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFF1A45A0), size: 28),
+            Icon(icon, color: AppColors.brandBlue, size: 28),
             const SizedBox(width: 18),
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: AppTextStyles.h3.copyWith(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A45A0),
+                  color: AppColors.brandBlue,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right, color: Color(0xFF1A45A0)),
+            const Icon(Icons.chevron_right, color: AppColors.brandBlue),
           ],
         ),
       ),
