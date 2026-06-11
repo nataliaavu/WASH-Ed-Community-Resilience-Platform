@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wash_ed_app/config/app_theme.dart';
+import 'package:wash_ed_app/views/profile/personal_details_page.dart';
 
 class PreparePage extends StatefulWidget {
   const PreparePage({super.key});
@@ -8,22 +10,19 @@ class PreparePage extends StatefulWidget {
 }
 
 class _PreparePageState extends State<PreparePage> {
-  // Checklist items - content to be confirmed by WASH-Ed
   final List<Map<String, dynamic>> _checklist = [
-    {'label': 'Water and snacks for 3 days', 'checked': false,},
-    {'label': 'Important documents sealed in a plastic bag', 'checked': false,},
-    {'label': 'Torch, extra clothes, and first aid kit', 'checked': false,},
-    {'label': 'Power bank for your phone (if you have one)', 'checked': false,},
+    {'label': 'Water and snacks for 3 days', 'checked': false},
+    {'label': 'Important documents sealed in a plastic bag', 'checked': false},
+    {'label': 'Torch, extra clothes, and first aid kit', 'checked': false},
+    {'label': 'Power bank for your phone (if you have one)', 'checked': false},
   ];
 
-  // Safety steps - content to be confirmed by WASH-Ed
   final List<String> _safetySteps = [
     'Tell a trusted adult near you straight away',
     'Grab your emergency bag if you can, and move to higher ground',
     'Stay away from floodwater. It can be deep and dirty',
     'Listen to the adults around you and follow official instructions',
     'If told to evacuate, go with your family to somewhere safe and dry',
-    
   ];
 
   @override
@@ -31,13 +30,7 @@ class _PreparePageState extends State<PreparePage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFE8D5F0), Color(0xFFFFE4D6)],
-          ),
-        ),
+        decoration: const BoxDecoration(gradient: AppGradients.pageBg),
         child: Column(
           children: [
             Expanded(
@@ -46,26 +39,29 @@ class _PreparePageState extends State<PreparePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHeader(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.lg),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildSectionLabel('Need help? Call now'),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSpacing.sm),
                           _buildEmergencyServicesCard(),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSpacing.sm),
                           _buildEmergencyContactsCard(),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: AppSpacing.sm),
+                          _buildViewContactsButton(context),
+                          const SizedBox(height: AppSpacing.lg),
                           _buildSectionLabel('Quick Safety Steps'),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSpacing.sm),
                           ..._safetySteps.asMap().entries.map(
-                            (e) => _buildSafetyStepCard(e.key + 1, e.value),
-                          ),
-                          const SizedBox(height: 24),
+                                (e) => _buildSafetyStepCard(e.key + 1, e.value),
+                              ),
+                          const SizedBox(height: AppSpacing.lg),
                           _buildChecklistSection(),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: AppSpacing.lg),
                         ],
                       ),
                     ),
@@ -78,47 +74,33 @@ class _PreparePageState extends State<PreparePage> {
       ),
     );
   }
+
   // ── HEADER ──────────────────────────────────────────────────────────────────
 
   Widget _buildHeader() {
     return SafeArea(
       bottom: false,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1A47C8),
-          borderRadius: BorderRadius.circular(24),
-        ),
+        margin: const EdgeInsets.fromLTRB(
+            AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
+        padding: const EdgeInsets.fromLTRB(20, AppSpacing.md, 20, AppSpacing.md),
+        decoration: AppDecorations.blueHeader(radius: 18),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text('Flood\nGuidance', style: AppTextStyles.h1White),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Flood\nGuidance',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      height: 1.1,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    "Wherever you are, \n here's what to do!",
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white,
-                      height: 1.4,
-                    ),
+                    "Wherever you are, here's what to do!",
+                    style: AppTextStyles.bodyWhite,
                   ),
                 ],
               ),
             ),
-            // Kiko character — replace with Image.asset once asset added
             SizedBox(
               width: 150,
               height: 160,
@@ -128,70 +110,53 @@ class _PreparePageState extends State<PreparePage> {
               ),
             ),
           ],
-        ),      // closes Row
-      ),        // closes Container
-    );          // closes SafeArea
+        ),
+      ),
+    );
   }
 
-    // ── SECTION LABEL ───────────────────────────────────────────────────────────
+  // ── SECTION LABEL ───────────────────────────────────────────────────────────
 
-    Widget _buildSectionLabel(String title) {
-      return Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF3D5AFE),
-        ),
-      );
-    }
+  Widget _buildSectionLabel(String title) {
+    return Text(title, style: AppTextStyles.h3Blue);
+  }
 
   // ── CALL FOR HELP CARDS ─────────────────────────────────────────────────────
 
   Widget _buildEmergencyServicesCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFCDD2),
-        borderRadius: BorderRadius.circular(50), // rounded edge
-        border: Border.all(color: const Color(0xFFFFCDD2)),
-      ),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: 14),
+      decoration: AppDecorations.emergencyCard,
       child: Row(
         children: [
-          // Red circle icon
           Container(
             width: 38,
             height: 38,
             decoration: const BoxDecoration(
-              color: Colors.red,
+              color: AppColors.errorRed,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.phone, color: Colors.white, size: 18),
+            child: const Icon(Icons.phone, color: AppColors.white, size: 18),
           ),
-          const SizedBox(width: 12),
-          const Expanded(
+          const SizedBox(width: AppSpacing.sm + 4),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Emergency Services',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-                Text(
-                  'Police, Fire, Ambulance',
-                  style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 88, 88, 88)),
-                ),
+                Text('Emergency Services',
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.bold)),
+                Text('Police, Fire, Ambulance',
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.textMid)),
               ],
             ),
           ),
-          // 911 in big bold red
-          const Text(
+          Text(
             '911',
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w900,
-              color: Colors.red,
-            ),
+            style: AppTextStyles.h1White
+                .copyWith(color: AppColors.errorRed, fontSize: 30),
           ),
         ],
       ),
@@ -200,80 +165,113 @@ class _PreparePageState extends State<PreparePage> {
 
   Widget _buildEmergencyContactsCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFCDD2),
-        borderRadius: BorderRadius.circular(50), // very rounded like wireframe
-        border: Border.all(color: const Color(0xFFFFCDD2)),
-      ),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: 14),
+      decoration: AppDecorations.emergencyCard,
       child: Row(
         children: [
-          // Lighter red/pink circle icon
           Container(
             width: 38,
             height: 38,
-            decoration: BoxDecoration(
-              color: Colors.red,
+            decoration: const BoxDecoration(
+              color: AppColors.errorRed,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.people, color: Colors.white, size: 18),
+            child: const Icon(Icons.people, color: AppColors.white, size: 18),
           ),
-          const SizedBox(width: 12),
-          const Expanded(
+          const SizedBox(width: AppSpacing.sm + 4),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Philippine Red Cross',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-                Text(
-                  'Disaster Relief',
-                  style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 88, 88, 88)),
-                ),
+                Text('Philippine Red Cross',
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.bold)),
+                Text('Disaster Relief',
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.textMid)),
               ],
             ),
           ),
-          const Text(
+          Text(
             '143',
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w900,
-              color: Colors.red,
-            ),
+            style: AppTextStyles.h1White
+                .copyWith(color: AppColors.errorRed, fontSize: 30),
           ),
         ],
       ),
     );
   }
 
+  // ── VIEW EMERGENCY CONTACTS BUTTON ──────────────────────────────────────────
+
+  Widget _buildViewContactsButton(BuildContext context) {
+  return GestureDetector(
+    onTap: () => Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PersonalDetailsPage()),
+    ),
+    child: Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: 14),
+      decoration: AppDecorations.emergencyCard,
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: const BoxDecoration(
+              color: AppColors.errorRed,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.contacts_outlined,
+                color: AppColors.white, size: 18),
+          ),
+          const SizedBox(width: AppSpacing.sm + 4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('View Emergency Contacts',
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.bold)),
+                Text('Your saved Safety Squad',
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.textMid)),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right,
+              color: AppColors.errorRed, size: 24),
+        ],
+      ),
+    ),
+  );
+}
+
   // ── QUICK SAFETY STEPS ──────────────────────────────────────────────────────
 
   Widget _buildSafetyStepCard(int number, String text) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE8EAFF)),
-      ),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+          horizontal: 14, vertical: AppSpacing.md),
+      decoration: AppDecorations.lightBorderCard(),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Blue rounded square number badge
           Container(
             width: 30,
             height: 30,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0xFF1A47C8),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.brandBlue,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Text(
               '$number',
-              style: const TextStyle(
-                color: Colors.white,
+              style: AppTextStyles.body.copyWith(
+                color: AppColors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
               ),
@@ -281,10 +279,7 @@ class _PreparePageState extends State<PreparePage> {
           ),
           const SizedBox(width: 14),
           Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 13, height: 1.4),
-            ),
+            child: Text(text, style: AppTextStyles.bodySmall),
           ),
         ],
       ),
@@ -296,39 +291,25 @@ class _PreparePageState extends State<PreparePage> {
   Widget _buildChecklistSection() {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFDE7), // pale yellow from wireframe
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFFFD54F)),
-      ),
+      decoration: AppDecorations.checklistContainer,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Checklist',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3D5AFE),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Text(
+          Text('Checklist', style: AppTextStyles.h3Blue),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
             'Pack a bag you can carry quickly if you need to leave home fast',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.black,
-            ),
+            style: AppTextStyles.bodySmall,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm),
           ..._checklist.asMap().entries.map((entry) {
             final index = entry.key;
             final item = entry.value;
             return Container(
-              margin: const EdgeInsets.only(bottom: 8),
+              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               child: CheckboxListTile(
                 value: item['checked'],
@@ -339,23 +320,21 @@ class _PreparePageState extends State<PreparePage> {
                 },
                 title: Text(
                   item['label'],
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: AppTextStyles.bodySmall.copyWith(
                     decoration: item['checked'] == true
                         ? TextDecoration.lineThrough
                         : null,
                     color: item['checked'] == true
-                        ? Colors.grey
-                        : Colors.black87,
+                        ? AppColors.textMid
+                        : AppColors.textDark,
                   ),
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
-                activeColor: const Color(0xFF3D5AFE),
-                checkboxShape:
-                    const CircleBorder(), // circle checkbox like wireframe
-                side: const BorderSide(color: Colors.grey, width: 1.5),
+                activeColor: AppColors.brandBlue,
+                checkboxShape: const CircleBorder(),
+                side: const BorderSide(color: AppColors.textMid, width: 1.5),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
               ),
             );
