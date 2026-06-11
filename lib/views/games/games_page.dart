@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:wash_ed_app/config/app_theme.dart';
 import 'package:flutter/services.dart';
@@ -24,14 +26,16 @@ const _games = [
     title: "Kiko's Flood Escape",
     description: 'Save Kiko and race to help him reach to safety!',
     thumbnailAsset: "assets/wash-ed/Kiko's Flood Escape.png",
-    url: 'https://wash-ed.itch.io/wash-ed-heroes-kiko-english',
+    url:
+        'https://html-classic.itch.zone/html/14755858/Wash-Ed-Interactive-Learning-Game-wash-heroes-english/Kiko\'s Flood Escape/index.html',
   ),
   _GameItem(
     title: "Kiko's Day",
     description:
         'Join Kiko throughout his day as he teaches proper hand hygiene!',
     thumbnailAsset: "assets/wash-ed/Kiko's Day Mini Games.png",
-    url: 'https://wash-ed.itch.io/kikos-day',
+    url:
+        'https://html-classic.itch.zone/html/15634034/KikosDayFinal/index.html',
   ),
 ];
 
@@ -212,6 +216,7 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations([.landscapeLeft, .landscapeRight]);
+    SystemChrome.setEnabledSystemUIMode(.immersive);
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -229,38 +234,176 @@ class _GameWebViewPageState extends State<GameWebViewPage> {
   void dispose() {
     super.dispose();
     SystemChrome.setPreferredOrientations([.portraitUp, .portraitDown]);
+    SystemChrome.setEnabledSystemUIMode(.edgeToEdge);
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) Navigator.pop(context);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            widget.title,
-            style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: AppColors.brandPink,
-          foregroundColor: AppColors.white,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        body: Stack(
-          children: [
-            WebViewWidget(controller: _controller),
-            if (_loading)
-              const Center(
-                child: CircularProgressIndicator(color: AppColors.brandPink),
+      child: Stack(
+        children: [
+          if (_loading)
+            const Center(child: CircularProgressIndicator(color: AppColors.brandPink)),
+
+          WebViewWidget(controller: _controller),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ExitButton(),
               ),
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class ExitButton extends StatefulWidget {
+  const ExitButton({super.key});
+
+  @override
+  State<ExitButton> createState() => _ExitButtonState();
+}
+
+class _ExitButtonState extends State<ExitButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  bool _showTooltip = false;
+  int _presses = 0;
+
+  void onTapUp() {
+    if (_controller.value == _controller.upperBound) return;
+
+    if (!_showTooltip) {
+      setState(() {
+        _showTooltip = true;
+      });
+    }
+
+    // Keep showing tooltip if button is pressed again within 2s
+    _presses += 1;
+    int n = _presses;
+    Timer(Duration(seconds: 2), () {
+      if (_controller.value == _controller.upperBound) return;
+
+      if (n == _presses) {
+        setState(() {
+          _showTooltip = false;
+        });
+
+        _presses = 0;
+      }
+    });
+
+    _controller.reset();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => onTapUp(),
+      onTapCancel: onTapUp,
+
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Row(
+            children: [
+              CustomPaint(
+                foregroundPainter: ProgressRingPainter(
+                  progress: _controller.value,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.close, color: Colors.white, size: 28),
+                ),
+              ),
+              if (_showTooltip)
+                Container(
+                  margin: const .only(left: 4),
+                  padding: const .symmetric(horizontal: 4, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: .circular(4),
+                  ),
+                  child: const Text(
+                    "Hold down the button to exit!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      decoration: .none,
+                      // TODO: add font
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class ProgressRingPainter extends CustomPainter {
+  ProgressRingPainter({required this.progress});
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress == 0) return; // Don't draw anything if not being held
+
+    const strokeWidth = 2.0;
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    // Shrink the drawing rectangle slightly so the stroke isn't clipped
+    final rect = Rect.fromLTWH(
+      strokeWidth / 2,
+      strokeWidth / 2,
+      size.width - strokeWidth,
+      size.height - strokeWidth,
+    );
+
+    const startAngle = -pi / 2;
+    final sweepAngle = 2 * pi * progress;
+    canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+  }
+
+  @override
+  bool shouldRepaint(ProgressRingPainter oldDelegate) {
+    return oldDelegate.progress != progress;
   }
 }
