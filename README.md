@@ -9,7 +9,7 @@ The app combines:
 
 Educational content will feature the Kiko Carabao character and utilise WASH-Ed curriculum materials to teach children hygiene behaviours that are critical during disasters when waterborne diseases increase.
 
-The platform will integrate hazard data from [API] to provide location-based flood warnings for families and preparedness information for families. 
+The platform will integrate hazard data from MeteoSource to provide location-based flood warnings for families and preparedness information for families. 
 
 ## Table of Contents
 - [1. Project Goals](#1-project-goals)
@@ -111,7 +111,7 @@ flutter pub get
 ### 9.3 Set Up an Emulator
 To run the app you need an Android emulator:
 1. Open Android Studio -> Virtual Device Manager
-2. Click Create device and follow setup steps (Recommended: Pixel 6)
+2. Click Create device and follow setup steps
 3. Start emulator
 
 ### 9.4 Configure Environment Variables
