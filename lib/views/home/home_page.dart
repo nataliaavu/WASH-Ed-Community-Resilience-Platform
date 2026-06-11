@@ -38,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadData() async {
+    if (mounted) setState(() => _loading = true);
     try {
       final profile = await _db.getUserProfile();
       final municity = (profile?.municity.isNotEmpty == true)
