@@ -86,12 +86,8 @@ class _PreparePageState extends State<PreparePage> {
                             child: _buildEmergencyContactsCard(),
                           ),
                           const SizedBox(height: AppSpacing.sm),
-                        
-                          InkWell(
-                            onTap: () => _callNumber('143'),
-                            child: _buildEmergencyContactsCard(),
-                          ),
-
+                          _buildViewContactsButton(context),
+                          
                           const SizedBox(height: AppSpacing.lg),
                           _buildSectionLabel('Quick Safety Steps'),
                           const SizedBox(height: AppSpacing.sm),
