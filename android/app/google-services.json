@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:136672976163:android:425ba025488b4253844096",
+        "mobilesdk_app_id": "1:136672976163:android:ad4a9bb68e35344b844096",
         "android_client_info": {
-          "package_name": "com.example.wash_ed_app"
+          "package_name": "com.washedteam.kikoshub"
         }
       },
       "oauth_client": [],
